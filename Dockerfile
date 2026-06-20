@@ -25,6 +25,10 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # on this file and output the final configuration to /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 
+# Copy script to inject runtime environment variables into index.html
+COPY 40-env-config.sh /docker-entrypoint.d/40-env-config.sh
+RUN chmod +x /docker-entrypoint.d/40-env-config.sh
+
 # Default Cloud Run port expectation (8080)
 EXPOSE 8080
 

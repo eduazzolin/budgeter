@@ -10,14 +10,22 @@ let app: FirebaseApp | null = null;
 let db: Firestore | null = null;
 let auth: Auth | null = null;
 
-// Load config from environment variables (Vite prefix VITE_)
+// Define global interface for runtime environment variables
+declare global {
+  interface Window {
+    _env_?: Record<string, string>;
+  }
+}
+
+// Load config from environment variables
+// Reads from runtime window._env_ (Docker) first, falls back to Vite build-time env vars (local dev)
 const config: FirebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
+  apiKey: window._env_?.VITE_FIREBASE_API_KEY || import.meta.env.VITE_FIREBASE_API_KEY || '',
+  authDomain: window._env_?.VITE_FIREBASE_AUTH_DOMAIN || import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
+  projectId: window._env_?.VITE_FIREBASE_PROJECT_ID || import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
+  storageBucket: window._env_?.VITE_FIREBASE_STORAGE_BUCKET || import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
+  messagingSenderId: window._env_?.VITE_FIREBASE_MESSAGING_SENDER_ID || import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
+  appId: window._env_?.VITE_FIREBASE_APP_ID || import.meta.env.VITE_FIREBASE_APP_ID || '',
 };
 
 if (config.apiKey && config.projectId) {
