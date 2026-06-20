@@ -118,7 +118,7 @@ function App() {
           </div>
           <div>
             <span className="font-display" style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.02em', display: 'block' }}>
-              Antigravity Budgeter
+              Budgeter
             </span>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
               Contagem Regressiva de Orçamento

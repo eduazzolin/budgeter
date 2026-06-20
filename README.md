@@ -1,6 +1,6 @@
-# Antigravity Budgeter - Contagem Regressiva de Orçamento
+# Budgeter - Contagem Regressiva de Orçamento
 
-O **Antigravity Budgeter** é um aplicativo de planejamento e contagem regressiva financeira minimalista e moderno, projetado em React + TypeScript com Vite e integrado ao Firebase. Ele ajuda usuários a controlarem seus gastos de forma linear ao longo de períodos customizados.
+O **Budgeter** é um aplicativo de planejamento e contagem regressiva financeira minimalista e moderno, projetado em React + TypeScript com Vite e integrado ao Firebase. Ele ajuda usuários a controlarem seus gastos de forma linear ao longo de períodos customizados.
 
 ---
 
