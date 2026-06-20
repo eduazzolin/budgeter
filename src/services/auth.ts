@@ -3,8 +3,7 @@ import {
   onAuthStateChanged, 
   signOut, 
   GoogleAuthProvider,
-  signInWithPopup,
-  signInWithRedirect
+  signInWithPopup
 } from 'firebase/auth';
 import type { User as FirebaseUser } from 'firebase/auth';
 
@@ -43,24 +42,15 @@ export const authService = {
     }
   },
 
-  // Login with Google (Detects mobile to use redirect instead of popup)
+  // Login with Google
   loginWithGoogle: async (): Promise<AppUser | null> => {
     if (isFirebaseEnabled() && auth) {
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
       
-      // Basic mobile device regex
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      
-      if (isMobile) {
-        // Redirect on mobile to avoid popup blocker issues
-        await signInWithRedirect(auth, provider);
-        return null; // The page will redirect, result resolved on mount
-      } else {
-        // Popup on desktop
-        const cred = await signInWithPopup(auth, provider);
-        return mapFirebaseUser(cred.user);
-      }
+      // Always use popup, as redirect has known state loss issues on mobile browsers
+      const cred = await signInWithPopup(auth, provider);
+      return mapFirebaseUser(cred.user);
     }
     throw new Error('Firebase não está configurado.');
   },

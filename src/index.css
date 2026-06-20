@@ -75,6 +75,8 @@ h1, h2, h3, h4, .font-display {
   font-family: 'Outfit', sans-serif;
   font-weight: 600;
   letter-spacing: -0.02em;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Glassmorphism/Card utility */
@@ -237,14 +239,14 @@ h1, h2, h3, h4, .font-display {
   margin: 0 auto;
   padding: 30px;
   display: grid;
-  grid-template-columns: 350px 1fr;
+  grid-template-columns: 350px minmax(0, 1fr);
   gap: 30px;
   min-height: calc(100vh - 80px);
 }
 
 @media (max-width: 968px) {
   .dashboard-container {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     padding: 20px;
   }
 }
