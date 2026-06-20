@@ -34,10 +34,7 @@ const saveLocalPeriods = (periods: Period[]) => {
 
 export const dbService = {
   getPeriods: async (userId?: string): Promise<Period[]> => {
-    if (isFirebaseEnabled() && db) {
-      if (!userId) {
-        return [];
-      }
+    if (isFirebaseEnabled() && db && userId) {
       try {
         const periodsRef = collection(db, 'periods');
         const q = query(periodsRef, where('userId', '==', userId));
@@ -64,16 +61,15 @@ export const dbService = {
         return periods.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       } catch (error) {
         console.error('Firebase getPeriods error:', error);
-        throw error;
       }
-    } else {
-      // Local mode
-      let periods = getLocalPeriods();
-      if (userId) {
-        periods = periods.filter(p => p.userId === userId || !p.userId);
-      }
-      return periods.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
+    
+    // Local mode fallback
+    let periods = getLocalPeriods();
+    if (userId) {
+      periods = periods.filter(p => p.userId === userId || !p.userId);
+    }
+    return periods.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   },
 
   createPeriod: async (periodData: Omit<Period, 'id' | 'createdAt'>, userId?: string): Promise<Period> => {
@@ -83,7 +79,7 @@ export const dbService = {
       userId: userId || undefined
     };
 
-    if (isFirebaseEnabled() && db) {
+    if (isFirebaseEnabled() && db && userId) {
       try {
         const periodsRef = collection(db, 'periods');
         const docRef = await addDoc(periodsRef, newPeriod);
