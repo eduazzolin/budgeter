@@ -195,15 +195,17 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
         
         {/* Budget Goals Card */}
-        <div className="glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="glass" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Saldo
           </span>
-          <div style={{ margin: '16px 0' }}>
+          <div style={{ margin: '12px 0' }}>
             <span className="font-display" style={{ 
               fontSize: '2.5rem', 
               fontWeight: 800, 
-              color: metrics.status === 'above' ? 'var(--color-above)' : metrics.status === 'below' ? 'var(--color-below)' : 'var(--text-primary)' 
+              lineHeight: 1.1,
+              color: metrics.status === 'above' ? 'var(--color-above)' : metrics.status === 'below' ? 'var(--color-below)' : 'var(--text-primary)',
+              display: 'block'
             }}>
               {metrics.difference !== undefined ? (metrics.difference > 0 ? '+' : '') + formatCurrency(metrics.difference) : '—'}
             </span>
@@ -214,21 +216,21 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         </div>
 
         {/* Daily Spending Card */}
-        <div className="glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="glass" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Esperado para Hoje
           </span>
-          <div style={{ margin: '16px 0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ margin: '12px 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <div>
-              <span className="font-display" style={{ fontSize: '2.0rem', fontWeight: 800, color: 'var(--color-primary)', display: 'block' }}>
+              <span className="font-display" style={{ fontSize: '2.0rem', fontWeight: 800, color: 'var(--color-primary)', display: 'block', lineHeight: 1.1 }}>
                 {formatCurrency(metrics.targetBalanceTodayStart)}
               </span>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginTop: '2px' }}>
                 Esperado (início)
               </span>
             </div>
-            <div style={{ borderTop: '1px solid var(--card-border)', paddingTop: '12px' }}>
-              <span className="font-display" style={{ fontSize: '2.0rem', fontWeight: 800, color: 'var(--text-primary)', display: 'block' }}>
+            <div style={{ borderTop: '1px solid var(--card-border)', paddingTop: '8px' }}>
+              <span className="font-display" style={{ fontSize: '2.0rem', fontWeight: 800, color: 'var(--text-primary)', display: 'block', lineHeight: 1.1 }}>
                 {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
               </span>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginTop: '2px' }}>
@@ -242,14 +244,14 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         </div>
 
         {/* Countdown Card */}
-        <div className="glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="glass" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Contagem Regressiva
           </span>
-          <div style={{ margin: '16px 0' }}>
+          <div style={{ margin: '12px 0' }}>
             {metrics.isPeriodNotStarted ? (
               <div>
-                <span className="font-display" style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-neutral)' }}>
+                <span className="font-display" style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-neutral)', lineHeight: 1.1, display: 'block' }}>
                   A Iniciar
                 </span>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
@@ -258,7 +260,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               </div>
             ) : metrics.isPeriodEnded ? (
               <div>
-                <span className="font-display" style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-muted)' }}>
+                <span className="font-display" style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-muted)', lineHeight: 1.1, display: 'block' }}>
                   Finalizado
                 </span>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
@@ -267,7 +269,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               </div>
             ) : (
               <div>
-                <span className="font-display" style={{ fontSize: '3.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                <span className="font-display" style={{ fontSize: '3.5rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.1 }}>
                   {metrics.daysRemaining}
                 </span>
                 <span style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', marginLeft: '6px' }}>
