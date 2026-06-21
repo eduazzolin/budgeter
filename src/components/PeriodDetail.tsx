@@ -256,57 +256,30 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         </div>
 
         {/* Budget Goals Card */}
-        <div className="glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
-          <div>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '12px' }}>
-              Saldo
-            </span>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Esperado:</span>
-              <span style={{ fontWeight: 600 }}>{formatCurrency(metrics.targetBalanceTodayStart)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Atual:</span>
-              <span style={{ fontWeight: 600 }}>{metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}</span>
-            </div>
-          </div>
-          <div style={{ borderTop: '1px solid var(--card-border)', paddingTop: '12px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Diferença: <strong style={{ color: metrics.status === 'above' ? 'var(--color-above)' : metrics.status === 'below' ? 'var(--color-below)' : 'var(--text-primary)' }}>
+        <div className="glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Saldo
+          </span>
+          <div style={{ margin: '16px 0' }}>
+            <span className="font-display" style={{ 
+              fontSize: '2.5rem', 
+              fontWeight: 800, 
+              color: metrics.status === 'above' ? 'var(--color-above)' : metrics.status === 'below' ? 'var(--color-below)' : 'var(--text-primary)' 
+            }}>
               {metrics.difference !== undefined ? (metrics.difference > 0 ? '+' : '') + formatCurrency(metrics.difference) : '—'}
-            </strong>
+            </span>
+            <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', display: 'block', marginTop: '4px' }}>
+              diferença
+            </span>
           </div>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            Atual: {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
+          </p>
         </div>
 
       </div>
 
-      {/* SECTION 4: Target Balance for Today */}
-      <div className="glass" style={{ padding: '24px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, var(--color-primary), var(--color-secondary))' }} />
-        <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Clock size={18} style={{ color: 'var(--color-primary)' }} /> Prospecção de Saldo para Hoje
-        </h3>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-          <div>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '4px' }}>Início do Dia</p>
-            <span className="font-display" style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-              {formatCurrency(metrics.targetBalanceTodayStart)}
-            </span>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Saldo ideal ao começar o dia de hoje
-            </p>
-          </div>
-          <div>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '4px' }}>Fim do Dia</p>
-            <span className="font-display" style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-              {formatCurrency(metrics.targetBalanceTodayEnd)}
-            </span>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Saldo ideal ao terminar o dia de hoje
-            </p>
-          </div>
-        </div>
-      </div>
+
 
       {/* SECTION 5: Table of Daily Projections (New Feature) */}
       <div className="glass" style={{ padding: '24px' }}>
