@@ -192,8 +192,58 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       </div>
 
       {/* SECTION 3: Grid of Main KPIs */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
         
+        {/* Budget Goals Card */}
+        <div className="glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Saldo
+          </span>
+          <div style={{ margin: '16px 0' }}>
+            <span className="font-display" style={{ 
+              fontSize: '2.5rem', 
+              fontWeight: 800, 
+              color: metrics.status === 'above' ? 'var(--color-above)' : metrics.status === 'below' ? 'var(--color-below)' : 'var(--text-primary)' 
+            }}>
+              {metrics.difference !== undefined ? (metrics.difference > 0 ? '+' : '') + formatCurrency(metrics.difference) : '—'}
+            </span>
+            <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', display: 'block', marginTop: '4px' }}>
+              diferença
+            </span>
+          </div>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            Atual: {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
+          </p>
+        </div>
+
+        {/* Daily Spending Card */}
+        <div className="glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Esperado para Hoje
+          </span>
+          <div style={{ margin: '16px 0', display: 'flex', gap: '16px' }}>
+            <div style={{ flex: 1 }}>
+              <span className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--color-primary)', display: 'block', wordBreak: 'break-word' }}>
+                {formatCurrency(metrics.targetBalanceTodayStart)}
+              </span>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginTop: '4px' }}>
+                Esperado (início)
+              </span>
+            </div>
+            <div style={{ flex: 1, borderLeft: '1px solid var(--card-border)', paddingLeft: '16px' }}>
+              <span className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)', display: 'block', wordBreak: 'break-word' }}>
+                {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
+              </span>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginTop: '4px' }}>
+                Atual
+              </span>
+            </div>
+          </div>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            Estimativa diária: {formatCurrency(metrics.dailyBudget)}/dia
+          </p>
+        </div>
+
         {/* Countdown Card */}
         <div className="glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -235,46 +285,6 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           <div className="progress-bar-container" style={{ margin: 0 }}>
             <div className="progress-bar-fill" style={{ width: `${metrics.currentProgressPercent}%` }} />
           </div>
-        </div>
-
-        {/* Daily Spending Card */}
-        <div className="glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Esperado para Hoje
-          </span>
-          <div style={{ margin: '16px 0' }}>
-            <span className="font-display" style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-primary)' }}>
-              {formatCurrency(metrics.targetBalanceTodayStart)}
-            </span>
-            <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', display: 'block', marginTop: '4px' }}>
-              no início do dia
-            </span>
-          </div>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Estimativa diária: {formatCurrency(metrics.dailyBudget)}/dia
-          </p>
-        </div>
-
-        {/* Budget Goals Card */}
-        <div className="glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Saldo
-          </span>
-          <div style={{ margin: '16px 0' }}>
-            <span className="font-display" style={{ 
-              fontSize: '2.5rem', 
-              fontWeight: 800, 
-              color: metrics.status === 'above' ? 'var(--color-above)' : metrics.status === 'below' ? 'var(--color-below)' : 'var(--text-primary)' 
-            }}>
-              {metrics.difference !== undefined ? (metrics.difference > 0 ? '+' : '') + formatCurrency(metrics.difference) : '—'}
-            </span>
-            <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', display: 'block', marginTop: '4px' }}>
-              diferença
-            </span>
-          </div>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Atual: {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
-          </p>
         </div>
 
       </div>
