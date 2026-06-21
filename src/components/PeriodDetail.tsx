@@ -207,9 +207,6 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
             }}>
               {metrics.difference !== undefined ? (metrics.difference > 0 ? '+' : '') + formatCurrency(metrics.difference) : '—'}
             </span>
-            <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', display: 'block', marginTop: '4px' }}>
-              diferença
-            </span>
           </div>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             Atual: {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
@@ -221,20 +218,20 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Esperado para Hoje
           </span>
-          <div style={{ margin: '16px 0', display: 'flex', gap: '16px' }}>
-            <div style={{ flex: 1 }}>
-              <span className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--color-primary)', display: 'block', wordBreak: 'break-word' }}>
+          <div style={{ margin: '16px 0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div>
+              <span className="font-display" style={{ fontSize: '2.0rem', fontWeight: 800, color: 'var(--color-primary)', display: 'block' }}>
                 {formatCurrency(metrics.targetBalanceTodayStart)}
               </span>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginTop: '4px' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginTop: '2px' }}>
                 Esperado (início)
               </span>
             </div>
-            <div style={{ flex: 1, borderLeft: '1px solid var(--card-border)', paddingLeft: '16px' }}>
-              <span className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)', display: 'block', wordBreak: 'break-word' }}>
+            <div style={{ borderTop: '1px solid var(--card-border)', paddingTop: '12px' }}>
+              <span className="font-display" style={{ fontSize: '2.0rem', fontWeight: 800, color: 'var(--text-primary)', display: 'block' }}>
                 {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
               </span>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginTop: '4px' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginTop: '2px' }}>
                 Atual
               </span>
             </div>
