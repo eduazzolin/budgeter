@@ -340,15 +340,16 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
                 return dates.map((dateStr, index) => {
                   const expectedBalance = period.initialBudget - index * metrics.dailyBudget;
-                  const isRecordedDate = period.currentBalanceDate === dateStr;
+                  const recordedBalanceForDay = period.balanceHistory?.[dateStr];
+                  const hasRecord = recordedBalanceForDay !== undefined;
                   const isToday = todayStr === dateStr;
                   
                   let diffText = '—';
                   let diffColor = 'inherit';
                   let diffWeight = 'normal';
 
-                  if (isRecordedDate && period.currentBalance !== undefined) {
-                    const diff = period.currentBalance - expectedBalance;
+                  if (hasRecord) {
+                    const diff = recordedBalanceForDay - expectedBalance;
                     const diffAbs = Math.abs(diff);
                     if (diff > 0.01) {
                       diffText = `+ ${formatCurrency(diffAbs)}`;
@@ -378,8 +379,8 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                       <td>{formatDate(dateStr)}</td>
                       <td>{formatCurrency(expectedBalance)}</td>
                       <td>
-                        {isRecordedDate && period.currentBalance !== undefined 
-                          ? formatCurrency(period.currentBalance) 
+                        {hasRecord
+                          ? formatCurrency(recordedBalanceForDay!) 
                           : '—'}
                       </td>
                       <td style={{ color: diffColor, fontWeight: diffWeight as any }}>

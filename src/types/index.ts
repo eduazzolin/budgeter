@@ -7,6 +7,7 @@ export interface Period {
   finalBudget: number;
   currentBalance?: number;
   currentBalanceDate?: string; // YYYY-MM-DD
+  balanceHistory?: Record<string, number>; // date YYYY-MM-DD -> balance
   createdAt: string;
   userId?: string;
 }

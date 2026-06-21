@@ -52,6 +52,7 @@ export const dbService = {
             finalBudget: Number(data.finalBudget),
             currentBalance: data.currentBalance !== undefined ? Number(data.currentBalance) : undefined,
             currentBalanceDate: data.currentBalanceDate || undefined,
+            balanceHistory: data.balanceHistory || {},
             createdAt: data.createdAt || new Date().toISOString(),
             userId: data.userId
           });
@@ -160,6 +161,7 @@ export const dbService = {
           finalBudget: p.finalBudget,
           currentBalance: p.currentBalance !== undefined ? p.currentBalance : null,
           currentBalanceDate: p.currentBalanceDate || null,
+          balanceHistory: p.balanceHistory || {},
           createdAt: p.createdAt,
           userId: userId
         };

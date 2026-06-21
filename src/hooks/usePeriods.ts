@@ -142,9 +142,15 @@ export const usePeriods = (userId?: string) => {
   const recordBalance = async (id: string, balance: number, date: string) => {
     try {
       setError(null);
+      const period = periods.find(p => p.id === id);
+      const history = period?.balanceHistory || {};
       const updates = {
         currentBalance: balance,
-        currentBalanceDate: date
+        currentBalanceDate: date,
+        balanceHistory: {
+          ...history,
+          [date]: balance
+        }
       };
       await dbService.updatePeriod(id, updates);
       setPeriods(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
