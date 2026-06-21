@@ -67,8 +67,8 @@ export const PeriodList: React.FC<PeriodListProps> = ({
                   borderWidth: '1px',
                   borderStyle: 'solid',
                   borderColor: isSelected ? 'var(--color-primary)' : 'var(--card-border)',
-                  backgroundColor: isSelected ? 'rgba(99, 102, 241, 0.08)' : 'var(--card-bg)',
-                  boxShadow: isSelected ? '0 0 15px rgba(99, 102, 241, 0.15)' : 'none',
+                  backgroundColor: isSelected ? 'rgba(9, 9, 11, 0.08)' : 'var(--card-bg)',
+                  boxShadow: isSelected ? '0 0 15px rgba(9, 9, 11, 0.15)' : 'none',
                   position: 'relative'
                 }}
               >

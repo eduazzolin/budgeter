@@ -12,7 +12,7 @@ import {
   Plus, 
   Cloud, 
   CloudOff, 
-  Coins,
+  Briefcase,
   LayoutDashboard
 } from 'lucide-react';
 
@@ -114,7 +114,7 @@ function App() {
             justifyContent: 'center',
             boxShadow: '0 0 15px var(--color-primary-glow)'
           }}>
-            <Coins size={22} style={{ color: '#ffffff' }} />
+            <Briefcase size={22} style={{ color: '#ffffff' }} />
           </div>
           <div>
             <span className="font-display" style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.02em', display: 'block' }}>
@@ -150,7 +150,7 @@ function App() {
               padding: '8px 16px', 
               fontSize: '0.85rem',
               borderColor: showSettings ? 'var(--color-primary)' : 'var(--card-border)',
-              background: showSettings ? 'rgba(99, 102, 241, 0.05)' : '#ffffff'
+              background: showSettings ? 'rgba(9, 9, 11, 0.05)' : '#ffffff'
             }}
           >
             <User size={15} /> 

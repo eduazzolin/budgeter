@@ -186,7 +186,7 @@ export const AuthSettings: React.FC<AuthSettingsProps> = ({
             disabled={authLoading}
           >
             {authLoading ? (
-              <div style={{ border: '2px solid rgba(0,0,0,0.1)', borderTop: '2px solid #4f46e5', borderRadius: '50%', width: '16px', height: '16px', animation: 'spin 1s linear infinite' }}></div>
+              <div style={{ border: '2px solid rgba(0,0,0,0.1)', borderTop: '2px solid #18181b', borderRadius: '50%', width: '16px', height: '16px', animation: 'spin 1s linear infinite' }}></div>
             ) : (
               <svg width="18" height="18" viewBox="0 0 18 18">
                 <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
