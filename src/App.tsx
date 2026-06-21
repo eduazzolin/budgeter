@@ -13,7 +13,8 @@ import {
   Cloud, 
   CloudOff, 
   Briefcase,
-  LayoutDashboard
+  LayoutDashboard,
+  Menu
 } from 'lucide-react';
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingPeriod, setEditingPeriod] = useState<Period | null>(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [isMobileListOpen, setIsMobileListOpen] = useState(false);
 
   // Handle Create or Edit Period form submit
   const handleFormSubmit = async (
@@ -105,6 +107,13 @@ function App() {
       {/* Top Header Bar */}
       <header className="glass app-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button 
+            className="btn btn-secondary hide-desktop"
+            style={{ padding: '4px', border: 'none', background: 'transparent', boxShadow: 'none' }}
+            onClick={() => setIsMobileListOpen(!isMobileListOpen)}
+          >
+            <Menu size={24} style={{ color: 'var(--text-primary)' }} />
+          </button>
           <div style={{ 
             background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
             padding: '8px',
@@ -116,14 +125,9 @@ function App() {
           }}>
             <Briefcase size={22} style={{ color: '#ffffff' }} />
           </div>
-          <div>
-            <span className="font-display" style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.02em', display: 'block' }}>
-              Budgeter
-            </span>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-              Contagem Regressiva de Orçamento
-            </span>
-          </div>
+          <span className="font-display" style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.02em' }}>
+            Budgeter
+          </span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -177,7 +181,7 @@ function App() {
       <main className="dashboard-container">
         
         {/* Left Side: Period List + Settings (if open) */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div className={isMobileListOpen ? '' : 'mobile-panel-hidden'} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {/* Settings Box (Collapsible) */}
           {showSettings && (

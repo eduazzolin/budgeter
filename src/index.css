@@ -249,6 +249,18 @@ h1, h2, h3, h4, .font-display {
     grid-template-columns: minmax(0, 1fr);
     padding: 20px;
   }
+  .mobile-panel-hidden {
+    display: none !important;
+  }
+  .hide-desktop {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 969px) {
+  .hide-desktop {
+    display: none !important;
+  }
 }
 
 /* Modal Overlay */

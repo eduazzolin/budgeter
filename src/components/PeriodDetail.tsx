@@ -240,18 +240,18 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         {/* Daily Spending Card */}
         <div className="glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Estimativa Diária de Gastos
+            Esperado para Hoje
           </span>
           <div style={{ margin: '16px 0' }}>
             <span className="font-display" style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-primary)' }}>
-              {formatCurrency(metrics.dailyBudget)}
+              {formatCurrency(metrics.targetBalanceTodayStart)}
             </span>
             <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', display: 'block', marginTop: '4px' }}>
-              por dia
+              no início do dia
             </span>
           </div>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Calculado dividindo o montante total ({formatCurrency(period.initialBudget - period.finalBudget)}) por {metrics.totalDays} dias.
+            Estimativa diária: {formatCurrency(metrics.dailyBudget)}/dia
           </p>
         </div>
 
@@ -259,19 +259,21 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         <div className="glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
           <div>
             <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '12px' }}>
-              Metas Orçamentárias
+              Saldo
             </span>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Inicial:</span>
-              <span style={{ fontWeight: 600 }}>{formatCurrency(period.initialBudget)}</span>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Esperado:</span>
+              <span style={{ fontWeight: 600 }}>{formatCurrency(metrics.targetBalanceTodayStart)}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Final Esperado:</span>
-              <span style={{ fontWeight: 600 }}>{formatCurrency(period.finalBudget)}</span>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Atual:</span>
+              <span style={{ fontWeight: 600 }}>{metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}</span>
             </div>
           </div>
           <div style={{ borderTop: '1px solid var(--card-border)', paddingTop: '12px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Redução planejada: <strong style={{ color: 'var(--text-primary)' }}>{formatCurrency(period.initialBudget - period.finalBudget)}</strong>
+            Diferença: <strong style={{ color: metrics.status === 'above' ? 'var(--color-above)' : metrics.status === 'below' ? 'var(--color-below)' : 'var(--text-primary)' }}>
+              {metrics.difference !== undefined ? (metrics.difference > 0 ? '+' : '') + formatCurrency(metrics.difference) : '—'}
+            </strong>
           </div>
         </div>
 
