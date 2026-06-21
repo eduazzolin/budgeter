@@ -181,7 +181,7 @@ function App() {
       <main className="dashboard-container">
         
         {/* Left Side: Period List + Settings (if open) */}
-        <div className={isMobileListOpen ? '' : 'mobile-panel-hidden'} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {/* Settings Box (Collapsible) */}
           {showSettings && (
@@ -194,14 +194,16 @@ function App() {
           )}
 
           {/* Period List Panel */}
-          <PeriodList 
-            periods={periods}
-            selectedPeriodId={selectedPeriodId}
-            onSelectPeriod={handleSelectPeriod}
-            onEditPeriod={handleEditClick}
-            onDeletePeriod={deletePeriod}
-            onAddNewClick={handleAddNewClick}
-          />
+          <div className={isMobileListOpen ? '' : 'mobile-panel-hidden'} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <PeriodList 
+              periods={periods}
+              selectedPeriodId={selectedPeriodId}
+              onSelectPeriod={handleSelectPeriod}
+              onEditPeriod={handleEditClick}
+              onDeletePeriod={deletePeriod}
+              onAddNewClick={handleAddNewClick}
+            />
+          </div>
         </div>
 
         {/* Right Side: Detailed View */}
