@@ -195,13 +195,13 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
         
         {/* Budget Goals Card */}
-        <div className="glass" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <div className="glass" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
             Saldo
           </span>
           <div style={{ margin: '12px 0' }}>
             <span className="font-display" style={{ 
-              fontSize: '2.5rem', 
+              fontSize: '2.2rem', 
               fontWeight: 800, 
               lineHeight: 1.1,
               color: metrics.status === 'above' ? 'var(--color-above)' : metrics.status === 'below' ? 'var(--color-below)' : 'var(--text-primary)',
@@ -216,67 +216,67 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         </div>
 
         {/* Daily Spending Card */}
-        <div className="glass" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <div className="glass" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
             Esperado para Hoje
           </span>
           <div style={{ margin: '12px 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div>
-              <span className="font-display" style={{ fontSize: '2.0rem', fontWeight: 800, color: 'var(--color-primary)', display: 'block', lineHeight: 1.1 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                Esperado
+              </span>
+              <span className="font-display" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-primary)' }}>
                 {formatCurrency(metrics.targetBalanceTodayStart)}
               </span>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginTop: '2px' }}>
-                Esperado (início)
-              </span>
             </div>
-            <div style={{ borderTop: '1px solid var(--card-border)', paddingTop: '8px' }}>
-              <span className="font-display" style={{ fontSize: '2.0rem', fontWeight: 800, color: 'var(--text-primary)', display: 'block', lineHeight: 1.1 }}>
-                {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
-              </span>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginTop: '2px' }}>
+            <div style={{ borderTop: '1px solid var(--card-border)', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                 Atual
+              </span>
+              <span className="font-display" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
               </span>
             </div>
           </div>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Estimativa diária: {formatCurrency(metrics.dailyBudget)}/dia
+            Estimativa: {formatCurrency(metrics.dailyBudget)}/dia
           </p>
         </div>
 
         {/* Countdown Card */}
-        <div className="glass" style={{ padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <div className="glass" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
             Contagem Regressiva
           </span>
           <div style={{ margin: '12px 0' }}>
             {metrics.isPeriodNotStarted ? (
               <div>
-                <span className="font-display" style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-neutral)', lineHeight: 1.1, display: 'block' }}>
+                <span className="font-display" style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--color-neutral)', lineHeight: 1.1, display: 'block' }}>
                   A Iniciar
                 </span>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                   Período começa em breve
                 </p>
               </div>
             ) : metrics.isPeriodEnded ? (
               <div>
-                <span className="font-display" style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-muted)', lineHeight: 1.1, display: 'block' }}>
+                <span className="font-display" style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-muted)', lineHeight: 1.1, display: 'block' }}>
                   Finalizado
                 </span>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                   Contador encerrado
                 </p>
               </div>
             ) : (
               <div>
-                <span className="font-display" style={{ fontSize: '3.5rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.1 }}>
+                <span className="font-display" style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.1 }}>
                   {metrics.daysRemaining}
                 </span>
-                <span style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', marginLeft: '6px' }}>
+                <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', marginLeft: '6px' }}>
                   dias restam
                 </span>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                  {metrics.daysPassed} de {metrics.totalDays} dias transcorridos
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                  {metrics.daysPassed} de {metrics.totalDays} transcorridos
                 </p>
               </div>
             )}
