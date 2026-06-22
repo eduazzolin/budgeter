@@ -4,10 +4,7 @@ import { calculateBudgetMetrics, parseLocalDate, getLocalDateString } from '../u
 import { 
   Calendar, 
   DollarSign, 
-  Clock, 
-  CheckCircle,
-  AlertCircle,
-  HelpCircle
+  Clock
 } from 'lucide-react';
 
 interface PeriodDetailProps {
@@ -66,50 +63,6 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     const [y, m, d] = dateStr.split('-');
     return `${d}/${m}/${y}`;
   };
-
-  // Get status color variables and titles
-  const getStatusDetails = () => {
-    if (metrics.difference === undefined) {
-      return {
-        cardClass: 'glow-card-neutral',
-        title: 'Saldo não registrado',
-        desc: 'Insira seu saldo atual abaixo para comparar com as projeções do período.',
-        icon: <HelpCircle size={24} style={{ color: 'var(--color-neutral)' }} />,
-        color: 'var(--color-neutral)'
-      };
-    }
-
-    const diffAbs = Math.abs(metrics.difference);
-    const dateFormatted = formatDate(metrics.recordedBalanceDate || '');
-
-    if (metrics.status === 'above') {
-      return {
-        cardClass: 'glow-card-above',
-        title: 'Acima do Estimado',
-        desc: `No dia ${dateFormatted}, seu saldo de ${formatCurrency(metrics.recordedBalance || 0)} estava ${formatCurrency(diffAbs)} ACIMA do planejado. Você economizou e está no caminho certo!`,
-        icon: <CheckCircle size={24} style={{ color: 'var(--color-above)' }} />,
-        color: 'var(--color-above)'
-      };
-    } else if (metrics.status === 'below') {
-      return {
-        cardClass: 'glow-card-below',
-        title: 'Abaixo do Estimado',
-        desc: `No dia ${dateFormatted}, seu saldo de ${formatCurrency(metrics.recordedBalance || 0)} estava ${formatCurrency(diffAbs)} ABAIXO do planejado. Tente conter os gastos para readequar ao orçamento.`,
-        icon: <AlertCircle size={24} style={{ color: 'var(--color-below)' }} />,
-        color: 'var(--color-below)'
-      };
-    } else {
-      return {
-        cardClass: 'glow-card-neutral',
-        title: 'Dentro do Estimado',
-        desc: `No dia ${dateFormatted}, seu saldo de ${formatCurrency(metrics.recordedBalance || 0)} estava perfeitamente alinhado com o esperado!`,
-        icon: <CheckCircle size={24} style={{ color: 'var(--color-neutral)' }} />,
-        color: 'var(--color-neutral)'
-      };
-    }
-  };
-
-  const statusInfo = getStatusDetails();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
@@ -173,22 +126,6 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
             {submitting ? 'Salvando...' : successMsg ? 'Registrado!' : 'Marcar Saldo'}
           </button>
         </form>
-      </div>
-
-      {/* SECTION 2: Live Status and Analysis Card (Moved Up next to form) */}
-      <div className={`glass ${statusInfo.cardClass}`} style={{ padding: '24px', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-        <div style={{ marginTop: '2px', flexShrink: 0 }}>{statusInfo.icon}</div>
-        <div style={{ flex: 1 }}>
-          <h3 style={{ fontSize: '1.15rem', color: statusInfo.color, marginBottom: '6px' }}>
-            {statusInfo.title}
-          </h3>
-          <p style={{ fontSize: '0.95rem', color: 'var(--text-primary)', lineHeight: 1.5 }}>
-            {statusInfo.desc}
-          </p>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '8px' }}>
-            💡 O saldo atual serve apenas para comparar sua performance e não altera os cálculos fixos das metas.
-          </p>
-        </div>
       </div>
 
       {/* SECTION 3: Grid of Main KPIs */}
