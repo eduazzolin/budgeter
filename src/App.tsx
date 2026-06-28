@@ -87,13 +87,35 @@ function App() {
   // Loading Screen (Auth initialization check)
   if (authLoading && isFirebaseEnabled()) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'var(--bg-primary)', gap: '16px' }}>
-        <div style={{ border: '4px solid rgba(255,255,255,0.1)', borderTop: '4px solid var(--color-primary)', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite' }}></div>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Conectando ao Firebase...</p>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'var(--bg-primary)', gap: '20px' }}>
+        <div style={{ 
+          background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+          padding: '16px',
+          borderRadius: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 0 20px var(--color-primary-glow)',
+          animation: 'pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+        }}>
+          <Briefcase size={32} style={{ color: '#ffffff' }} />
+        </div>
+        <p className="font-display" style={{ color: 'var(--text-primary)', fontSize: '1.1rem', fontWeight: 600 }}>
+          Preparando o Budgeter...
+        </p>
+        <div style={{ display: 'flex', gap: '6px', marginTop: '-10px' }}>
+          <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', animation: 'bounce 1.4s infinite ease-in-out both' }}></div>
+          <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', animation: 'bounce 1.4s infinite ease-in-out both', animationDelay: '0.16s' }}></div>
+          <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', animation: 'bounce 1.4s infinite ease-in-out both', animationDelay: '0.32s' }}></div>
+        </div>
         <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+          @keyframes pulse-slow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .85; transform: scale(0.95); }
+          }
+          @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+            40% { transform: scale(1); opacity: 1; }
           }
         `}</style>
       </div>
@@ -132,24 +154,21 @@ function App() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           {/* Backend Status Icon */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+          <div 
+            title={isFirebaseMode ? 'Firebase Conectado' : 'Modo Offline (Local)'}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
             {isFirebaseMode ? (
-              <>
-                <Cloud size={14} style={{ color: 'var(--color-above)' }} />
-                <span className="hide-mobile">Firebase Conectado</span>
-              </>
+              <Cloud size={20} style={{ color: 'var(--color-above)' }} />
             ) : (
-              <>
-                <CloudOff size={14} style={{ color: 'var(--color-neutral)' }} />
-                <span className="hide-mobile">Modo Offline (Local)</span>
-              </>
+              <CloudOff size={20} style={{ color: 'var(--text-muted)' }} />
             )}
           </div>
 
           {/* Toggle Settings Button */}
           <button 
             onClick={() => setShowSettings(!showSettings)} 
-            className="btn btn-secondary"
+            className="btn btn-secondary hide-mobile-text"
             style={{ 
               padding: '8px 16px', 
               fontSize: '0.85rem',

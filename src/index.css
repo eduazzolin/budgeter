@@ -406,14 +406,16 @@ h1, h2, h3, h4, .font-display {
 @media (max-width: 640px) {
   .app-header {
     margin: 10px 12px 0 12px;
-    padding: 12px 16px;
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
-    text-align: center;
+    padding: 12px 14px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
   .app-header > div {
-    justify-content: center;
+    gap: 8px; /* reduce gap slightly on mobile */
+  }
+  .hide-mobile-text span {
+    display: none;
   }
   .periods-error-banner {
     margin: 10px 12px 0 12px;

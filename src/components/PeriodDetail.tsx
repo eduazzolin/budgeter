@@ -37,7 +37,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     setBalanceInput(period.currentBalance !== undefined ? period.currentBalance.toString() : '');
     
     // Set default date to today, but clamped to period bounds if today is outside the period
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
     if (today < period.startDate) {
       setBalanceDate(period.startDate);
     } else if (today > period.endDate) {
