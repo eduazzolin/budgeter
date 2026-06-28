@@ -4,8 +4,18 @@ import { calculateBudgetMetrics, parseLocalDate, getLocalDateString } from '../u
 import { 
   Calendar, 
   DollarSign, 
-  Clock
+  Clock,
+  TrendingUp
 } from 'lucide-react';
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer 
+} from 'recharts';
 
 interface PeriodDetailProps {
   period: Period;
@@ -62,6 +72,74 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
   const formatDate = (dateStr: string) => {
     const [y, m, d] = dateStr.split('-');
     return `${d}/${m}/${y}`;
+  };
+
+  const formatShortDate = (dateStr: string) => {
+    const [, m, d] = dateStr.split('-');
+    return `${d}/${m}`;
+  };
+
+  // Prepare chart data
+  const chartData = [];
+  const start = parseLocalDate(period.startDate);
+  for (let i = 0; i < metrics.totalDays; i++) {
+    const nextDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    const dateStr = getLocalDateString(nextDate);
+    const expectedBalance = period.initialBudget - i * metrics.dailyBudget;
+    const actualBalance = period.balanceHistory?.[dateStr];
+    
+    chartData.push({
+      date: formatShortDate(dateStr),
+      Esperado: parseFloat(expectedBalance.toFixed(2)),
+      Real: actualBalance !== undefined ? parseFloat(actualBalance.toFixed(2)) : null,
+    });
+  }
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const esperado = payload.find((p: any) => p.dataKey === 'Esperado')?.value;
+      const real = payload.find((p: any) => p.dataKey === 'Real')?.value;
+      
+      return (
+        <div style={{ 
+          backgroundColor: '#fff', 
+          borderRadius: '8px', 
+          border: '1px solid var(--card-border)', 
+          boxShadow: '0 4px 12px rgba(0,0,0,0.05)', 
+          padding: '12px',
+          fontSize: '0.85rem',
+          fontFamily: 'var(--font-family, "Inter", sans-serif)'
+        }}>
+          <p style={{ color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '8px', margin: 0 }}>{label}</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {payload.map((entry: any, index: number) => (
+              <div key={`item-${index}`} style={{ color: entry.color, display: 'flex', justifyContent: 'space-between', gap: '16px' }}>
+                <span>{entry.name}:</span>
+                <span style={{ fontWeight: 600 }}>{formatCurrency(Number(entry.value))}</span>
+              </div>
+            ))}
+            {real !== undefined && real !== null && (
+              <div style={{ 
+                marginTop: '6px', 
+                paddingTop: '6px', 
+                borderTop: '1px solid var(--card-border)',
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                gap: '16px',
+                color: real >= esperado ? 'var(--color-above)' : 'var(--color-below)',
+                fontWeight: 700
+              }}>
+                <span>Diferença:</span>
+                <span>
+                  {real >= esperado ? '+' : ''}{formatCurrency(real - esperado)}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -313,6 +391,31 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               })()}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* SECTION 6: Chart (New Feature) */}
+      <div className="glass animate-in delay-400" style={{ padding: '24px' }}>
+        <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <TrendingUp size={18} style={{ color: 'var(--color-primary)' }} /> Evolução do Orçamento
+        </h3>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>
+          Acompanhe visualmente se os seus gastos reais estão seguindo o orçamento esperado.
+        </p>
+        <div style={{ width: '100%', height: 320 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={chartData}
+              margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--card-border)" />
+              <XAxis dataKey="date" tick={{ fontSize: 12, fill: 'var(--text-muted)' }} tickMargin={12} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 12, fill: 'var(--text-muted)' }} tickFormatter={(value) => `R$${value}`} axisLine={false} tickLine={false} tickMargin={12} />
+              <Tooltip content={<CustomTooltip />} />
+              <Line name="Esperado" type="monotone" dataKey="Esperado" stroke="var(--text-muted)" strokeWidth={2} strokeDasharray="4 4" dot={false} />
+              <Line name="Real" type="monotone" dataKey="Real" stroke="var(--color-primary)" strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} activeDot={{ r: 6, strokeWidth: 0, fill: 'var(--color-primary)' }} connectNulls />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
