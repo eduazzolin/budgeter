@@ -178,7 +178,7 @@ function App() {
       )}
 
       {/* Main Grid Layout */}
-      <main className="dashboard-container">
+      <main className="dashboard-container animate-in">
         
         {/* Left Side: Period List + Settings (if open) */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>

@@ -41,9 +41,10 @@ export const PeriodList: React.FC<PeriodListProps> = ({
             Nenhum período cadastrado. Clique em "Novo" para começar!
           </div>
         ) : (
-          periods.map((period) => {
+          periods.map((period, index) => {
             const isSelected = period.id === selectedPeriodId;
             const metrics = calculateBudgetMetrics(period);
+            const delayClass = index < 5 ? `delay-${(index + 1) * 100}` : '';
             
             // Format currency in BRL
             const formatCurrency = (val: number) => {
@@ -60,7 +61,7 @@ export const PeriodList: React.FC<PeriodListProps> = ({
               <div
                 key={period.id}
                 onClick={() => onSelectPeriod(period.id)}
-                className={`glass ${isSelected ? 'glass-hover' : ''}`}
+                className={`glass glass-enhanced-hover animate-in ${delayClass} ${isSelected ? 'glass-hover' : ''}`}
                 style={{
                   padding: '16px',
                   cursor: 'pointer',

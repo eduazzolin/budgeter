@@ -68,7 +68,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
       
       {/* Period Header */}
-      <div>
+      <div className="animate-in">
         <h1 style={{ fontSize: '2.5rem', fontWeight: 800, background: 'linear-gradient(90deg, var(--text-primary), var(--text-secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '8px' }}>
           {period.name}
         </h1>
@@ -83,7 +83,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       </div>
 
       {/* SECTION 1: Record Current Balance (Moved Up for Quick Access) */}
-      <div className="glass" style={{ padding: '24px' }}>
+      <div className="glass animate-in delay-100" style={{ padding: '24px' }}>
         <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <DollarSign size={18} style={{ color: 'var(--color-primary)' }} /> Registrar Saldo Atual
         </h3>
@@ -129,10 +129,10 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       </div>
 
       {/* SECTION 3: Grid of Main KPIs */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
+      <div className="animate-in delay-200" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
         
         {/* Budget Goals Card */}
-        <div className="glass" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="glass glass-enhanced-hover" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
             Saldo
           </span>
@@ -153,7 +153,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         </div>
 
         {/* Daily Spending Card */}
-        <div className="glass" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="glass glass-enhanced-hover" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
             Esperado para Hoje
           </span>
@@ -181,7 +181,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         </div>
 
         {/* Countdown Card */}
-        <div className="glass" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="glass glass-enhanced-hover" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
             Contagem Regressiva
           </span>
@@ -228,7 +228,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
 
       {/* SECTION 5: Table of Daily Projections (New Feature) */}
-      <div className="glass" style={{ padding: '24px' }}>
+      <div className="glass animate-in delay-300" style={{ padding: '24px' }}>
         <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Calendar size={18} style={{ color: 'var(--color-primary)' }} /> Tabela de Prospecção Diária
         </h3>

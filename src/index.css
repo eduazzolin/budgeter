@@ -436,3 +436,41 @@ h1, h2, h3, h4, .font-display {
     padding: 20px 16px;
   }
 }
+
+/* --- New Animations & Enhancements --- */
+.animate-in {
+  animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Micro-interaction for buttons on hover */
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* Stagger delay classes if needed */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* Enhanced hover effect for cards */
+.glass-enhanced-hover {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.glass-enhanced-hover:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
