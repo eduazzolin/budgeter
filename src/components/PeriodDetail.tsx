@@ -8,7 +8,8 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { 
-  LineChart, 
+  ComposedChart, 
+  Area,
   Line, 
   XAxis, 
   YAxis, 
@@ -79,19 +80,73 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     return `${d}/${m}`;
   };
 
-  // Prepare chart data
+  // Prepare chart data & Regression
   const chartData = [];
   const start = parseLocalDate(period.startDate);
+  
+  // 1. Gather data for linear regression (Least Squares)
+  let sumX = 0;
+  let sumY = 0;
+  let sumXY = 0;
+  let sumXX = 0;
+  let nPoints = 0;
+  let lastRecordedDayIndex = -1;
+  let lastRecordedBalance: number | null = null;
+
+  for (let i = 0; i < metrics.totalDays; i++) {
+    const nextDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    const dateStr = getLocalDateString(nextDate);
+    
+    let y = null;
+    if (i === 0) {
+      y = period.initialBudget; // Ponto inicial garantido
+    }
+    
+    const actualBalance = period.balanceHistory?.[dateStr];
+    if (actualBalance !== undefined) {
+      y = actualBalance;
+      lastRecordedDayIndex = i;
+      lastRecordedBalance = y;
+    }
+
+    if (y !== null) {
+      sumX += i;
+      sumY += y;
+      sumXY += i * y;
+      sumXX += i * i;
+      nPoints++;
+    }
+  }
+
+  // Calculate slope (m) and intercept (b) if we have at least 2 points
+  let m = 0;
+  let canProject = false;
+  if (nPoints >= 2) {
+    const denominator = nPoints * sumXX - sumX * sumX;
+    if (denominator !== 0) {
+      m = (nPoints * sumXY - sumX * sumY) / denominator;
+      canProject = true;
+    }
+  }
+
+  // 2. Build the chart data array
   for (let i = 0; i < metrics.totalDays; i++) {
     const nextDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
     const dateStr = getLocalDateString(nextDate);
     const expectedBalance = period.initialBudget - i * metrics.dailyBudget;
     const actualBalance = period.balanceHistory?.[dateStr];
     
+    let projectedBalance = null;
+    if (canProject && lastRecordedBalance !== null && i >= lastRecordedDayIndex) {
+      // Projeta a partir do último saldo real conhecido usando a taxa de consumo histórica (m)
+      projectedBalance = lastRecordedBalance + m * (i - lastRecordedDayIndex);
+    }
+    
     chartData.push({
       date: formatShortDate(dateStr),
       Esperado: parseFloat(expectedBalance.toFixed(2)),
       Real: actualBalance !== undefined ? parseFloat(actualBalance.toFixed(2)) : null,
+      Projetado: projectedBalance !== null ? parseFloat(projectedBalance.toFixed(2)) : null,
     });
   }
 
@@ -100,6 +155,13 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       const esperado = payload.find((p: any) => p.dataKey === 'Esperado')?.value;
       const real = payload.find((p: any) => p.dataKey === 'Real')?.value;
       
+      // Order items to match visual hierarchy: Real, Esperado, Projetado
+      const orderedPayload = [
+        payload.find((p: any) => p.dataKey === 'Real'),
+        payload.find((p: any) => p.dataKey === 'Esperado'),
+        payload.find((p: any) => p.dataKey === 'Projetado')
+      ].filter(Boolean);
+
       return (
         <div style={{ 
           backgroundColor: '#fff', 
@@ -112,7 +174,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         }}>
           <p style={{ color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '8px', margin: 0 }}>{label}</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {payload.map((entry: any, index: number) => (
+            {orderedPayload.map((entry: any, index: number) => (
               <div key={`item-${index}`} style={{ color: entry.color, display: 'flex', justifyContent: 'space-between', gap: '16px' }}>
                 <span>{entry.name}:</span>
                 <span style={{ fontWeight: 600 }}>{formatCurrency(Number(entry.value))}</span>
@@ -404,17 +466,53 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         </p>
         <div style={{ width: '100%', height: 320 }}>
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart
+            <ComposedChart
               data={chartData}
               margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
             >
+              <defs>
+                <linearGradient id="colorEsperado" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--text-muted)" stopOpacity={0.15}/>
+                  <stop offset="95%" stopColor="var(--text-muted)" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--card-border)" />
               <XAxis dataKey="date" tick={{ fontSize: 12, fill: 'var(--text-muted)' }} tickMargin={12} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 12, fill: 'var(--text-muted)' }} tickFormatter={(value) => `R$${value}`} axisLine={false} tickLine={false} tickMargin={12} />
               <Tooltip content={<CustomTooltip />} />
-              <Line name="Esperado" type="monotone" dataKey="Esperado" stroke="var(--text-muted)" strokeWidth={2} strokeDasharray="4 4" dot={false} />
-              <Line name="Real" type="monotone" dataKey="Real" stroke="var(--color-primary)" strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} activeDot={{ r: 6, strokeWidth: 0, fill: 'var(--color-primary)' }} connectNulls />
-            </LineChart>
+              
+              <Area 
+                name="Esperado" 
+                type="monotone" 
+                dataKey="Esperado" 
+                stroke="var(--text-muted)" 
+                strokeWidth={2}
+                fillOpacity={1} 
+                fill="url(#colorEsperado)" 
+                strokeDasharray="4 4"
+              />
+              
+              <Line 
+                name="Projetado" 
+                type="monotone" 
+                dataKey="Projetado" 
+                stroke="var(--text-muted)" 
+                strokeWidth={1.5} 
+                strokeDasharray="2 4" 
+                dot={false} 
+              />
+              
+              <Line 
+                name="Real" 
+                type="monotone" 
+                dataKey="Real" 
+                stroke="var(--color-primary)" 
+                strokeWidth={3} 
+                dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} 
+                activeDot={{ r: 6, strokeWidth: 0, fill: 'var(--color-primary)' }} 
+                connectNulls 
+              />
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
       </div>
