@@ -262,7 +262,7 @@ function App() {
               <div>
                 <h3 style={{ fontSize: '1.5rem', marginBottom: '8px', color: 'var(--text-primary)' }}>Nenhum contador ativo</h3>
                 <p style={{ color: 'var(--text-secondary)', maxWidth: '400px', margin: '0 auto', fontSize: '0.95rem', lineHeight: 1.5 }}>
-                  Crie um novo período de orçamento ou selecione um dos contadores da lista lateral para visualizar as projeções diárias e acompanhar seus saldos.
+                  Crie um novo período de orçamento ou selecione um dos contadores da lista lateral para visualizar as projeções diárias e acompanhar sua Margem e Saldo Real.
                 </p>
               </div>
               <button onClick={handleAddNewClick} className="btn btn-primary">

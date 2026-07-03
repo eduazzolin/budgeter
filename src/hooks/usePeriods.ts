@@ -155,7 +155,7 @@ export const usePeriods = (userId?: string) => {
       await dbService.updatePeriod(id, updates);
       setPeriods(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
     } catch (err: any) {
-      setError(err.message || 'Falha ao registrar saldo.');
+      setError(err.message || 'Falha ao registrar Saldo Real.');
       throw err;
     }
   };

@@ -14,8 +14,9 @@ O Budgeter funciona baseado em um princípio simples: **distribuição linear do
 
 1. **Definição de Período e Orçamento:** Você insere a data de início e fim do seu ciclo financeiro (ex: mês, quinzena) e a quantia que deseja economizar ou que está disponível para gasto.
 2. **Cálculo Diário:** O sistema divide automaticamente o valor total pelo número de dias do período, gerando uma "meta" fixa de gasto/economia por dia.
-3. **Acompanhamento de Saldo:** Você pode registrar seu saldo atual a qualquer momento.
-4. **Projeção:** A aplicação cruza o saldo atual com a expectativa daquele dia, indicando instantaneamente se você está acima (verde) ou abaixo (vermelho) do planejado.
+3. **Acompanhamento de Saldo Real:** Você pode registrar seu saldo em conta a qualquer momento.
+4. **Margem de Desempenho:** A aplicação cruza o Saldo Real atual com o Saldo Esperado daquele dia, indicando instantaneamente se você está acima (verde) ou abaixo (vermelho) do planejado.
+5. **Previsão de Alta:** Com base no seu comportamento de gastos recentes, o sistema calcula quando a sua Margem voltará a ficar positiva.
 
 Os dados são salvos preferencialmente offline-first no navegador (`localStorage`) para velocidade e privacidade, mas podem ser sincronizados na nuvem usando Firebase via Login com o Google.
 
@@ -25,9 +26,9 @@ Os dados são salvos preferencialmente offline-first no navegador (`localStorage
 
 *   **Contagem Regressiva Visual**: Veja exatamente quantos dias restam e o percentual de tempo decorrido do período.
 *   **Estimativa de Gasto Diário**: Calcula de forma automática o limite diário dividindo a redução necessária do orçamento pela quantidade de dias totais.
-*   **Prospecção de Saldo Diário**: Mostra qual o saldo ideal que você deve ter ao acordar e ao encerrar o dia de hoje.
-*   **Lançamento Rápido de Saldo**: Registre seu saldo atual a qualquer momento do período.
-*   **Fórmula de Projeção Fixa**: O saldo atual é usado exclusivamente para indicar se você está acima (economizando) ou abaixo (estourado) da estimativa ideal para aquele dia, sem alterar os cálculos base (garantindo que suas metas originais permaneçam fixas).
+*   **Evolução do Orçamento**: Mostra o Saldo Esperado que você deve ter ao acordar e ao encerrar o dia de hoje, além de uma tabela interativa para acompanhamento.
+*   **Lançamento Rápido de Saldo Real**: Registre seu dinheiro em conta a qualquer momento do período.
+*   **Fórmula de Projeção Fixa**: O Saldo Real é usado exclusivamente para indicar a sua Margem de desempenho em relação à estimativa ideal daquele dia, sem alterar as metas base.
 *   **Tabela de Prospecção Diária**: Exibe uma listagem completa dia-a-dia do período, destacando o dia atual ("Hoje") com comparação direta de valores e diferença visual (+/-).
 *   **Tema Claro Moderno (Alto Contraste)**: Interface limpa e minimalista com contraste reforçado (WCAG Compliant) para máxima legibilidade.
 *   **100% Otimizado para Mobile**: Cabeçalhos responsivos que se reorganizam em blocos e tabela de prospecção com rolagem horizontal nativa para evitar cortes em smartphones.

@@ -225,12 +225,12 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       {/* SECTION 1: Record Current Balance (Moved Up for Quick Access) */}
       <div className="glass animate-in delay-100" style={{ padding: '24px' }}>
         <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <DollarSign size={18} style={{ color: 'var(--color-primary)' }} /> Registrar Saldo Atual
+          <DollarSign size={18} style={{ color: 'var(--color-primary)' }} /> Registrar Saldo Real
         </h3>
 
         <form onSubmit={handleBalanceSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'flex-end' }}>
           <div style={{ flex: '2 1 200px' }}>
-            <label className="form-label">Saldo Atual (R$)</label>
+            <label className="form-label">Saldo Real (R$)</label>
             <input
               type="number"
               step="0.01"
@@ -292,7 +292,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
             return (
               <>
                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-                  Saldo
+                  Margem
                 </span>
                 <div style={{ margin: '12px 0' }}>
                   <span className="font-display" style={{ 
@@ -306,7 +306,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                   </span>
                 </div>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: predictedNormalizationDate ? '12px' : '0' }}>
-                  Atual: {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
+                  Saldo Real: {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
                 </p>
                 {predictedNormalizationDate && (
                   <div style={{ 
@@ -332,7 +332,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         {/* Daily Spending Card */}
         <div className="glass glass-enhanced-hover" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-            Esperado para Hoje
+            Alvo de Hoje (Saldo Esperado)
           </span>
           <div style={{ margin: '12px 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
@@ -345,7 +345,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
             </div>
             <div style={{ borderTop: '1px solid var(--card-border)', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                Atual
+                Saldo Real
               </span>
               <span className="font-display" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                 {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
@@ -407,7 +407,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       {/* SECTION 5: Table of Daily Projections (New Feature) */}
       <div className="glass animate-in delay-300" style={{ padding: '24px' }}>
         <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Calendar size={18} style={{ color: 'var(--color-primary)' }} /> Tabela de Prospecção Diária
+          <Calendar size={18} style={{ color: 'var(--color-primary)' }} /> Tabela de Evolução do Orçamento
         </h3>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
           Veja qual o saldo esperado ao início de cada dia do período e compare com o saldo que você marcou manualmente.
@@ -419,9 +419,9 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               <tr>
                 <th style={{ width: '15%' }}>Dia</th>
                 <th style={{ width: '20%' }}>Data</th>
-                <th style={{ width: '25%' }}>Saldo Esperado (Início)</th>
-                <th style={{ width: '20%' }}>Saldo Inserido</th>
-                <th style={{ width: '20%' }}>Diferença</th>
+                <th style={{ width: '25%' }}>Saldo Esperado</th>
+                <th style={{ width: '20%' }}>Saldo Real</th>
+                <th style={{ width: '20%' }}>Margem</th>
               </tr>
             </thead>
             <tbody>
@@ -458,7 +458,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                       diffColor = 'var(--color-below)';
                       diffWeight = '700';
                     } else {
-                      diffText = 'Saldo OK';
+                      diffText = 'Margem OK';
                       diffColor = 'var(--color-neutral)';
                       diffWeight = '700';
                     }

@@ -135,8 +135,8 @@ export const PeriodList: React.FC<PeriodListProps> = ({
                         </span>
                       )}
                       {metrics.status === 'neutral' && (
-                        <span className="badge badge-neutral">
-                          <Equal size={10} /> Saldo OK
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                          <Equal size={10} /> Margem OK
                         </span>
                       )}
                     </div>
