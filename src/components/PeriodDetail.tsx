@@ -275,8 +275,16 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         <div className="glass glass-enhanced-hover" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           {(() => {
             let predictedNormalizationDate: Date | null = null;
-            if (canProject && lastRecordedBalance !== null && lastRecordedBalance < 0 && m > 0) {
-              const daysToNormalize = Math.ceil(Math.abs(lastRecordedBalance) / m);
+            
+            // A diferença atual (se o usuário está no "vermelho" do orçamento ou não)
+            const currentDiff = metrics.difference;
+            
+            // m é a taxa de gasto real. metrics.dailyBudget é a taxa de gasto esperada.
+            // Para cruzar, a taxa de gasto real (m) deve ser menos íngreme (maior) que -dailyBudget.
+            // Ou seja, (m + dailyBudget) > 0.
+            if (canProject && lastRecordedBalance !== null && currentDiff !== undefined && currentDiff < 0 && (m + metrics.dailyBudget) > 0) {
+              const recoveryRate = m + metrics.dailyBudget; // O quanto a diferença melhora por dia
+              const daysToNormalize = Math.ceil(Math.abs(currentDiff) / recoveryRate);
               const predictedDayIndex = lastRecordedDayIndex + daysToNormalize;
               predictedNormalizationDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + predictedDayIndex);
             }
