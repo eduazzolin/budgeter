@@ -273,23 +273,52 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         
         {/* Budget Goals Card */}
         <div className="glass glass-enhanced-hover" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-            Saldo
-          </span>
-          <div style={{ margin: '12px 0' }}>
-            <span className="font-display" style={{ 
-              fontSize: '2.2rem', 
-              fontWeight: 800, 
-              lineHeight: 1.1,
-              color: metrics.status === 'above' ? 'var(--color-above)' : metrics.status === 'below' ? 'var(--color-below)' : 'var(--text-primary)',
-              display: 'block'
-            }}>
-              {metrics.difference !== undefined ? (metrics.difference > 0 ? '+' : '') + formatCurrency(metrics.difference) : '—'}
-            </span>
-          </div>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Atual: {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
-          </p>
+          {(() => {
+            let predictedNormalizationDate: Date | null = null;
+            if (canProject && lastRecordedBalance !== null && lastRecordedBalance < 0 && m > 0) {
+              const daysToNormalize = Math.ceil(Math.abs(lastRecordedBalance) / m);
+              const predictedDayIndex = lastRecordedDayIndex + daysToNormalize;
+              predictedNormalizationDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + predictedDayIndex);
+            }
+
+            return (
+              <>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
+                  Saldo
+                </span>
+                <div style={{ margin: '12px 0' }}>
+                  <span className="font-display" style={{ 
+                    fontSize: '2.2rem', 
+                    fontWeight: 800, 
+                    lineHeight: 1.1,
+                    color: metrics.status === 'above' ? 'var(--color-above)' : metrics.status === 'below' ? 'var(--color-below)' : 'var(--text-primary)',
+                    display: 'block'
+                  }}>
+                    {metrics.difference !== undefined ? (metrics.difference > 0 ? '+' : '') + formatCurrency(metrics.difference) : '—'}
+                  </span>
+                </div>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: predictedNormalizationDate ? '12px' : '0' }}>
+                  Atual: {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
+                </p>
+                {predictedNormalizationDate && (
+                  <div style={{ 
+                    marginTop: 'auto',
+                    padding: '8px 10px',
+                    borderRadius: '6px',
+                    backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                    fontSize: '0.75rem',
+                    color: 'var(--color-primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontWeight: 600
+                  }}>
+                    <TrendingUp size={14} /> Previsão de alta: {formatShortDate(getLocalDateString(predictedNormalizationDate))}
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
 
         {/* Daily Spending Card */}
