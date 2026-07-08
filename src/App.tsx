@@ -151,7 +151,7 @@ function App() {
           }}>
             <Briefcase size={22} style={{ color: '#ffffff' }} />
           </div>
-          <span className="font-display" style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.02em' }}>
+          <span className="font-display" style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>
             Budgeter
           </span>
         </div>
@@ -172,7 +172,7 @@ function App() {
           {/* Help Button */}
           <button 
             onClick={() => setIsHelpOpen(true)} 
-            className="btn btn-secondary"
+            className="btn btn-secondary hide-mobile-text"
             style={{ 
               padding: '8px 12px', 
               fontSize: '0.85rem',
@@ -185,7 +185,7 @@ function App() {
             title="Ajuda / Glossário"
           >
             <HelpCircle size={15} />
-            <span className="hide-mobile-text">Ajuda</span>
+            <span>Ajuda</span>
           </button>
 
           {/* Toggle Settings Button */}
