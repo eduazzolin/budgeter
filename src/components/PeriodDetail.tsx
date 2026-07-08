@@ -417,11 +417,12 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           <table className="budget-table">
             <thead>
               <tr>
-                <th style={{ width: '15%' }}>Dia</th>
-                <th style={{ width: '20%' }}>Data</th>
-                <th style={{ width: '25%' }}>Saldo Esperado</th>
-                <th style={{ width: '20%' }}>Saldo Real</th>
-                <th style={{ width: '20%' }}>Margem</th>
+                <th style={{ width: '10%' }}>Dia</th>
+                <th style={{ width: '15%' }}>Data</th>
+                <th style={{ width: '20%' }}>Saldo Esperado</th>
+                <th style={{ width: '18%' }}>Saldo Real</th>
+                <th style={{ width: '20%' }}>Saldo Projetado</th>
+                <th style={{ width: '17%' }}>Margem</th>
               </tr>
             </thead>
             <tbody>
@@ -442,6 +443,11 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                   const hasRecord = recordedBalanceForDay !== undefined;
                   const isToday = todayStr === dateStr;
                   
+                  let projectedBalance = null;
+                  if (canProject && lastRecordedBalance !== null && index >= lastRecordedDayIndex) {
+                    projectedBalance = lastRecordedBalance + m * (index - lastRecordedDayIndex);
+                  }
+
                   let diffText = '—';
                   let diffColor = 'inherit';
                   let diffWeight = 'normal';
@@ -479,6 +485,11 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                       <td>
                         {hasRecord
                           ? formatCurrency(recordedBalanceForDay!) 
+                          : '—'}
+                      </td>
+                      <td style={{ color: 'var(--text-secondary)', fontStyle: projectedBalance !== null ? 'normal' : 'italic' }}>
+                        {projectedBalance !== null
+                          ? formatCurrency(projectedBalance)
                           : '—'}
                       </td>
                       <td style={{ color: diffColor, fontWeight: diffWeight as any }}>
