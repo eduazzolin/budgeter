@@ -402,6 +402,13 @@ h1, h2, h3, h4, .font-display {
   gap: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
+.header-btn {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
 @media (max-width: 640px) {
   .app-header {
@@ -416,6 +423,9 @@ h1, h2, h3, h4, .font-display {
   }
   .hide-mobile-text span {
     display: none;
+  }
+  .header-btn {
+    padding: 8px !important;
   }
   .periods-error-banner {
     margin: 10px 12px 0 12px;

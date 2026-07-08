@@ -132,7 +132,7 @@ function App() {
     <div>
       {/* Top Header Bar */}
       <header className="glass app-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div>
           <button 
             className="btn btn-secondary hide-desktop"
             style={{ padding: '4px', border: 'none', background: 'transparent', boxShadow: 'none' }}
@@ -156,7 +156,7 @@ function App() {
           </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div>
           {/* Backend Status Icon */}
           <div 
             title={isFirebaseMode ? 'Firebase Conectado' : 'Modo Offline (Local)'}
@@ -172,15 +172,10 @@ function App() {
           {/* Help Button */}
           <button 
             onClick={() => setIsHelpOpen(true)} 
-            className="btn btn-secondary hide-mobile-text"
+            className="btn btn-secondary hide-mobile-text header-btn"
             style={{ 
-              padding: '8px 12px', 
-              fontSize: '0.85rem',
               borderColor: 'var(--card-border)',
-              background: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
+              background: '#ffffff'
             }}
             title="Ajuda / Glossário"
           >
@@ -191,10 +186,8 @@ function App() {
           {/* Toggle Settings Button */}
           <button 
             onClick={() => setShowSettings(!showSettings)} 
-            className="btn btn-secondary hide-mobile-text"
+            className="btn btn-secondary hide-mobile-text header-btn"
             style={{ 
-              padding: '8px 16px', 
-              fontSize: '0.85rem',
               borderColor: showSettings ? 'var(--color-primary)' : 'var(--card-border)',
               background: showSettings ? 'rgba(9, 9, 11, 0.05)' : '#ffffff'
             }}
