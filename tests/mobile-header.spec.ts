@@ -24,10 +24,9 @@ test.describe('Mobile Header Layout', () => {
     await page.goto('/');
     await page.waitForSelector('.app-header');
 
-    // On mobile viewports (e.g., Pixel 5, iPhone 12), the texts "Ajuda" and "Entrar / Login"
-    // are wrapped in span.hide-mobile-text or are children of a button with hide-mobile-text.
-    // They should be hidden (display: none).
-    
+    // Take screenshot to replicate the issue
+    await page.locator('.app-header').screenshot({ path: 'header-screenshot.png' });
+
     // Wait for buttons to load
     const helpButtonSpan = page.locator('button[title="Ajuda / Glossário"] span').last();
     // In our implementation, we moved the hide-mobile-text class to the button,
