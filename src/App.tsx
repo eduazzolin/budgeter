@@ -5,6 +5,7 @@ import { PeriodList } from './components/PeriodList';
 import { PeriodDetail } from './components/PeriodDetail';
 import { PeriodForm } from './components/PeriodForm';
 import { AuthSettings } from './components/AuthSettings';
+import { HelpModal } from './components/HelpModal';
 import { isFirebaseEnabled } from './firebase';
 import type { Period } from './types';
 import { 
@@ -14,8 +15,10 @@ import {
   CloudOff, 
   Briefcase,
   LayoutDashboard,
-  Menu
+  Menu,
+  HelpCircle
 } from 'lucide-react';
+
 
 function App() {
   const { 
@@ -41,6 +44,7 @@ function App() {
 
   // Modal & Settings states
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [editingPeriod, setEditingPeriod] = useState<Period | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [isMobileListOpen, setIsMobileListOpen] = useState(false);
@@ -165,6 +169,25 @@ function App() {
             )}
           </div>
 
+          {/* Help Button */}
+          <button 
+            onClick={() => setIsHelpOpen(true)} 
+            className="btn btn-secondary"
+            style={{ 
+              padding: '8px 12px', 
+              fontSize: '0.85rem',
+              borderColor: 'var(--card-border)',
+              background: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+            title="Ajuda / Glossário"
+          >
+            <HelpCircle size={15} />
+            <span className="hide-mobile-text">Ajuda</span>
+          </button>
+
           {/* Toggle Settings Button */}
           <button 
             onClick={() => setShowSettings(!showSettings)} 
@@ -279,6 +302,12 @@ function App() {
         onClose={() => setIsFormOpen(false)}
         onSubmit={handleFormSubmit}
         editPeriod={editingPeriod}
+      />
+
+      {/* Help Modal */}
+      <HelpModal 
+        isOpen={isHelpOpen}
+        onClose={() => setIsHelpOpen(false)}
       />
     </div>
   );
