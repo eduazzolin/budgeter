@@ -142,26 +142,26 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       projectedBalance = lastRecordedBalance + m * (i - lastRecordedDayIndex);
     }
     
+    const margemReal = actualBalance !== undefined ? actualBalance - expectedBalance : null;
+    const margemProjetada = projectedBalance !== null ? projectedBalance - expectedBalance : null;
+
     chartData.push({
       date: formatShortDate(dateStr),
-      Esperado: parseFloat(expectedBalance.toFixed(2)),
-      Real: actualBalance !== undefined ? parseFloat(actualBalance.toFixed(2)) : null,
-      Projetado: projectedBalance !== null ? parseFloat(projectedBalance.toFixed(2)) : null,
+      Esperado: 0,
+      Real: margemReal !== null ? parseFloat(margemReal.toFixed(2)) : null,
+      Projetado: margemProjetada !== null ? parseFloat(margemProjetada.toFixed(2)) : null,
+      _rawEsperado: expectedBalance,
+      _rawReal: actualBalance,
+      _rawProjetado: projectedBalance
     });
   }
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
-      const esperado = payload.find((p: any) => p.dataKey === 'Esperado')?.value;
-      const real = payload.find((p: any) => p.dataKey === 'Real')?.value;
-      
-      // Order items to match visual hierarchy: Real, Esperado, Projetado
-      const orderedPayload = [
-        payload.find((p: any) => p.dataKey === 'Real'),
-        payload.find((p: any) => p.dataKey === 'Esperado'),
-        payload.find((p: any) => p.dataKey === 'Projetado')
-      ].filter(Boolean);
-
+      const data = payload[0].payload;
+      const formatCurrency = (val: number | null | undefined) => 
+        val != null ? `R$ ${val.toFixed(2)}` : '-';
+        
       return (
         <div style={{ 
           backgroundColor: '#fff', 
@@ -174,29 +174,43 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         }}>
           <p style={{ color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '8px', margin: 0 }}>{label}</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {orderedPayload.map((entry: any, index: number) => (
-              <div key={`item-${index}`} style={{ color: entry.color, display: 'flex', justifyContent: 'space-between', gap: '16px' }}>
-                <span>{entry.name}:</span>
-                <span style={{ fontWeight: 600 }}>{formatCurrency(Number(entry.value))}</span>
-              </div>
-            ))}
-            {real !== undefined && real !== null && (
-              <div style={{ 
-                marginTop: '6px', 
-                paddingTop: '6px', 
-                borderTop: '1px solid var(--card-border)',
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                gap: '16px',
-                color: real >= esperado ? 'var(--color-above)' : 'var(--color-below)',
-                fontWeight: 700
-              }}>
-                <span>Diferença:</span>
-                <span>
-                  {real >= esperado ? '+' : ''}{formatCurrency(real - esperado)}
-                </span>
+            <div style={{ color: 'var(--color-primary)', display: 'flex', justifyContent: 'space-between', gap: '16px' }}>
+              <span>Margem Real:</span>
+              <span style={{ fontWeight: 600 }}>{data.Real !== null ? formatCurrency(data.Real) : '-'}</span>
+            </div>
+
+            {data.Projetado !== null && data.Real === null && (
+              <div style={{ color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', gap: '16px' }}>
+                <span>Margem Projetada:</span>
+                <span style={{ fontWeight: 600 }}>{formatCurrency(data.Projetado)}</span>
               </div>
             )}
+            
+            <div style={{ 
+              marginTop: '6px', 
+              paddingTop: '6px', 
+              borderTop: '1px solid var(--card-border)',
+              display: 'flex', 
+              flexDirection: 'column',
+              gap: '4px',
+              color: 'var(--text-secondary)',
+              fontSize: '0.8rem'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px' }}>
+                <span>Saldo Real Absoluto:</span>
+                <span>{formatCurrency(data._rawReal)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px' }}>
+                <span>Saldo Esperado Absoluto:</span>
+                <span>{formatCurrency(data._rawEsperado)}</span>
+              </div>
+              {data._rawProjetado !== null && data._rawReal === undefined && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px' }}>
+                  <span>Saldo Projetado Absoluto:</span>
+                  <span>{formatCurrency(data._rawProjetado)}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       );
@@ -526,7 +540,23 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--card-border)" />
               <XAxis dataKey="date" tick={{ fontSize: 12, fill: 'var(--text-muted)' }} tickMargin={12} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 12, fill: 'var(--text-muted)' }} tickFormatter={(value) => `R$${value}`} axisLine={false} tickLine={false} tickMargin={12} />
+              <YAxis 
+                domain={['auto', (dataMax: number) => {
+                  // Find the minimum value in the data to calculate a proportional padding above zero
+                  let minMargin = 0;
+                  chartData.forEach((d: any) => {
+                    if (d.Real !== null && d.Real < minMargin) minMargin = d.Real;
+                    if (d.Projetado !== null && d.Projetado < minMargin) minMargin = d.Projetado;
+                  });
+                  const padding = minMargin < 0 ? Math.abs(minMargin) * 0.2 : 100;
+                  return Math.max(dataMax, padding);
+                }]}
+                tick={{ fontSize: 12, fill: 'var(--text-muted)' }} 
+                tickFormatter={(value) => `R$${value}`} 
+                axisLine={false} 
+                tickLine={false} 
+                tickMargin={12} 
+              />
               <Tooltip content={<CustomTooltip />} />
               
               <Area 
