@@ -22,6 +22,18 @@ Os dados são salvos preferencialmente offline-first no navegador (`localStorage
 
 ---
 
+## 📖 Glossário de Termos do Sistema
+
+Para garantir clareza e evitar ambiguidades, o **Budgeter** adota a seguinte terminologia padrão:
+
+*   **Saldo Real:** O dinheiro de fato que você possui na conta bancária (o valor físico lançado).
+*   **Saldo Esperado:** O valor ideal (alvo) que você deveria ter na conta em um dia específico para terminar o período exatamente dentro da meta estabelecida.
+*   **Margem ou Desempenho:** A diferença calculada entre o Saldo Real e o Saldo Esperado (`Saldo Real - Saldo Esperado`). Se positivo, indica economia; se negativo, indica que gastou a mais.
+*   **Saldo Projetado:** A projeção matemática (linha de tendência) indicando como o seu Saldo Real vai se comportar no futuro se a taxa de gastos atual for mantida.
+*   **Previsão de Alta (Ponto de Equilíbrio):** A data prevista em que a linha do Saldo Projetado cruza a linha do Saldo Esperado, indicando quando a Margem deixará de ser negativa e voltará a ficar positiva.
+
+---
+
 ## ✨ Funcionalidades Principais
 
 *   **Contagem Regressiva Visual**: Veja exatamente quantos dias restam e o percentual de tempo decorrido do período.

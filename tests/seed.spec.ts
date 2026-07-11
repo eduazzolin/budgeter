@@ -144,8 +144,8 @@ test.describe('Dashboard Seed & Visual Check', () => {
     // Wait for chart animations to finish
     await page.waitForTimeout(2000);
 
-    // Take screenshot of the viewport
-    await page.screenshot({ path: 'public/screenshot.png', fullPage: false });
+    // Take screenshot of the full page (without scrollbar, showing everything)
+    await page.screenshot({ path: 'public/screenshot.png', fullPage: true });
     console.log('Screenshot saved to public/screenshot.png');
     
     await context.close();
