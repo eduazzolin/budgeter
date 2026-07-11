@@ -1,43 +1,81 @@
 import { test, expect } from '@playwright/test';
 
+// Helper to generate dynamic period data that is always in progress
+function generateDynamicPeriod(opts: { id: string; name: string; isNegativeOnly?: boolean }) {
+  const today = new Date();
+  
+  const formatDate = (d: Date) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const start = new Date(today);
+  start.setDate(today.getDate() - 5); // starts 5 days ago
+  
+  const end = new Date(today);
+  end.setDate(today.getDate() + 5); // ends 5 days from now
+  
+  const history: Record<string, number> = {};
+  
+  const initialBudget = 1000;
+  const totalDays = 11; // -5 to +5 inclusive is 11 days
+  const dailyBudget = initialBudget / (totalDays - 1); // 100 per day
+  
+  let currentBalance = initialBudget;
+  for (let i = 0; i <= 5; i++) {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    const expected = initialBudget - i * dailyBudget;
+    
+    let margin;
+    if (opts.isNegativeOnly) {
+      margin = -50 - i * 30; // always negative
+    } else {
+      // starts negative, then crosses to positive (similar to jun26)
+      if (i === 0) margin = 0;
+      else if (i === 1) margin = -20;
+      else if (i === 2) margin = 30;
+      else if (i === 3) margin = 80;
+      else if (i === 4) margin = 120;
+      else margin = 150;
+    }
+    
+    currentBalance = Math.round(expected + margin);
+    history[formatDate(d)] = currentBalance;
+  }
+  
+  return {
+    id: opts.id,
+    name: opts.name,
+    startDate: formatDate(start),
+    endDate: formatDate(end),
+    initialBudget,
+    finalBudget: 0,
+    currentBalance,
+    currentBalanceDate: formatDate(today),
+    balanceHistory: history,
+    createdAt: new Date().toISOString(),
+    userId: "teste"
+  };
+}
+
 test.describe('Dashboard Seed & Visual Check', () => {
   test('inject data and capture chart', async ({ page }) => {
-    // Inject budget data into localStorage before loading the page
-    await page.addInitScript(() => {
-      const mockPeriod = {
-        id: "9DImpGbIsCAjM4tNhP48",
-        name: "jun26",
-        startDate: "2026-06-20",
-        endDate: "2026-06-30",
-        initialBudget: 1516,
-        finalBudget: 0,
-        currentBalance: 642,
-        currentBalanceDate: "2026-06-29",
-        balanceHistory: {
-          "2026-06-20": 1516,
-          "2026-06-21": 1350,
-          "2026-06-22": 1300,
-          "2026-06-23": 1160,
-          "2026-06-24": 1118,
-          "2026-06-25": 1118,
-          "2026-06-26": 1026,
-          "2026-06-27": 858,
-          "2026-06-28": 682,
-          "2026-06-29": 642
-        },
-        createdAt: "2026-06-20T20:39:10.285Z",
-        userId: "teste"
-      };
+    const mockPeriod = generateDynamicPeriod({ id: "active-period-id", name: "Período Ativo" });
 
-      window.localStorage.setItem('budgeter_periods', JSON.stringify([mockPeriod]));
-      window.localStorage.setItem('budgeter_selected_period_id', '9DImpGbIsCAjM4tNhP48');
-    });
+    // Inject budget data into localStorage before loading the page
+    await page.addInitScript((data) => {
+      window.localStorage.setItem('budgeter_periods', JSON.stringify([data]));
+      window.localStorage.setItem('budgeter_selected_period_id', data.id);
+    }, mockPeriod);
 
     // Go to the dashboard
     await page.goto('/');
 
     // Verify period title is visible
-    await expect(page.locator('h1')).toContainText('jun26');
+    await expect(page.locator('h1')).toContainText('Período Ativo');
 
     // Wait for the chart to render (Recharts is svg-based)
     await page.waitForSelector('.recharts-responsive-container');
@@ -51,37 +89,13 @@ test.describe('Dashboard Seed & Visual Check', () => {
   });
 
   test('inject negative-only data and capture chart', async ({ page }) => {
-    // Inject budget data with negative margins into localStorage before loading the page
-    await page.addInitScript(() => {
-      const mockPeriod = {
-        id: "neg-only-id",
-        name: "jul26_neg",
-        startDate: "2026-07-01",
-        endDate: "2026-07-31",
-        initialBudget: 1000,
-        finalBudget: 0,
-        currentBalance: 150,
-        currentBalanceDate: "2026-07-11",
-        balanceHistory: {
-          "2026-07-01": 900,
-          "2026-07-02": 800,
-          "2026-07-03": 700,
-          "2026-07-04": 500,
-          "2026-07-05": 450,
-          "2026-07-06": 400,
-          "2026-07-07": 350,
-          "2026-07-08": 300,
-          "2026-07-09": 250,
-          "2026-07-10": 200,
-          "2026-07-11": 150
-        },
-        createdAt: "2026-07-01T12:00:00.000Z",
-        userId: "teste"
-      };
+    const mockPeriod = generateDynamicPeriod({ id: "neg-only-id", name: "jul26_neg", isNegativeOnly: true });
 
-      window.localStorage.setItem('budgeter_periods', JSON.stringify([mockPeriod]));
-      window.localStorage.setItem('budgeter_selected_period_id', 'neg-only-id');
-    });
+    // Inject budget data with negative margins into localStorage before loading the page
+    await page.addInitScript((data) => {
+      window.localStorage.setItem('budgeter_periods', JSON.stringify([data]));
+      window.localStorage.setItem('budgeter_selected_period_id', data.id);
+    }, mockPeriod);
 
     // Go to the dashboard
     await page.goto('/');
@@ -110,42 +124,19 @@ test.describe('Dashboard Seed & Visual Check', () => {
     });
     const page = await context.newPage();
 
-    // Inject budget data into localStorage before loading the page
-    await page.addInitScript(() => {
-      const mockPeriod = {
-        id: "9DImpGbIsCAjM4tNhP48",
-        name: "jun26",
-        startDate: "2026-06-20",
-        endDate: "2026-06-30",
-        initialBudget: 1516,
-        finalBudget: 0,
-        currentBalance: 642,
-        currentBalanceDate: "2026-06-29",
-        balanceHistory: {
-          "2026-06-20": 1516,
-          "2026-06-21": 1350,
-          "2026-06-22": 1300,
-          "2026-06-23": 1160,
-          "2026-06-24": 1118,
-          "2026-06-25": 1118,
-          "2026-06-26": 1026,
-          "2026-06-27": 858,
-          "2026-06-28": 682,
-          "2026-06-29": 642
-        },
-        createdAt: "2026-06-20T20:39:10.285Z",
-        userId: "teste"
-      };
+    const mockPeriod = generateDynamicPeriod({ id: "active-period-id", name: "Período Ativo" });
 
-      window.localStorage.setItem('budgeter_periods', JSON.stringify([mockPeriod]));
-      window.localStorage.setItem('budgeter_selected_period_id', '9DImpGbIsCAjM4tNhP48');
-    });
+    // Inject budget data into localStorage before loading the page
+    await page.addInitScript((data) => {
+      window.localStorage.setItem('budgeter_periods', JSON.stringify([data]));
+      window.localStorage.setItem('budgeter_selected_period_id', data.id);
+    }, mockPeriod);
 
     // Go to the dashboard
     await page.goto('/');
 
     // Verify period title is visible
-    await expect(page.locator('h1')).toContainText('jun26');
+    await expect(page.locator('h1')).toContainText('Período Ativo');
 
     // Wait for the chart to render (Recharts is svg-based)
     await page.waitForSelector('.recharts-responsive-container');
