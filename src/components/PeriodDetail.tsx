@@ -158,6 +158,110 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     });
   }
 
+  // 3. Find min/max values to calculate a fixed YAxis domain and split gradient
+  let maxMargin = 0;
+  let minMargin = 0;
+  chartData.forEach((d: any) => {
+    if (d.Real !== null) {
+      if (d.Real > maxMargin) maxMargin = d.Real;
+      if (d.Real < minMargin) minMargin = d.Real;
+    }
+    if (d.Projetado !== null) {
+      if (d.Projetado > maxMargin) maxMargin = d.Projetado;
+      if (d.Projetado < minMargin) minMargin = d.Projetado;
+    }
+  });
+
+  // Calculate max absolute margin to make the Y axis perfectly symmetric
+  // This guarantees that 0 is always exactly in the center of the Y axis and visible
+  const maxAbsMargin = Math.max(Math.abs(maxMargin), Math.abs(minMargin), 10);
+  const targetHalf = maxAbsMargin / 2;
+  const exponent = Math.floor(Math.log10(targetHalf));
+  const fraction = targetHalf / Math.pow(10, exponent);
+  let niceFraction = 10;
+  if (fraction <= 1) niceFraction = 1;
+  else if (fraction <= 2) niceFraction = 2;
+  else if (fraction <= 2.5) niceFraction = 2.5;
+  else if (fraction <= 5) niceFraction = 5;
+
+  const niceStep = niceFraction * Math.pow(10, exponent);
+  const yAxisMax = niceStep * 2;
+  const yAxisMin = -yAxisMax;
+  const yTicks = [-yAxisMax, -niceStep, 0, niceStep, yAxisMax];
+
+  // Calculate precise gradient offsets for the fill (Area) and stroke (Line)
+  // because SVG gradients default to objectBoundingBox which is relative to the drawn path, not the axes.
+  let dataMaxReal = -Infinity;
+  let dataMinReal = Infinity;
+  chartData.forEach((d: any) => {
+    if (d.Real !== null) {
+      if (d.Real > dataMaxReal) dataMaxReal = d.Real;
+      if (d.Real < dataMinReal) dataMinReal = d.Real;
+    }
+  });
+  if (dataMaxReal === -Infinity) { dataMaxReal = 0; dataMinReal = 0; }
+
+  const areaMax = Math.max(0, dataMaxReal);
+  const areaMin = Math.min(0, dataMinReal);
+  let fillOffset = areaMax === areaMin ? 0 : areaMax / (areaMax - areaMin);
+  fillOffset = Math.max(0, Math.min(1, fillOffset));
+
+  const strokeMax = dataMaxReal;
+  const strokeMin = dataMinReal;
+  let strokeOffset = strokeMax === strokeMin ? 0 : strokeMax / (strokeMax - strokeMin);
+  strokeOffset = Math.max(0, Math.min(1, strokeOffset));
+
+  // Helper to extract numeric value from Recharts props (which might be an array [baseline, value] for Area)
+  const getRealValue = (props: any) => {
+    const { value, payload } = props;
+    if (payload && payload.Real !== undefined && payload.Real !== null) {
+      return payload.Real;
+    }
+    if (Array.isArray(value)) {
+      return value[1];
+    }
+    return value;
+  };
+
+  // Custom dots for the Area chart to avoid mixing gradient colors
+  const renderCustomDot = (props: any) => {
+    const { cx, cy } = props;
+    if (!cx || !cy || isNaN(cx) || isNaN(cy)) return null;
+    const val = getRealValue(props);
+    if (val === null || val === undefined || isNaN(val)) return null;
+    const isPositive = val >= 0;
+    return (
+      <circle 
+        key={`dot-${cx}-${cy}`} 
+        cx={cx} 
+        cy={cy} 
+        r={4} 
+        fill="#fff" 
+        stroke={isPositive ? 'var(--color-above)' : 'var(--color-below)'} 
+        strokeWidth={2} 
+      />
+    );
+  };
+
+  const renderActiveDot = (props: any) => {
+    const { cx, cy } = props;
+    if (!cx || !cy || isNaN(cx) || isNaN(cy)) return null;
+    const val = getRealValue(props);
+    if (val === null || val === undefined || isNaN(val)) return null;
+    const isPositive = val >= 0;
+    return (
+      <circle 
+        key={`active-dot-${cx}-${cy}`} 
+        cx={cx} 
+        cy={cy} 
+        r={6} 
+        fill="#fff" 
+        stroke={isPositive ? 'var(--color-above)' : 'var(--color-below)'} 
+        strokeWidth={2} 
+      />
+    );
+  };
+
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -574,22 +678,54 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                   <stop offset="5%" stopColor="var(--text-muted)" stopOpacity={0.15}/>
                   <stop offset="95%" stopColor="var(--text-muted)" stopOpacity={0}/>
                 </linearGradient>
+                <linearGradient id="colorReal" x1="0" y1="0" x2="0" y2="1">
+                  {fillOffset <= 0 ? (
+                    <>
+                      <stop offset="0%" stopColor="var(--color-below)" stopOpacity={0}/>
+                      <stop offset="100%" stopColor="var(--color-below)" stopOpacity={0.15}/>
+                    </>
+                  ) : fillOffset >= 1 ? (
+                    <>
+                      <stop offset="0%" stopColor="var(--color-above)" stopOpacity={0.15}/>
+                      <stop offset="100%" stopColor="var(--color-above)" stopOpacity={0}/>
+                    </>
+                  ) : (
+                    <>
+                      <stop offset="0%" stopColor="var(--color-above)" stopOpacity={0.15}/>
+                      <stop offset={`${fillOffset * 100}%`} stopColor="var(--color-above)" stopOpacity={0}/>
+                      <stop offset={`${fillOffset * 100}%`} stopColor="var(--color-below)" stopOpacity={0}/>
+                      <stop offset="100%" stopColor="var(--color-below)" stopOpacity={0.15}/>
+                    </>
+                  )}
+                </linearGradient>
+                <linearGradient id="strokeReal" x1="0" y1="0" x2="0" y2="1">
+                  {strokeOffset <= 0 ? (
+                    <>
+                      <stop offset="0%" stopColor="var(--color-below)" stopOpacity={1}/>
+                      <stop offset="100%" stopColor="var(--color-below)" stopOpacity={1}/>
+                    </>
+                  ) : strokeOffset >= 1 ? (
+                    <>
+                      <stop offset="0%" stopColor="var(--color-above)" stopOpacity={1}/>
+                      <stop offset="100%" stopColor="var(--color-above)" stopOpacity={1}/>
+                    </>
+                  ) : (
+                    <>
+                      <stop offset="0%" stopColor="var(--color-above)" stopOpacity={1}/>
+                      <stop offset={`${strokeOffset * 100}%`} stopColor="var(--color-above)" stopOpacity={1}/>
+                      <stop offset={`${strokeOffset * 100}%`} stopColor="var(--color-below)" stopOpacity={1}/>
+                      <stop offset="100%" stopColor="var(--color-below)" stopOpacity={1}/>
+                    </>
+                  )}
+                </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--card-border)" />
               <XAxis dataKey="date" tick={{ fontSize: 12, fill: 'var(--text-muted)' }} tickMargin={12} axisLine={false} tickLine={false} />
               <YAxis 
-                domain={['auto', (dataMax: number) => {
-                  // Find the minimum value in the data to calculate a proportional padding above zero
-                  let minMargin = 0;
-                  chartData.forEach((d: any) => {
-                    if (d.Real !== null && d.Real < minMargin) minMargin = d.Real;
-                    if (d.Projetado !== null && d.Projetado < minMargin) minMargin = d.Projetado;
-                  });
-                  const padding = minMargin < 0 ? Math.abs(minMargin) * 0.2 : 100;
-                  return Math.max(dataMax, padding);
-                }]}
+                domain={[yAxisMin, yAxisMax]}
+                ticks={yTicks}
                 tick={{ fontSize: 12, fill: 'var(--text-muted)' }} 
-                tickFormatter={(value) => `R$${value}`} 
+                tickFormatter={(value) => `R$ ${Math.round(value)}`} 
                 axisLine={false} 
                 tickLine={false} 
                 tickMargin={12} 
@@ -617,14 +753,16 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                 dot={false} 
               />
               
-              <Line 
+              <Area 
                 name="Real" 
                 type="monotone" 
                 dataKey="Real" 
-                stroke="var(--color-primary)" 
-                strokeWidth={3} 
-                dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} 
-                activeDot={{ r: 6, strokeWidth: 0, fill: 'var(--color-primary)' }} 
+                stroke="url(#strokeReal)" 
+                strokeWidth={3}
+                fillOpacity={1}
+                fill="url(#colorReal)"
+                dot={renderCustomDot} 
+                activeDot={renderActiveDot} 
                 connectNulls 
               />
             </ComposedChart>
