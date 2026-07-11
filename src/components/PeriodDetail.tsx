@@ -34,6 +34,15 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
   const [showChartHelp, setShowChartHelp] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Set default values when period changes
   useEffect(() => {
@@ -625,7 +634,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       </div>
 
       {/* SECTION 6: Chart (New Feature) */}
-      <div className="glass animate-in delay-400" style={{ padding: '24px' }}>
+      <div className="glass animate-in delay-400" style={{ padding: isMobile ? '16px 12px' : '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -667,11 +676,14 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           </div>
         </div>
         
-        <div style={{ width: '100%', height: 320 }}>
+        <div style={{ width: '100%', height: isMobile ? 280 : 320 }}>
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart
               data={chartData}
-              margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+              margin={isMobile 
+                ? { top: 5, right: 5, left: 5, bottom: 5 } 
+                : { top: 5, right: 20, left: 10, bottom: 5 }
+              }
             >
               <defs>
                 <linearGradient id="colorEsperado" x1="0" y1="0" x2="0" y2="1">
@@ -722,13 +734,24 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--card-border)" />
               <XAxis dataKey="date" tick={{ fontSize: 12, fill: 'var(--text-muted)' }} tickMargin={12} axisLine={false} tickLine={false} />
               <YAxis 
+                width={isMobile ? 40 : 60}
                 domain={[yAxisMin, yAxisMax]}
                 ticks={yTicks}
                 tick={{ fontSize: 12, fill: 'var(--text-muted)' }} 
-                tickFormatter={(value) => `R$ ${Math.round(value)}`} 
+                tickFormatter={(value) => {
+                  if (isMobile) {
+                    if (value === 0) return '0';
+                    const absVal = Math.abs(value);
+                    if (absVal >= 1000) {
+                      return `${Math.round((value / 1000) * 10) / 10}k`;
+                    }
+                    return `${Math.round(value)}`;
+                  }
+                  return `R$ ${Math.round(value)}`;
+                }}
                 axisLine={false} 
                 tickLine={false} 
-                tickMargin={12} 
+                tickMargin={isMobile ? 4 : 12} 
               />
               <Tooltip content={<CustomTooltip />} />
               
