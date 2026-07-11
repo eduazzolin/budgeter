@@ -533,108 +533,8 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
 
 
-      {/* SECTION 5: Table of Daily Projections (New Feature) */}
-      <div className="glass animate-in delay-300" style={{ padding: '24px' }}>
-        <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Calendar size={18} style={{ color: 'var(--color-primary)' }} /> Tabela de Evolução do Orçamento
-        </h3>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-          Veja qual o saldo esperado ao início de cada dia do período e compare com o saldo que você marcou manualmente.
-        </p>
-        
-        <div className="table-container">
-          <table className="budget-table">
-            <thead>
-              <tr>
-                <th style={{ width: '10%' }}>Dia</th>
-                <th style={{ width: '15%' }}>Data</th>
-                <th style={{ width: '20%' }}>Saldo Esperado</th>
-                <th style={{ width: '18%' }}>Saldo Real</th>
-                <th style={{ width: '20%' }}>Saldo Projetado</th>
-                <th style={{ width: '17%' }}>Margem</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(() => {
-                const totalDays = metrics.totalDays;
-                const dates = [];
-                const start = parseLocalDate(period.startDate);
-                for (let i = 0; i < totalDays; i++) {
-                  const nextDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
-                  dates.push(getLocalDateString(nextDate));
-                }
-                
-                const todayStr = getLocalDateString();
-
-                return dates.map((dateStr, index) => {
-                  const expectedBalance = period.initialBudget - index * metrics.dailyBudget;
-                  const recordedBalanceForDay = period.balanceHistory?.[dateStr];
-                  const hasRecord = recordedBalanceForDay !== undefined;
-                  const isToday = todayStr === dateStr;
-                  
-                  let projectedBalance = null;
-                  if (canProject && lastRecordedBalance !== null && index >= lastRecordedDayIndex) {
-                    projectedBalance = lastRecordedBalance + m * (index - lastRecordedDayIndex);
-                  }
-
-                  let diffText = '—';
-                  let diffColor = 'inherit';
-                  let diffWeight = 'normal';
-
-                  if (hasRecord) {
-                    const diff = recordedBalanceForDay - expectedBalance;
-                    const diffAbs = Math.abs(diff);
-                    if (diff > 0.01) {
-                      diffText = `+ ${formatCurrency(diffAbs)}`;
-                      diffColor = 'var(--color-above)';
-                      diffWeight = '700';
-                    } else if (diff < -0.01) {
-                      diffText = `- ${formatCurrency(diffAbs)}`;
-                      diffColor = 'var(--color-below)';
-                      diffWeight = '700';
-                    } else {
-                      diffText = 'Margem OK';
-                      diffColor = 'var(--color-neutral)';
-                      diffWeight = '700';
-                    }
-                  }
-
-                  return (
-                    <tr key={dateStr} className={isToday ? 'today-row' : ''}>
-                      <td style={{ color: isToday ? 'var(--color-primary)' : 'inherit' }}>
-                        Dia {index + 1}
-                        {isToday && (
-                          <span className="badge badge-neutral" style={{ marginLeft: '8px', padding: '2px 8px', fontSize: '0.65rem', textTransform: 'none' }}>
-                            Hoje
-                          </span>
-                        )}
-                      </td>
-                      <td>{formatDate(dateStr)}</td>
-                      <td>{formatCurrency(expectedBalance)}</td>
-                      <td>
-                        {hasRecord
-                          ? formatCurrency(recordedBalanceForDay!) 
-                          : '—'}
-                      </td>
-                      <td style={{ color: 'var(--text-secondary)', fontStyle: projectedBalance !== null ? 'normal' : 'italic' }}>
-                        {projectedBalance !== null
-                          ? formatCurrency(projectedBalance)
-                          : '—'}
-                      </td>
-                      <td style={{ color: diffColor, fontWeight: diffWeight as any }}>
-                        {diffText}
-                      </td>
-                    </tr>
-                  );
-                });
-              })()}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
       {/* SECTION 6: Chart (New Feature) */}
-      <div className="glass animate-in delay-400" style={{ padding: isMobile ? '16px 12px' : '24px' }}>
+      <div className="glass animate-in delay-300" style={{ padding: isMobile ? '16px 12px' : '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -790,6 +690,106 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               />
             </ComposedChart>
           </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* SECTION 5: Table of Daily Projections (New Feature) */}
+      <div className="glass animate-in delay-400" style={{ padding: '24px' }}>
+        <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Calendar size={18} style={{ color: 'var(--color-primary)' }} /> Tabela de Evolução do Orçamento
+        </h3>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+          Veja qual o saldo esperado ao início de cada dia do período e compare com o saldo que você marcou manualmente.
+        </p>
+        
+        <div className="table-container">
+          <table className="budget-table">
+            <thead>
+              <tr>
+                <th style={{ width: '10%' }}>Dia</th>
+                <th style={{ width: '15%' }}>Data</th>
+                <th style={{ width: '20%' }}>Saldo Esperado</th>
+                <th style={{ width: '18%' }}>Saldo Real</th>
+                <th style={{ width: '20%' }}>Saldo Projetado</th>
+                <th style={{ width: '17%' }}>Margem</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(() => {
+                const totalDays = metrics.totalDays;
+                const dates = [];
+                const start = parseLocalDate(period.startDate);
+                for (let i = 0; i < totalDays; i++) {
+                  const nextDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+                  dates.push(getLocalDateString(nextDate));
+                }
+                
+                const todayStr = getLocalDateString();
+
+                return dates.map((dateStr, index) => {
+                  const expectedBalance = period.initialBudget - index * metrics.dailyBudget;
+                  const recordedBalanceForDay = period.balanceHistory?.[dateStr];
+                  const hasRecord = recordedBalanceForDay !== undefined;
+                  const isToday = todayStr === dateStr;
+                  
+                  let projectedBalance = null;
+                  if (canProject && lastRecordedBalance !== null && index >= lastRecordedDayIndex) {
+                    projectedBalance = lastRecordedBalance + m * (index - lastRecordedDayIndex);
+                  }
+
+                  let diffText = '—';
+                  let diffColor = 'inherit';
+                  let diffWeight = 'normal';
+
+                  if (hasRecord) {
+                    const diff = recordedBalanceForDay - expectedBalance;
+                    const diffAbs = Math.abs(diff);
+                    if (diff > 0.01) {
+                      diffText = `+ ${formatCurrency(diffAbs)}`;
+                      diffColor = 'var(--color-above)';
+                      diffWeight = '700';
+                    } else if (diff < -0.01) {
+                      diffText = `- ${formatCurrency(diffAbs)}`;
+                      diffColor = 'var(--color-below)';
+                      diffWeight = '700';
+                    } else {
+                      diffText = 'Margem OK';
+                      diffColor = 'var(--color-neutral)';
+                      diffWeight = '700';
+                    }
+                  }
+
+                  return (
+                    <tr key={dateStr} className={isToday ? 'today-row' : ''}>
+                      <td style={{ color: isToday ? 'var(--color-primary)' : 'inherit' }}>
+                        Dia {index + 1}
+                        {isToday && (
+                          <span className="badge badge-neutral" style={{ marginLeft: '8px', padding: '2px 8px', fontSize: '0.65rem', textTransform: 'none' }}>
+                            Hoje
+                          </span>
+                        )}
+                      </td>
+                      <td>{formatDate(dateStr)}</td>
+                      <td>{formatCurrency(expectedBalance)}</td>
+                      <td>
+                        {hasRecord
+                          ? formatCurrency(recordedBalanceForDay!) 
+                          : '—'}
+                      </td>
+                      <td style={{ color: 'var(--text-secondary)', fontStyle: projectedBalance !== null ? 'normal' : 'italic' }}>
+                        {projectedBalance !== null
+                          ? formatCurrency(projectedBalance)
+                          : '—'}
+                      </td>
+                      <td style={{ color: diffColor, fontWeight: diffWeight as any }}>
+                        {diffText}
+                      </td>
+                    </tr>
+                  );
+                });
+              })()}
+            </tbody>
+          </table>
         </div>
       </div>
 
