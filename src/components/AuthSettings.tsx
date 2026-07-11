@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import type { AppUser } from '../services/auth';
 import { isFirebaseEnabled } from '../firebase';
+import { dbService } from '../services/db';
+import { authService } from '../services/auth';
 import { 
   Cloud, 
   CloudOff, 
   Info, 
   LogOut, 
-  RefreshCw
+  RefreshCw,
+  Trash2
 } from 'lucide-react';
 
 interface AuthSettingsProps {
@@ -26,6 +29,37 @@ export const AuthSettings: React.FC<AuthSettingsProps> = ({
   const [syncing, setSyncing] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+    
+    const confirmDelete = window.confirm(
+      "Tem certeza absoluta que deseja excluir sua conta e TODOS os seus dados? Esta ação é irreversível e garantida pela LGPD."
+    );
+    
+    if (!confirmDelete) return;
+
+    try {
+      setIsDeleting(true);
+      setAuthError(null);
+      // 1. Delete user data
+      await dbService.deleteAllUserPeriods(user.uid);
+      // 2. Delete auth account
+      await authService.deleteAccount();
+      // On success, the auth listener will catch the signout/deletion and update UI
+      alert("Sua conta e dados foram excluídos com sucesso.");
+    } catch (err: any) {
+      console.error(err);
+      if (err?.code === 'auth/requires-recent-login') {
+        alert("Por questões de segurança, você precisa ter feito login recentemente para excluir sua conta. Por favor, saia (logout), faça login novamente e tente excluir a conta.");
+      } else {
+        alert("Erro ao excluir conta: " + err.message);
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const handleGoogleLogin = async () => {
     try {
@@ -144,10 +178,21 @@ export const AuthSettings: React.FC<AuthSettingsProps> = ({
 
             <button 
               onClick={onLogout} 
-              className="btn btn-danger" 
-              style={{ width: '100%', padding: '8px 12px', fontSize: '0.85rem', display: 'flex', justifyContent: 'center', gap: '8px' }}
+              className="btn btn-secondary" 
+              style={{ width: '100%', padding: '8px 12px', fontSize: '0.85rem', display: 'flex', justifyContent: 'center', gap: '8px', border: '1px solid var(--card-border)' }}
             >
               <LogOut size={14} /> Sair da Conta
+            </button>
+
+            <button 
+              onClick={handleDeleteAccount}
+              disabled={isDeleting}
+              className="btn btn-danger" 
+              style={{ width: '100%', padding: '8px 12px', fontSize: '0.85rem', display: 'flex', justifyContent: 'center', gap: '8px', opacity: isDeleting ? 0.7 : 1 }}
+              title="Excluir permanentemente sua conta e todos os seus dados salvos (LGPD)"
+            >
+              <Trash2 size={14} className={isDeleting ? 'animate-pulse' : ''} />
+              {isDeleting ? 'Excluindo...' : 'Excluir Conta e Dados'}
             </button>
           </div>
         </div>

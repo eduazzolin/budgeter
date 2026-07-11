@@ -173,5 +173,32 @@ export const dbService = {
     } catch (error) {
       console.error('Error syncing local data to Firebase:', error);
     }
+  },
+
+  // Delete all data for a specific user (LGPD compliance)
+  deleteAllUserPeriods: async (userId: string): Promise<void> => {
+    if (isFirebaseEnabled() && db && userId) {
+      try {
+        const periodsRef = collection(db, 'periods');
+        const q = query(periodsRef, where('userId', '==', userId));
+        const querySnapshot = await getDocs(q);
+        
+        const deletePromises: Promise<void>[] = [];
+        querySnapshot.forEach((docSnap) => {
+          deletePromises.push(deleteDoc(docSnap.ref));
+        });
+        
+        await Promise.all(deletePromises);
+        console.log(`Deleted ${deletePromises.length} periods for user ${userId}`);
+      } catch (error) {
+        console.error('Error deleting all user periods:', error);
+        throw new Error('Falha ao excluir os dados do usuário no banco de dados.');
+      }
+    }
+    
+    // Always clear local data associated with this user as well
+    const periods = getLocalPeriods();
+    const filtered = periods.filter(p => p.userId !== userId && p.userId !== undefined);
+    saveLocalPeriods(filtered);
   }
 };

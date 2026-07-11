@@ -6,6 +6,8 @@ import { PeriodDetail } from './components/PeriodDetail';
 import { PeriodForm } from './components/PeriodForm';
 import { AuthSettings } from './components/AuthSettings';
 import { HelpModal } from './components/HelpModal';
+import { PrivacyModal } from './components/PrivacyModal';
+import { CookieBanner } from './components/CookieBanner';
 import { isFirebaseEnabled } from './firebase';
 import type { Period } from './types';
 import { 
@@ -16,7 +18,8 @@ import {
   Briefcase,
   LayoutDashboard,
   Menu,
-  HelpCircle
+  HelpCircle,
+  ShieldCheck
 } from 'lucide-react';
 
 
@@ -45,6 +48,7 @@ function App() {
   // Modal & Settings states
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [editingPeriod, setEditingPeriod] = useState<Period | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [isMobileListOpen, setIsMobileListOpen] = useState(false);
@@ -183,6 +187,20 @@ function App() {
             <span>Ajuda</span>
           </button>
 
+          {/* Privacy Button */}
+          <button 
+            onClick={() => setIsPrivacyOpen(true)} 
+            className="btn btn-secondary hide-mobile-text header-btn"
+            style={{ 
+              borderColor: 'var(--card-border)',
+              background: '#ffffff'
+            }}
+            title="Política de Privacidade (LGPD)"
+          >
+            <ShieldCheck size={15} />
+            <span>Privacidade</span>
+          </button>
+
           {/* Toggle Settings Button */}
           <button 
             onClick={() => setShowSettings(!showSettings)} 
@@ -301,6 +319,17 @@ function App() {
       <HelpModal 
         isOpen={isHelpOpen}
         onClose={() => setIsHelpOpen(false)}
+      />
+
+      {/* Privacy Modal */}
+      <PrivacyModal 
+        isOpen={isPrivacyOpen}
+        onClose={() => setIsPrivacyOpen(false)}
+      />
+
+      {/* LGPD Cookie Banner */}
+      <CookieBanner 
+        onOpenPrivacy={() => setIsPrivacyOpen(true)}
       />
     </div>
   );

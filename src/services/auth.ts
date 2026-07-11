@@ -3,7 +3,8 @@ import {
   onAuthStateChanged, 
   signOut, 
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  deleteUser
 } from 'firebase/auth';
 import type { User as FirebaseUser } from 'firebase/auth';
 
@@ -59,6 +60,18 @@ export const authService = {
   logout: async (): Promise<void> => {
     if (isFirebaseEnabled() && auth) {
       await signOut(auth);
+    }
+  },
+
+  // Delete user account (LGPD compliance)
+  deleteAccount: async (): Promise<void> => {
+    if (isFirebaseEnabled() && auth && auth.currentUser) {
+      try {
+        await deleteUser(auth.currentUser);
+      } catch (error: any) {
+        // If it throws auth/requires-recent-login, the UI will handle it
+        throw error;
+      }
     }
   }
 };
