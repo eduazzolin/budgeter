@@ -5,7 +5,8 @@ import {
   Calendar, 
   DollarSign, 
   Clock,
-  TrendingUp
+  TrendingUp,
+  Info
 } from 'lucide-react';
 import { 
   ComposedChart, 
@@ -32,6 +33,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
   const [balanceDate, setBalanceDate] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
+  const [showChartHelp, setShowChartHelp] = useState(false);
 
   // Set default values when period changes
   useEffect(() => {
@@ -520,12 +522,47 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
       {/* SECTION 6: Chart (New Feature) */}
       <div className="glass animate-in delay-400" style={{ padding: '24px' }}>
-        <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <TrendingUp size={18} style={{ color: 'var(--color-primary)' }} /> Evolução do Orçamento
-        </h3>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>
-          Acompanhe visualmente se os seus gastos reais estão seguindo o orçamento esperado.
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <TrendingUp size={18} style={{ color: 'var(--color-primary)' }} /> Evolução do Orçamento
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>
+              Acompanhe visualmente se os seus gastos reais estão seguindo o orçamento esperado.
+            </p>
+          </div>
+          
+          <div 
+            style={{ position: 'relative', display: 'flex', alignItems: 'center', cursor: 'help' }}
+            onMouseEnter={() => setShowChartHelp(true)}
+            onMouseLeave={() => setShowChartHelp(false)}
+            onClick={() => setShowChartHelp(!showChartHelp)}
+          >
+            <Info size={18} style={{ color: 'var(--text-muted)' }} />
+            
+            {showChartHelp && (
+              <div className="glass animate-in" style={{ 
+                position: 'absolute', 
+                top: '24px', 
+                right: 0, 
+                width: '300px', 
+                padding: '16px', 
+                zIndex: 10,
+                fontSize: '0.85rem',
+                color: 'var(--text-secondary)',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.1)'
+              }}>
+                <p style={{ margin: '0 0 12px 0', fontWeight: 'bold', color: 'var(--text-primary)' }}>Como ler o gráfico?</p>
+                <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <li>A linha reta tracejada <strong style={{ color: 'var(--text-primary)' }}>R$0</strong> representa o seu limite diário ideal para terminar no azul.</li>
+                  <li>Pontos <strong>acima de R$0</strong> significam que você está economizando (Margem positiva).</li>
+                  <li>Pontos <strong>abaixo de R$0</strong> significam que você ultrapassou a meta no momento (Margem negativa).</li>
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+        
         <div style={{ width: '100%', height: 320 }}>
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart
