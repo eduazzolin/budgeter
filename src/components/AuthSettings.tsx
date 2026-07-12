@@ -9,7 +9,9 @@ import {
   Info, 
   LogOut, 
   RefreshCw,
-  Trash2
+  Trash2,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 interface AuthSettingsProps {
@@ -17,13 +19,17 @@ interface AuthSettingsProps {
   onLogout: () => Promise<void>;
   onLoginWithGoogle: () => Promise<void>;
   onSyncLocalData: () => Promise<void>;
+  theme: 'light' | 'dark';
+  onThemeChange: (theme: 'light' | 'dark') => void;
 }
 
 export const AuthSettings: React.FC<AuthSettingsProps> = ({
   user,
   onLogout,
   onLoginWithGoogle,
-  onSyncLocalData
+  onSyncLocalData,
+  theme,
+  onThemeChange
 }) => {
   const firebaseActive = isFirebaseEnabled();
   const [syncing, setSyncing] = useState(false);
@@ -107,6 +113,38 @@ export const AuthSettings: React.FC<AuthSettingsProps> = ({
         }}>
           <Info size={16} style={{ color: 'var(--color-neutral)', flexShrink: 0, marginTop: '2px' }} />
           <span>Seus contadores estão ativos e sendo salvos localmente neste navegador.</span>
+        </div>
+
+        {/* Theme Selector */}
+        <div style={{ 
+          borderTop: '1px solid var(--card-border)', 
+          paddingTop: '12px',
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '10px',
+          marginTop: '4px'
+        }}>
+          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Aparência
+          </span>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button 
+              type="button"
+              onClick={() => onThemeChange('light')}
+              className={`btn ${theme === 'light' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ flex: 1, padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+            >
+              <Sun size={13} /> Claro
+            </button>
+            <button 
+              type="button"
+              onClick={() => onThemeChange('dark')}
+              className={`btn ${theme === 'dark' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ flex: 1, padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+            >
+              <Moon size={13} /> Escuro
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -244,6 +282,37 @@ export const AuthSettings: React.FC<AuthSettingsProps> = ({
           </button>
         </div>
       )}
+
+      {/* Theme Selector */}
+      <div style={{ 
+        borderTop: '1px solid var(--card-border)', 
+        paddingTop: '16px',
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: '10px' 
+      }}>
+        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          Aparência
+        </span>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button 
+            type="button"
+            onClick={() => onThemeChange('light')}
+            className={`btn ${theme === 'light' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ flex: 1, padding: '8px 12px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+          >
+            <Sun size={14} /> Claro
+          </button>
+          <button 
+            type="button"
+            onClick={() => onThemeChange('dark')}
+            className={`btn ${theme === 'dark' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ flex: 1, padding: '8px 12px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+          >
+            <Moon size={14} /> Escuro
+          </button>
+        </div>
+      </div>
 
       <style>{`
         @keyframes spin {

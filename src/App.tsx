@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { usePeriods } from './hooks/usePeriods';
 import { PeriodList } from './components/PeriodList';
@@ -52,6 +52,24 @@ function App() {
   const [editingPeriod, setEditingPeriod] = useState<Period | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [isMobileListOpen, setIsMobileListOpen] = useState(false);
+
+  // Theme state
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark' || saved === 'light') return saved;
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+    return 'light';
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   // Handle Create or Edit Period form submit
   const handleFormSubmit = async (
@@ -179,7 +197,7 @@ function App() {
             className="btn btn-secondary hide-mobile-text header-btn"
             style={{ 
               borderColor: 'var(--card-border)',
-              background: '#ffffff'
+              background: 'var(--card-bg)'
             }}
             title="Ajuda / Glossário"
           >
@@ -193,7 +211,7 @@ function App() {
             className="btn btn-secondary hide-mobile-text header-btn"
             style={{ 
               borderColor: 'var(--card-border)',
-              background: '#ffffff'
+              background: 'var(--card-bg)'
             }}
             title="Política de Privacidade (LGPD)"
           >
@@ -207,7 +225,7 @@ function App() {
             className="btn btn-secondary hide-mobile-text header-btn"
             style={{ 
               borderColor: showSettings ? 'var(--color-primary)' : 'var(--card-border)',
-              background: showSettings ? 'rgba(9, 9, 11, 0.05)' : '#ffffff'
+              background: showSettings ? 'var(--bg-secondary)' : 'var(--card-bg)'
             }}
           >
             <User size={15} /> 
@@ -243,6 +261,8 @@ function App() {
               onLogout={logout}
               onLoginWithGoogle={loginWithGoogle}
               onSyncLocalData={syncLocalData}
+              theme={theme}
+              onThemeChange={setTheme}
             />
           )}
 

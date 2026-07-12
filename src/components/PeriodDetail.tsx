@@ -279,10 +279,10 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         
       return (
         <div style={{ 
-          backgroundColor: '#fff', 
+          backgroundColor: 'var(--card-bg)', 
           borderRadius: '8px', 
           border: '1px solid var(--card-border)', 
-          boxShadow: '0 4px 12px rgba(0,0,0,0.05)', 
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)', 
           padding: '12px',
           fontSize: '0.85rem',
           fontFamily: 'var(--font-family, "Inter", sans-serif)'
