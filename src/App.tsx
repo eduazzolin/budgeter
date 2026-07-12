@@ -124,7 +124,7 @@ function App() {
           boxShadow: '0 0 20px var(--color-primary-glow)',
           animation: 'pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
         }}>
-          <Briefcase size={32} style={{ color: '#ffffff' }} />
+          <Briefcase size={32} style={{ color: 'var(--bg-primary)' }} />
         </div>
         <p className="font-display" style={{ color: 'var(--text-primary)', fontSize: '1.1rem', fontWeight: 600 }}>
           Preparando o Budgeter...
@@ -171,7 +171,7 @@ function App() {
             justifyContent: 'center',
             boxShadow: '0 0 15px var(--color-primary-glow)'
           }}>
-            <Briefcase size={22} style={{ color: '#ffffff' }} />
+            <Briefcase size={22} style={{ color: 'var(--bg-primary)' }} />
           </div>
           <span className="font-display" style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>
             Budgeter
