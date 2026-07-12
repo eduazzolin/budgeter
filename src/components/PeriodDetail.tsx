@@ -404,6 +404,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         <div className="glass glass-enhanced-hover" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           {(() => {
             let predictedNormalizationDate: Date | null = null;
+            let isZeroSpendAssumption = false;
             
             // A diferença atual (se o usuário está no "vermelho" do orçamento ou não)
             const currentDiff = metrics.difference;
@@ -411,11 +412,23 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
             // m é a taxa de gasto real. metrics.dailyBudget é a taxa de gasto esperada.
             // Para cruzar, a taxa de gasto real (m) deve ser menos íngreme (maior) que -dailyBudget.
             // Ou seja, (m + dailyBudget) > 0.
-            if (canProject && lastRecordedBalance !== null && currentDiff !== undefined && currentDiff < 0 && (m + metrics.dailyBudget) > 0) {
-              const recoveryRate = m + metrics.dailyBudget; // O quanto a diferença melhora por dia
-              const daysToNormalize = Math.ceil(Math.abs(currentDiff) / recoveryRate);
-              const predictedDayIndex = lastRecordedDayIndex + daysToNormalize;
-              predictedNormalizationDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + predictedDayIndex);
+            if (lastRecordedBalance !== null && currentDiff !== undefined && currentDiff < 0) {
+              if (canProject && (m + metrics.dailyBudget) > 0) {
+                const recoveryRate = m + metrics.dailyBudget; // O quanto a diferença melhora por dia
+                const daysToNormalize = Math.ceil(Math.abs(currentDiff) / recoveryRate);
+                const predictedDayIndex = lastRecordedDayIndex + daysToNormalize;
+                predictedNormalizationDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + predictedDayIndex);
+              } else {
+                // Projeção atual não alcança (ou não há pontos suficientes).
+                // Calcula baseando-se em gasto ZERO a partir de agora.
+                const recoveryRateZero = metrics.dailyBudget; // O quanto a diferença melhora por dia sem gastos
+                if (recoveryRateZero > 0) {
+                  const daysToNormalizeZero = Math.ceil(Math.abs(currentDiff) / recoveryRateZero);
+                  const predictedDayIndexZero = lastRecordedDayIndex + daysToNormalizeZero;
+                  predictedNormalizationDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + predictedDayIndexZero);
+                  isZeroSpendAssumption = true;
+                }
+              }
             }
 
             return (
@@ -442,15 +455,24 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                     marginTop: 'auto',
                     padding: '8px 10px',
                     borderRadius: '6px',
-                    backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                    backgroundColor: isZeroSpendAssumption ? 'rgba(234, 179, 8, 0.15)' : 'rgba(56, 189, 248, 0.1)',
                     fontSize: '0.75rem',
-                    color: 'var(--color-primary)',
+                    color: isZeroSpendAssumption ? '#eab308' : 'var(--color-primary)',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    fontWeight: 600
+                    fontWeight: 600,
+                    flexWrap: 'wrap'
                   }}>
-                    <TrendingUp size={14} /> Previsão de alta: {formatShortDate(getLocalDateString(predictedNormalizationDate))}
+                    <TrendingUp size={14} style={{ flexShrink: 0 }} /> 
+                    <span>
+                      Previsão de alta: {formatShortDate(getLocalDateString(predictedNormalizationDate))}
+                      {isZeroSpendAssumption && (
+                        <span style={{ display: 'block', fontSize: '0.65rem', fontWeight: 'normal', opacity: 0.9, marginTop: '2px', color: 'var(--text-secondary)' }}>
+                          *Se não houver mais gastos até lá.
+                        </span>
+                      )}
+                    </span>
                   </div>
                 )}
               </>
