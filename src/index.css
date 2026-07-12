@@ -61,7 +61,7 @@
   /* Text */
   --text-primary: #fafafa; 
   --text-secondary: #a1a1aa; 
-  --text-muted: #52525b; 
+  --text-muted: #71717a; 
   
   color-scheme: dark;
 }
@@ -78,6 +78,28 @@
 
 :root.dark .budget-table tr.today-row {
   background: rgba(250, 250, 250, 0.05);
+}
+
+:root.dark .btn-primary {
+  color: #09090b;
+}
+
+:root.dark .badge-above {
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: var(--color-above) !important;
+  border-color: rgba(16, 185, 129, 0.2) !important;
+}
+
+:root.dark .badge-below {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: var(--color-below) !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+:root.dark .badge-neutral {
+  background: rgba(113, 113, 122, 0.1) !important;
+  color: var(--color-neutral) !important;
+  border-color: rgba(113, 113, 122, 0.2) !important;
 }
 
 * {
