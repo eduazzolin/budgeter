@@ -6,7 +6,8 @@ import {
   DollarSign, 
   Clock,
   TrendingUp,
-  Info
+  Info,
+  AlertTriangle
 } from 'lucide-react';
 import { 
   ComposedChart, 
@@ -405,6 +406,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           {(() => {
             let predictedNormalizationDate: Date | null = null;
             let isZeroSpendAssumption = false;
+            let showWarning = false;
             
             // A diferença atual (se o usuário está no "vermelho" do orçamento ou não)
             const currentDiff = metrics.difference;
@@ -413,20 +415,36 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
             // Para cruzar, a taxa de gasto real (m) deve ser menos íngreme (maior) que -dailyBudget.
             // Ou seja, (m + dailyBudget) > 0.
             if (lastRecordedBalance !== null && currentDiff !== undefined && currentDiff < 0) {
+              const end = parseLocalDate(period.endDate);
+              let regularProjectedDate: Date | null = null;
+
               if (canProject && (m + metrics.dailyBudget) > 0) {
                 const recoveryRate = m + metrics.dailyBudget; // O quanto a diferença melhora por dia
                 const daysToNormalize = Math.ceil(Math.abs(currentDiff) / recoveryRate);
                 const predictedDayIndex = lastRecordedDayIndex + daysToNormalize;
-                predictedNormalizationDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + predictedDayIndex);
+                regularProjectedDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + predictedDayIndex);
+              }
+
+              if (regularProjectedDate && regularProjectedDate <= end) {
+                predictedNormalizationDate = regularProjectedDate;
+                isZeroSpendAssumption = false;
               } else {
-                // Projeção atual não alcança (ou não há pontos suficientes).
+                // Projeção atual não alcança ou está fora do período.
                 // Calcula baseando-se em gasto ZERO a partir de agora.
                 const recoveryRateZero = metrics.dailyBudget; // O quanto a diferença melhora por dia sem gastos
                 if (recoveryRateZero > 0) {
                   const daysToNormalizeZero = Math.ceil(Math.abs(currentDiff) / recoveryRateZero);
                   const predictedDayIndexZero = lastRecordedDayIndex + daysToNormalizeZero;
-                  predictedNormalizationDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + predictedDayIndexZero);
-                  isZeroSpendAssumption = true;
+                  const zeroSpendProjectedDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + predictedDayIndexZero);
+                  
+                  if (zeroSpendProjectedDate <= end) {
+                    predictedNormalizationDate = zeroSpendProjectedDate;
+                    isZeroSpendAssumption = true;
+                  } else {
+                    showWarning = true;
+                  }
+                } else {
+                  showWarning = true;
                 }
               }
             }
@@ -447,32 +465,49 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                     {metrics.difference !== undefined ? (metrics.difference > 0 ? '+' : '') + formatCurrency(metrics.difference) : '—'}
                   </span>
                 </div>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: predictedNormalizationDate ? '12px' : '0' }}>
-                  Saldo Real: {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: (predictedNormalizationDate || showWarning) ? '12px' : '0' }}>
+                  Estimativa: {formatCurrency(metrics.dailyBudget)}/dia
                 </p>
-                {predictedNormalizationDate && (
+                {(predictedNormalizationDate || showWarning) && (
                   <div style={{ 
                     marginTop: 'auto',
                     padding: '8px 10px',
                     borderRadius: '6px',
-                    backgroundColor: isZeroSpendAssumption ? 'rgba(234, 179, 8, 0.15)' : 'rgba(56, 189, 248, 0.1)',
+                    backgroundColor: showWarning 
+                      ? 'rgba(239, 68, 68, 0.15)' 
+                      : isZeroSpendAssumption 
+                        ? 'rgba(234, 179, 8, 0.15)' 
+                        : 'rgba(56, 189, 248, 0.1)',
                     fontSize: '0.75rem',
-                    color: isZeroSpendAssumption ? '#eab308' : 'var(--color-primary)',
+                    color: showWarning 
+                      ? '#ef4444' 
+                      : isZeroSpendAssumption 
+                        ? '#eab308' 
+                        : 'var(--color-primary)',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
                     fontWeight: 600,
                     flexWrap: 'wrap'
                   }}>
-                    <TrendingUp size={14} style={{ flexShrink: 0 }} /> 
-                    <span>
-                      Previsão de alta: {formatShortDate(getLocalDateString(predictedNormalizationDate))}
-                      {isZeroSpendAssumption && (
-                        <span style={{ display: 'block', fontSize: '0.65rem', fontWeight: 'normal', opacity: 0.9, marginTop: '2px', color: 'var(--text-secondary)' }}>
-                          *Se não houver mais gastos até lá.
+                    {showWarning ? (
+                      <>
+                        <AlertTriangle size={14} style={{ flexShrink: 0 }} /> 
+                        <span>Complicou, a previsão diz que o saldo não terá alta.</span>
+                      </>
+                    ) : (
+                      <>
+                        <TrendingUp size={14} style={{ flexShrink: 0 }} /> 
+                        <span>
+                          Previsão de alta: {formatShortDate(getLocalDateString(predictedNormalizationDate!))}
+                          {isZeroSpendAssumption && (
+                            <span style={{ display: 'block', fontSize: '0.65rem', fontWeight: 'normal', opacity: 0.9, marginTop: '2px', color: 'var(--text-secondary)' }}>
+                              *Se não houver mais gastos até lá.
+                            </span>
+                          )}
                         </span>
-                      )}
-                    </span>
+                      </>
+                    )}
                   </div>
                 )}
               </>
@@ -483,7 +518,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         {/* Daily Spending Card */}
         <div className="glass glass-enhanced-hover" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-            Alvo de Hoje (Saldo Esperado)
+            Valores totais
           </span>
           <div style={{ margin: '12px 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
@@ -502,10 +537,15 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                 {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
               </span>
             </div>
+            <div style={{ borderTop: '1px solid var(--card-border)', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                Total Gasto
+              </span>
+              <span className="font-display" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                {metrics.recordedBalance !== undefined ? formatCurrency(period.initialBudget - metrics.recordedBalance) : '—'}
+              </span>
+            </div>
           </div>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Estimativa: {formatCurrency(metrics.dailyBudget)}/dia
-          </p>
         </div>
 
         {/* Countdown Card */}
@@ -538,13 +578,14 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                   {metrics.daysRemaining}
                 </span>
                 <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', marginLeft: '6px' }}>
-                  dias restam
+                  dias restantes
                 </span>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                  {metrics.daysPassed} de {metrics.totalDays} transcorridos
+                  {metrics.daysPassed} de {metrics.totalDays} dias decorridos
                 </p>
               </div>
             )}
+
           </div>
           <div className="progress-bar-container" style={{ margin: 0 }}>
             <div className="progress-bar-fill" style={{ width: `${metrics.currentProgressPercent}%` }} />

@@ -13,8 +13,6 @@ import type { Period } from './types';
 import { 
   User, 
   Plus, 
-  Cloud, 
-  CloudOff, 
   Briefcase,
   LayoutDashboard,
   Menu,
@@ -148,7 +146,7 @@ function App() {
     );
   }
 
-  const isFirebaseMode = isFirebaseEnabled();
+
 
   return (
     <div>
@@ -179,17 +177,7 @@ function App() {
         </div>
 
         <div>
-          {/* Backend Status Icon */}
-          <div 
-            title={isFirebaseMode ? 'Firebase Conectado' : 'Modo Offline (Local)'}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            {isFirebaseMode ? (
-              <Cloud size={20} style={{ color: 'var(--color-above)' }} />
-            ) : (
-              <CloudOff size={20} style={{ color: 'var(--text-muted)' }} />
-            )}
-          </div>
+
 
           {/* Help Button */}
           <button 
