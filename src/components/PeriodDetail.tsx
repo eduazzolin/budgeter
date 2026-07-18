@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import type { Period } from '../types';
 import { calculateBudgetMetrics, parseLocalDate, getLocalDateString } from '../utils/calculations';
 import { 
@@ -7,7 +8,8 @@ import {
   Clock,
   TrendingUp,
   Info,
-  AlertTriangle
+  AlertTriangle,
+  Trash2
 } from 'lucide-react';
 import { 
   ComposedChart, 
@@ -23,11 +25,13 @@ import {
 interface PeriodDetailProps {
   period: Period;
   onRecordBalance: (id: string, balance: number, date: string) => Promise<void>;
+  onDeleteBalance: (id: string, date: string) => Promise<void>;
 }
 
 export const PeriodDetail: React.FC<PeriodDetailProps> = ({
   period,
-  onRecordBalance
+  onRecordBalance,
+  onDeleteBalance
 }) => {
   const metrics = calculateBudgetMetrics(period);
   const [balanceInput, setBalanceInput] = useState('');
@@ -36,6 +40,25 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
   const [successMsg, setSuccessMsg] = useState(false);
   const [showChartHelp, setShowChartHelp] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [deleteTargetDate, setDeleteTargetDate] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeleteClick = (dateStr: string) => {
+    setDeleteTargetDate(dateStr);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTargetDate) return;
+    try {
+      setDeleting(true);
+      await onDeleteBalance(period.id, deleteTargetDate);
+      setDeleteTargetDate(null);
+    } catch (error) {
+      console.error('Error deleting balance:', error);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -537,7 +560,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                 {metrics.recordedBalance !== undefined ? formatCurrency(metrics.recordedBalance) : '—'}
               </span>
             </div>
-            <div style={{ borderTop: '1px solid var(--card-border)', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <div style={{ borderTop: '3px double var(--card-border)', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                 Total Gasto
               </span>
@@ -769,12 +792,11 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           <table className="budget-table">
             <thead>
               <tr>
-                <th style={{ width: '10%' }}>Dia</th>
-                <th style={{ width: '15%' }}>Data</th>
+                <th style={{ width: '20%' }}>Data</th>
                 <th style={{ width: '20%' }}>Saldo Esperado</th>
-                <th style={{ width: '18%' }}>Saldo Real</th>
+                <th style={{ width: '20%' }}>Saldo Real</th>
                 <th style={{ width: '20%' }}>Saldo Projetado</th>
-                <th style={{ width: '17%' }}>Margem</th>
+                <th style={{ width: '20%' }}>Margem</th>
               </tr>
             </thead>
             <tbody>
@@ -824,20 +846,50 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
                   return (
                     <tr key={dateStr} className={isToday ? 'today-row' : ''}>
-                      <td style={{ color: isToday ? 'var(--color-primary)' : 'inherit' }}>
-                        Dia {index + 1}
+                      <td style={{ color: isToday ? 'var(--color-primary)' : 'inherit', fontWeight: isToday ? 600 : 'normal' }}>
+                        {formatDate(dateStr)}
                         {isToday && (
                           <span className="badge badge-neutral" style={{ marginLeft: '8px', padding: '2px 8px', fontSize: '0.65rem', textTransform: 'none' }}>
                             Hoje
                           </span>
                         )}
                       </td>
-                      <td>{formatDate(dateStr)}</td>
                       <td>{formatCurrency(expectedBalance)}</td>
                       <td>
-                        {hasRecord
-                          ? formatCurrency(recordedBalanceForDay!) 
-                          : '—'}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                          <span>
+                            {hasRecord ? formatCurrency(recordedBalanceForDay!) : '—'}
+                          </span>
+                          {hasRecord && (
+                            <button
+                              onClick={() => handleDeleteClick(dateStr)}
+                              style={{
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'var(--text-muted)',
+                                cursor: 'pointer',
+                                padding: '4px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: '4px',
+                                transition: 'all 0.2s',
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.color = 'var(--color-below)';
+                                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.color = 'var(--text-muted)';
+                                e.currentTarget.style.backgroundColor = 'transparent';
+                              }}
+                              className="delete-balance-btn"
+                              title="Remover saldo lançado"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
+                        </div>
                       </td>
                       <td style={{ color: 'var(--text-secondary)', fontStyle: projectedBalance !== null ? 'normal' : 'italic' }}>
                         {projectedBalance !== null
@@ -855,6 +907,52 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           </table>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteTargetDate && createPortal(
+        <div className="modal-overlay" onClick={() => setDeleteTargetDate(null)}>
+          <div 
+            className="modal-content glass" 
+            style={{ 
+              border: '1px solid var(--card-border-hover)', 
+              maxWidth: '400px', 
+              width: '90%',
+              padding: '24px',
+              textAlign: 'center'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px', color: 'var(--color-below)' }}>
+              <AlertTriangle size={48} />
+            </div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '8px', color: 'var(--text-primary)' }}>
+              Confirmar Exclusão
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: '1.5' }}>
+              Tem certeza que deseja remover o saldo real registrado no dia <strong>{formatDate(deleteTargetDate)}</strong> ({formatCurrency(period.balanceHistory?.[deleteTargetDate] || 0)})?
+            </p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => setDeleteTargetDate(null)}
+                disabled={deleting}
+                style={{ flex: '1' }}
+              >
+                Cancelar
+              </button>
+              <button 
+                className="btn btn-danger" 
+                onClick={handleConfirmDelete}
+                disabled={deleting}
+                style={{ flex: '1' }}
+              >
+                {deleting ? 'Removendo...' : 'Remover'}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
 
     </div>
   );

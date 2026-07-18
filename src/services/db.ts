@@ -8,7 +8,8 @@ import {
   updateDoc, 
   deleteDoc, 
   query, 
-  where
+  where,
+  deleteField
 } from 'firebase/firestore';
 
 const LOCAL_STORAGE_KEY = 'budgeter_periods';
@@ -108,7 +109,13 @@ export const dbService = {
     if (isFirebaseEnabled() && db) {
       try {
         const docRef = doc(db, 'periods', id);
-        await updateDoc(docRef, updates as any);
+        const firestoreUpdates: any = { ...updates };
+        Object.keys(firestoreUpdates).forEach(key => {
+          if (firestoreUpdates[key] === undefined) {
+            firestoreUpdates[key] = deleteField();
+          }
+        });
+        await updateDoc(docRef, firestoreUpdates);
         return;
       } catch (error) {
         console.error('Firebase updatePeriod error, updating locally:', error);
@@ -119,10 +126,16 @@ export const dbService = {
     const periods = getLocalPeriods();
     const index = periods.findIndex(p => p.id === id);
     if (index !== -1) {
-      periods[index] = {
+      const mergedPeriod = {
         ...periods[index],
         ...updates
       };
+      Object.keys(updates).forEach(key => {
+        if ((updates as any)[key] === undefined) {
+          delete (mergedPeriod as any)[key];
+        }
+      });
+      periods[index] = mergedPeriod;
       saveLocalPeriods(periods);
     }
   },

@@ -160,6 +160,44 @@ export const usePeriods = (userId?: string) => {
     }
   };
 
+  const deleteBalance = async (id: string, date: string) => {
+    try {
+      setError(null);
+      const period = periods.find(p => p.id === id);
+      if (!period) return;
+
+      const history = { ...period.balanceHistory };
+      delete history[date];
+
+      const dates = Object.keys(history).sort();
+      let currentBalance: number | undefined = undefined;
+      let currentBalanceDate: string | undefined = undefined;
+
+      if (dates.length > 0) {
+        const latestDate = dates[dates.length - 1];
+        currentBalance = history[latestDate];
+        currentBalanceDate = latestDate;
+      }
+
+      const updates = {
+        currentBalance,
+        currentBalanceDate,
+        balanceHistory: history
+      };
+
+      await dbService.updatePeriod(id, updates);
+      setPeriods(prev => prev.map(p => p.id === id ? {
+        ...p,
+        currentBalance,
+        currentBalanceDate,
+        balanceHistory: history
+      } : p));
+    } catch (err: any) {
+      setError(err.message || 'Falha ao remover Saldo Real.');
+      throw err;
+    }
+  };
+
   const syncLocalData = async () => {
     if (userId) {
       setLoading(true);
@@ -181,6 +219,7 @@ export const usePeriods = (userId?: string) => {
     updatePeriod,
     deletePeriod,
     recordBalance,
+    deleteBalance,
     syncLocalData,
     refresh: fetchPeriods
   };

@@ -40,6 +40,7 @@ function App() {
     updatePeriod,
     deletePeriod,
     recordBalance,
+    deleteBalance,
     syncLocalData
   } = usePeriods(user?.uid);
 
@@ -277,6 +278,7 @@ function App() {
             <PeriodDetail 
               period={selectedPeriod}
               onRecordBalance={recordBalance}
+              onDeleteBalance={deleteBalance}
             />
           ) : (
             <div className="glass" style={{ 
