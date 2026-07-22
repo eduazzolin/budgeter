@@ -409,7 +409,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                 }}
                 title="Abrir calculadora"
               >
-                <Calculator size={13} /> Calcular
+                <Calculator size={13} /> Calculadora
               </button>
             </div>
             <input

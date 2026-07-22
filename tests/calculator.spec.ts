@@ -27,8 +27,8 @@ test.describe('Calculadora de Apoio ao Saldo Real', () => {
     // Abre a página principal
     await page.goto('/');
 
-    // Encontra o botão "Calcular"
-    const calculateBtn = page.locator('button.calculator-btn-trigger', { hasText: 'Calcular' });
+    // Encontra o botão "Calculadora"
+    const calculateBtn = page.locator('button.calculator-btn-trigger', { hasText: 'Calculadora' });
     await expect(calculateBtn).toBeVisible();
 
     // Clica no botão para abrir a calculadora
