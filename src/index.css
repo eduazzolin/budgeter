@@ -577,3 +577,32 @@ h1, h2, h3, h4, .font-display {
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
 }
 
+/* Calculator button trigger */
+.calculator-btn-trigger {
+  opacity: 0.85;
+}
+.calculator-btn-trigger:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+  background: var(--card-bg-hover) !important;
+  border-color: var(--card-border-hover) !important;
+  color: var(--color-primary) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+.calculator-btn-trigger:active {
+  transform: scale(0.95);
+}
+
+/* Calculator scale animation */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+

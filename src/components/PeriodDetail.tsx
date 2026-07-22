@@ -9,8 +9,10 @@ import {
   TrendingUp,
   Info,
   AlertTriangle,
-  Trash2
+  Trash2,
+  Calculator
 } from 'lucide-react';
+import { CalculatorModal } from './CalculatorModal';
 import { 
   ComposedChart, 
   Area,
@@ -42,6 +44,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [deleteTargetDate, setDeleteTargetDate] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [showCalculator, setShowCalculator] = useState(false);
 
   const handleDeleteClick = (dateStr: string) => {
     setDeleteTargetDate(dateStr);
@@ -383,7 +386,32 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
         <form onSubmit={handleBalanceSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'flex-end' }}>
           <div style={{ flex: '2 1 200px' }}>
-            <label className="form-label">Saldo Real (R$)</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <label className="form-label" style={{ marginBottom: 0 }}>Saldo Real (R$)</label>
+              <button
+                type="button"
+                onClick={() => setShowCalculator(true)}
+                className="calculator-btn-trigger"
+                style={{
+                  background: 'var(--bg-secondary)',
+                  border: '1px solid var(--card-border)',
+                  color: 'var(--text-secondary)',
+                  cursor: 'pointer',
+                  padding: '3px 8px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  borderRadius: 'var(--border-radius-sm)',
+                  transition: 'all 0.2s ease',
+                  outline: 'none'
+                }}
+                title="Abrir calculadora"
+              >
+                <Calculator size={13} /> Calcular
+              </button>
+            </div>
             <input
               type="number"
               step="0.01"
@@ -952,6 +980,15 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           </div>
         </div>,
         document.body
+      )}
+
+      {showCalculator && (
+        <CalculatorModal
+          isOpen={showCalculator}
+          onClose={() => setShowCalculator(false)}
+          onApply={(value) => setBalanceInput(value)}
+          initialValue={balanceInput}
+        />
       )}
 
     </div>
