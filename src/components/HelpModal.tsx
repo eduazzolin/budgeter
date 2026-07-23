@@ -1,10 +1,29 @@
 import React from 'react';
-import { X, HelpCircle, DollarSign, Target, TrendingUp, Activity, Milestone } from 'lucide-react';
+import { X, HelpCircle, DollarSign, Target, TrendingUp, Activity, Milestone, Mail, Sparkles } from 'lucide-react';
 
 interface HelpModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const GithubIcon: React.FC<{ size?: number; style?: React.CSSProperties; className?: string }> = ({ size = 16, style, className }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    style={style}
+    className={className}
+  >
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+    <path d="M9 18c-4.51 2-5-2-7-2" />
+  </svg>
+);
 
 export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
@@ -68,6 +87,81 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
           >
             <X size={18} />
           </button>
+        </div>
+
+        {/* Créditos do Projeto */}
+        <div 
+          className="glass-enhanced"
+          style={{ 
+            padding: '16px', 
+            borderRadius: '12px', 
+            border: '1px solid rgba(99, 102, 241, 0.2)',
+            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            marginBottom: '20px'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)', fontSize: '0.9rem', fontWeight: 600 }}>
+            <Sparkles size={16} style={{ color: '#a855f7' }} />
+            <span>Créditos do Projeto</span>
+          </div>
+          
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center' }}>
+            <a 
+              href="https://github.com/eduazzolin" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                color: 'var(--text-secondary)', 
+                textDecoration: 'none', 
+                fontSize: '0.85rem',
+                transition: 'color 0.2s ease'
+              }}
+              className="hover-white"
+            >
+              <GithubIcon size={16} />
+              github.com/eduazzolin
+            </a>
+
+            <a 
+              href="mailto:eduduazzolin@gmail.com" 
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                color: 'var(--text-secondary)', 
+                textDecoration: 'none', 
+                fontSize: '0.85rem',
+                transition: 'color 0.2s ease'
+              }}
+              className="hover-white"
+            >
+              <Mail size={16} />
+              eduduazzolin@gmail.com
+            </a>
+          </div>
+
+          <div style={{ 
+            fontSize: '0.8rem', 
+            color: 'var(--text-muted)', 
+            borderTop: '1px solid rgba(255, 255, 255, 0.05)', 
+            paddingTop: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px'
+          }}>
+            Vibecoded com <span style={{ 
+              background: 'linear-gradient(90deg, #6366f1, #a855f7)', 
+              WebkitBackgroundClip: 'text', 
+              WebkitTextFillColor: 'transparent',
+              fontWeight: 700 
+            }}>Antigravity</span> 🌌
+          </div>
         </div>
 
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '20px', lineHeight: 1.5 }}>
