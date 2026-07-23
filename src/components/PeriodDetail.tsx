@@ -10,7 +10,9 @@ import {
   Info,
   AlertTriangle,
   Trash2,
-  AlertCircle
+  AlertCircle,
+  Calculator,
+  ArrowLeft
 } from 'lucide-react';
 import { 
   ComposedChart, 
@@ -471,19 +473,32 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               border: '1px solid var(--card-border)',
               color: 'var(--text-secondary)',
               cursor: 'pointer',
-              padding: '4px 10px',
+              padding: isMobile ? '8px' : '4px 10px',
               display: 'inline-flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '6px',
               fontSize: '0.8rem',
               fontWeight: 600,
               borderRadius: 'var(--border-radius-sm)',
               transition: 'all 0.2s ease',
-              outline: 'none'
+              outline: 'none',
+              minWidth: isMobile ? '36px' : 'auto',
+              height: isMobile ? '36px' : 'auto'
             }}
             title={showCalculator ? "Voltar para o formulário padrão" : "Usar calculadora de saldo"}
           >
-            {showCalculator ? "Registro Padrão" : "Calculadora"}
+            {showCalculator ? (
+              <>
+                <ArrowLeft size={isMobile ? 18 : 13} />
+                {!isMobile && "Registro Padrão"}
+              </>
+            ) : (
+              <>
+                <Calculator size={isMobile ? 18 : 13} />
+                {!isMobile && "Calculadora"}
+              </>
+            )}
           </button>
         </div>
 

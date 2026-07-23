@@ -33,13 +33,13 @@ test.describe('Calculadora de Apoio ao Saldo Real (Alternável)', () => {
 
     // Encontra o botão no cabeçalho do card
     const toggleBtn = page.locator('button.calculator-btn-trigger').first();
-    await expect(toggleBtn).toHaveText('Calculadora');
+    await expect(toggleBtn).toHaveAttribute('title', 'Usar calculadora de saldo');
 
     // Clica no botão para abrir a calculadora
     await toggleBtn.click();
 
-    // O botão deve alternar o texto para "Registro Padrão"
-    await expect(toggleBtn).toHaveText('Registro Padrão');
+    // O botão deve alternar o título para indicar que pode voltar
+    await expect(toggleBtn).toHaveAttribute('title', 'Voltar para o formulário padrão');
 
     // Verifica se a visualização mudou para a calculadora (mostrando a label correspondente)
     const calcLabel = page.locator('label.form-label', { hasText: 'Expressão Matemática' });
