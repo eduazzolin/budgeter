@@ -9,6 +9,7 @@ import { HelpModal } from './components/HelpModal';
 import { PrivacyModal } from './components/PrivacyModal';
 import { CookieBanner } from './components/CookieBanner';
 import { isFirebaseEnabled } from './firebase';
+import { SkeletonPeriodList, SkeletonPeriodDetail } from './components/SkeletonDashboard';
 import type { Period } from './types';
 import { 
   User, 
@@ -43,6 +44,8 @@ function App() {
     deleteBalance,
     syncLocalData
   } = usePeriods(user?.uid);
+
+  const isLoading = (authLoading && isFirebaseEnabled()) || periodsLoading;
 
   // Modal & Settings states
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -109,43 +112,7 @@ function App() {
     }
   };
 
-  // Loading Screen (Auth initialization check)
-  if (authLoading && isFirebaseEnabled()) {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', justifyContent: 'center', alignItems: 'center', backgroundColor: 'var(--bg-primary)', gap: '20px' }}>
-        <div style={{ 
-          background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-          padding: '16px',
-          borderRadius: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 0 20px var(--color-primary-glow)',
-          animation: 'pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
-        }}>
-          <Briefcase size={32} style={{ color: 'var(--bg-primary)' }} />
-        </div>
-        <p className="font-display" style={{ color: 'var(--text-primary)', fontSize: '1.1rem', fontWeight: 600 }}>
-          Preparando o Budgeter...
-        </p>
-        <div style={{ display: 'flex', gap: '6px', marginTop: '-10px' }}>
-          <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', animation: 'bounce 1.4s infinite ease-in-out both' }}></div>
-          <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', animation: 'bounce 1.4s infinite ease-in-out both', animationDelay: '0.16s' }}></div>
-          <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', animation: 'bounce 1.4s infinite ease-in-out both', animationDelay: '0.32s' }}></div>
-        </div>
-        <style>{`
-          @keyframes pulse-slow {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: .85; transform: scale(0.95); }
-          }
-          @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
-            40% { transform: scale(1); opacity: 1; }
-          }
-        `}</style>
-      </div>
-    );
-  }
+
 
 
 
@@ -214,11 +181,17 @@ function App() {
             className="btn btn-secondary hide-mobile-text header-btn"
             style={{ 
               borderColor: showSettings ? 'var(--color-primary)' : 'var(--card-border)',
-              background: showSettings ? 'var(--bg-secondary)' : 'var(--card-bg)'
+              background: showSettings ? 'var(--bg-secondary)' : 'var(--card-bg)',
+              pointerEvents: isLoading ? 'none' : 'auto'
             }}
+            disabled={isLoading}
           >
             <User size={15} /> 
-            <span>{user ? 'Minha Conta' : 'Entrar / Login'}</span>
+            {isLoading ? (
+              <div className="skeleton-pulse" style={{ width: '80px', height: '14px', borderRadius: '3px' }} />
+            ) : (
+              <span>{user ? 'Minha Conta' : 'Entrar / Login'}</span>
+            )}
           </button>
         </div>
       </header>
@@ -257,23 +230,25 @@ function App() {
 
           {/* Period List Panel */}
           <div className={isMobileListOpen ? '' : 'mobile-panel-hidden'} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <PeriodList 
-              periods={periods}
-              selectedPeriodId={selectedPeriodId}
-              onSelectPeriod={handleSelectPeriod}
-              onEditPeriod={handleEditClick}
-              onDeletePeriod={deletePeriod}
-              onAddNewClick={handleAddNewClick}
-            />
+            {isLoading ? (
+              <SkeletonPeriodList />
+            ) : (
+              <PeriodList 
+                periods={periods}
+                selectedPeriodId={selectedPeriodId}
+                onSelectPeriod={handleSelectPeriod}
+                onEditPeriod={handleEditClick}
+                onDeletePeriod={deletePeriod}
+                onAddNewClick={handleAddNewClick}
+              />
+            )}
           </div>
         </div>
 
         {/* Right Side: Detailed View */}
         <div id="detail-panel">
-          {periodsLoading ? (
-            <div className="glass" style={{ height: '300px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <div style={{ border: '3px solid rgba(255,255,255,0.1)', borderTop: '3px solid var(--color-primary)', borderRadius: '50%', width: '30px', height: '30px', animation: 'spin 1s linear infinite' }}></div>
-            </div>
+          {isLoading ? (
+            <SkeletonPeriodDetail />
           ) : selectedPeriod ? (
             <PeriodDetail 
               period={selectedPeriod}
