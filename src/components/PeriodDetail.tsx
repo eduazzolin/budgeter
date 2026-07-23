@@ -10,10 +10,7 @@ import {
   Info,
   AlertTriangle,
   Trash2,
-  Calculator,
-  Check,
-  AlertCircle,
-  HelpCircle
+  AlertCircle
 } from 'lucide-react';
 import { 
   ComposedChart, 
@@ -46,9 +43,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [deleteTargetDate, setDeleteTargetDate] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [showCalculator, setShowCalculator] = useState(false);
-  const [calcExpression, setCalcExpression] = useState('');
-  const calcInputRef = useRef<HTMLInputElement>(null);
+  const balanceInputRef = useRef<HTMLInputElement>(null);
 
   const handleDeleteClick = (dateStr: string) => {
     setDeleteTargetDate(dateStr);
@@ -91,23 +86,15 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     setSuccessMsg(false);
   }, [period]);
 
-  // Auto focus the calculator input when opened
-  useEffect(() => {
-    if (showCalculator) {
-      setCalcExpression('');
-      setTimeout(() => {
-        calcInputRef.current?.focus();
-      }, 100);
-    }
-  }, [showCalculator]);
-
-  // Derived state: calculate result and validity on the fly during render for the embedded calculator
+  // Derived state: calculate result and validity on the fly during render for the unified input
   let calcResult: number | null = null;
   let calcIsValid = true;
 
-  const trimmedExpression = calcExpression.trim();
-  if (trimmedExpression !== '') {
-    const sanitized = trimmedExpression.replace(/,/g, '.');
+  const trimmedInput = balanceInput.trim();
+  const isFormula = /[+\-*/()]/.test(trimmedInput);
+
+  if (isFormula && trimmedInput !== '') {
+    const sanitized = trimmedInput.replace(/,/g, '.');
     const safePattern = /^[0-9+\-*/().\s]+$/;
     
     if (!safePattern.test(sanitized)) {
@@ -128,32 +115,46 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     }
   }
 
-  const handleApplyCalc = () => {
-    if (calcResult !== null && calcIsValid) {
-      const roundedResult = Math.round(calcResult * 100) / 100;
-      setBalanceInput(roundedResult.toFixed(2));
-      setShowCalculator(false);
-    }
-  };
+  const handleInsertOperator = (op: string) => {
+    const input = balanceInputRef.current;
+    if (!input) return;
 
-  const handleCalcKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleApplyCalc();
-    } else if (e.key === 'Escape') {
-      setShowCalculator(false);
-    }
+    const start = input.selectionStart ?? balanceInput.length;
+    const end = input.selectionEnd ?? balanceInput.length;
+    const value = balanceInput;
+
+    const newValue = value.substring(0, start) + op + value.substring(end);
+    setBalanceInput(newValue);
+
+    setTimeout(() => {
+      input.focus();
+      const newCursorPos = start + op.length;
+      input.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
   };
 
   const handleBalanceSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const balance = parseFloat(balanceInput);
+    
+    let balance = NaN;
+    if (isFormula) {
+      if (calcResult !== null && calcIsValid) {
+        balance = Math.round(calcResult * 100) / 100;
+      }
+    } else {
+      const parsed = parseFloat(trimmedInput.replace(/,/g, '.'));
+      if (!isNaN(parsed)) {
+        balance = parsed;
+      }
+    }
+
     if (isNaN(balance)) return;
 
     try {
       setSubmitting(true);
       await onRecordBalance(period.id, balance, balanceDate);
       setSuccessMsg(true);
+      setBalanceInput(balance.toFixed(2));
       setTimeout(() => setSuccessMsg(false), 3000);
     } catch (error) {
       console.error('Error saving balance:', error);
@@ -437,19 +438,34 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       </div>
 
       {/* SECTION 1: Record Current Balance (Moved Up for Quick Access) */}
+      {/* SECTION 1: Record Current Balance (Moved Up for Quick Access) */}
       <div className="glass animate-in delay-100" style={{ padding: '24px' }}>
         <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <DollarSign size={18} style={{ color: 'var(--color-primary)' }} /> Registrar Saldo Real
         </h3>
 
-        {!showCalculator ? (
-          <form onSubmit={handleBalanceSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'flex-end' }}>
-            <div style={{ flex: '2 1 200px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <label className="form-label" style={{ marginBottom: 0 }}>Saldo Real (R$)</label>
+        <form onSubmit={handleBalanceSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'flex-end' }}>
+          <div style={{ flex: '2 1 200px' }}>
+            <label className="form-label">Saldo Real (R$)</label>
+            <input
+              ref={balanceInputRef}
+              type="text"
+              inputMode="decimal"
+              className="input-field"
+              placeholder="Ex: 850.00 ou 1200 + 250"
+              value={balanceInput}
+              onChange={(e) => setBalanceInput(e.target.value)}
+              disabled={submitting}
+              required
+            />
+            
+            {/* Operators shortcut bar */}
+            <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
+              {['+', '-', '*', '/', '(', ')'].map((op) => (
                 <button
+                  key={op}
                   type="button"
-                  onClick={() => setShowCalculator(true)}
+                  onClick={() => handleInsertOperator(op)}
                   className="calculator-btn-trigger"
                   style={{
                     background: 'var(--bg-secondary)',
@@ -457,157 +473,94 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                     color: 'var(--text-secondary)',
                     cursor: 'pointer',
                     padding: '3px 8px',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    fontSize: '0.8rem',
+                    fontSize: '0.85rem',
                     fontWeight: 600,
                     borderRadius: 'var(--border-radius-sm)',
-                    transition: 'all 0.2s ease',
-                    outline: 'none'
-                  }}
-                  title="Abrir calculadora"
-                >
-                  <Calculator size={13} /> Calculadora
-                </button>
-              </div>
-              <input
-                type="number"
-                step="0.01"
-                className="input-field"
-                placeholder="Ex: 850.00"
-                value={balanceInput}
-                onChange={(e) => setBalanceInput(e.target.value)}
-                disabled={submitting}
-                required
-              />
-            </div>
-
-            <div style={{ flex: '1 1 150px' }}>
-              <label className="form-label">Data de Registro</label>
-              <input
-                type="date"
-                className="input-field"
-                min={period.startDate}
-                max={period.endDate}
-                value={balanceDate}
-                onChange={(e) => setBalanceDate(e.target.value)}
-                disabled={submitting}
-                required
-              />
-            </div>
-
-            <button 
-              type="submit" 
-              className="btn btn-primary" 
-              style={{ height: '46px', flex: '1 1 150px' }}
-              disabled={submitting || !balanceInput}
-            >
-              {submitting ? 'Salvando...' : successMsg ? 'Registrado!' : 'Marcar Saldo'}
-            </button>
-          </form>
-        ) : (
-          <div className="animate-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <label className="form-label" style={{ marginBottom: 0 }}>Expressão Matemática</label>
-                <button
-                  type="button"
-                  onClick={() => setShowCalculator(false)}
-                  className="calculator-btn-trigger"
-                  style={{
-                    background: 'var(--bg-secondary)',
-                    border: '1px solid var(--card-border)',
-                    color: 'var(--text-secondary)',
-                    cursor: 'pointer',
-                    padding: '3px 8px',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    fontSize: '0.8rem',
-                    fontWeight: 600,
-                    borderRadius: 'var(--border-radius-sm)',
-                    transition: 'all 0.2s ease',
-                    outline: 'none'
+                    transition: 'all 0.1s ease',
+                    userSelect: 'none'
                   }}
                 >
-                  Voltar
+                  {op}
                 </button>
-              </div>
-              <input
-                ref={calcInputRef}
-                type="text"
-                className="input-field"
-                style={{ 
-                  fontSize: '1.1rem', 
-                  fontFamily: 'monospace',
-                  padding: '10px 14px',
-                  border: !calcIsValid ? '1px solid var(--color-below)' : '1px solid var(--card-border)',
-                  outline: 'none',
-                  width: '100%',
-                  boxSizing: 'border-box'
+              ))}
+              <button
+                type="button"
+                onClick={() => setBalanceInput('')}
+                className="calculator-btn-trigger"
+                style={{
+                  background: 'var(--bg-secondary)',
+                  border: '1px solid var(--card-border)',
+                  color: 'var(--color-below)',
+                  cursor: 'pointer',
+                  padding: '3px 8px',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  borderRadius: 'var(--border-radius-sm)',
+                  transition: 'all 0.1s ease',
+                  userSelect: 'none',
+                  marginLeft: 'auto'
                 }}
-                placeholder="Ex: 800 + 450 - 120"
-                value={calcExpression}
-                onChange={(e) => setCalcExpression(e.target.value)}
-                onKeyDown={handleCalcKeyDown}
-              />
-            </div>
-
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: '-8px 0 4px 0', lineHeight: 1.4, display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <HelpCircle size={12} style={{ color: 'var(--text-muted)' }} />
-              <span>Digite a fórmula. Ponto ou vírgula para centavos.</span>
-            </p>
-
-            <div 
-              style={{ 
-                background: 'var(--bg-secondary)', 
-                padding: '12px 16px', 
-                borderRadius: 'var(--border-radius-md)', 
-                minHeight: '48px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '1px solid var(--card-border)'
-              }}
-            >
-              {calcExpression.trim() === '' ? (
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Digite a fórmula acima</span>
-              ) : !calcIsValid ? (
-                <span style={{ color: 'var(--color-below)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <AlertCircle size={14} /> Fórmula inválida ou incompleta
-                </span>
-              ) : calcResult !== null ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Resultado:</span>
-                  <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-above)', fontFamily: 'Outfit, sans-serif' }}>
-                    {formatCurrency(calcResult)}
-                  </span>
-                </div>
-              ) : null}
-            </div>
-
-            <div style={{ display: 'flex', gap: '12px', marginTop: '4px' }}>
-              <button 
-                type="button"
-                onClick={() => setShowCalculator(false)} 
-                className="btn btn-secondary" 
-                style={{ flex: 1, height: '40px' }}
               >
-                Cancelar
-              </button>
-              <button 
-                type="button"
-                onClick={handleApplyCalc} 
-                className="btn btn-primary" 
-                style={{ flex: 1.5, height: '40px' }}
-                disabled={calcResult === null || !calcIsValid}
-              >
-                <Check size={16} /> Aplicar no Saldo
+                Limpar
               </button>
             </div>
           </div>
-        )}
+
+          <div style={{ flex: '1 1 150px' }}>
+            <label className="form-label">Data de Registro</label>
+            <input
+              type="date"
+              className="input-field"
+              min={period.startDate}
+              max={period.endDate}
+              value={balanceDate}
+              onChange={(e) => setBalanceDate(e.target.value)}
+              disabled={submitting}
+              required
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            className="btn btn-primary" 
+            style={{ height: '46px', flex: '1 1 150px' }}
+            disabled={submitting || !balanceInput || (isFormula && (!calcIsValid || calcResult === null))}
+          >
+            {submitting ? 'Salvando...' : successMsg ? 'Registrado!' : 'Marcar Saldo'}
+          </button>
+
+          {/* Real-time preview row (appears when a formula is detected) */}
+          {isFormula && trimmedInput !== '' && (
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginTop: '2px' }}>
+              <div 
+                className="animate-in"
+                style={{ 
+                  background: 'var(--bg-secondary)', 
+                  padding: '6px 12px', 
+                  borderRadius: 'var(--border-radius-sm)', 
+                  border: '1px solid var(--card-border)',
+                  fontSize: '0.85rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                {!calcIsValid ? (
+                  <span style={{ color: 'var(--color-below)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <AlertCircle size={14} /> Fórmula inválida ou incompleta
+                  </span>
+                ) : calcResult !== null ? (
+                  <>
+                    <span style={{ color: 'var(--text-secondary)' }}>Resultado calculado:</span>
+                    <strong style={{ color: 'var(--color-above)', fontFamily: 'Outfit, sans-serif' }}>
+                      {formatCurrency(calcResult)}
+                    </strong>
+                  </>
+                ) : null}
+              </div>
+            </div>
+          )}
+        </form>
       </div>
 
       {/* SECTION 3: Grid of Main KPIs */}

@@ -1,7 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Calculadora de Apoio ao Saldo Real', () => {
-  test('deve abrir a calculadora, fazer operações e aplicar o valor no campo de saldo real', async ({ page }) => {
+test.describe('Calculadora de Apoio ao Saldo Real (Unificada)', () => {
+  test('deve permitir digitação direta de expressões no input de saldo e salvar diretamente', async ({ page }) => {
+    // Definimos uma data de hoje fixa (2026-07-23) para consistência dos testes
+    const today = new Date('2026-07-23T12:00:00');
+    
     const mockPeriod = {
       id: "BDMeguP0XldfUDnnVeNU",
       name: "jul26",
@@ -12,7 +15,8 @@ test.describe('Calculadora de Apoio ao Saldo Real', () => {
       currentBalance: 2000,
       currentBalanceDate: "2026-07-18",
       balanceHistory: {
-        "2026-07-01": 3994
+        "2026-07-01": 3994,
+        "2026-07-18": 2000
       },
       createdAt: "2026-07-18T10:00:00Z",
       userId: "teste"
@@ -27,40 +31,37 @@ test.describe('Calculadora de Apoio ao Saldo Real', () => {
     // Abre a página principal
     await page.goto('/');
 
-    // Encontra o botão "Calculadora"
-    const calculateBtn = page.locator('button.calculator-btn-trigger', { hasText: 'Calculadora' });
-    await expect(calculateBtn).toBeVisible();
+    // Encontra o input inteligente de Saldo Real
+    const balanceInput = page.locator('input[placeholder="Ex: 850.00 ou 1200 + 250"]');
+    await expect(balanceInput).toBeVisible();
 
-    // Clica no botão para abrir a calculadora
-    await calculateBtn.click();
+    // Digita uma expressão matemática
+    await balanceInput.fill('1200,50 + 350');
 
-    // Verifica se a visualização mudou para a calculadora (mostrando a label correspondente)
-    const calcLabel = page.locator('label.form-label', { hasText: 'Expressão Matemática' });
-    await expect(calcLabel).toBeVisible();
- 
-    // Seleciona o input da calculadora
-    const calcInput = page.locator('input[placeholder="Ex: 800 + 450 - 120"]');
-    await expect(calcInput).toBeVisible();
-    await expect(calcInput).toBeFocused();
- 
-    // Digita a expressão "1200.50 + 350 - 100" na calculadora
-    await calcInput.fill('1200,50 + 350 - 100');
- 
+    // Clica no botão operador '-' da barra de atalhos
+    const minusOperatorBtn = page.locator('button.calculator-btn-trigger', { hasText: '-' });
+    await expect(minusOperatorBtn).toBeVisible();
+    await minusOperatorBtn.click();
+
+    // Adiciona o restante da fórmula ('100')
+    await balanceInput.pressSequentially('100');
+
+    // O input deve conter a expressão completa
+    await expect(balanceInput).toHaveValue('1200,50 + 350-100');
+
     // Verifica se o resultado calculado dinamicamente está correto
     // Deve mostrar R$ 1.450,50 formatado
-    const resultDisplay = page.locator('span', { hasText: 'R$ 1.450,50' });
+    const resultDisplay = page.locator('strong', { hasText: 'R$ 1.450,50' });
     await expect(resultDisplay).toBeVisible();
- 
-    // Clica em "Aplicar no Saldo"
-    const applyBtn = page.locator('button', { hasText: 'Aplicar no Saldo' });
-    await applyBtn.click();
- 
-    // A calculadora deve sumir
-    await expect(calcLabel).not.toBeVisible();
 
-    // O input do Saldo Real principal deve agora conter "1450.50"
-    const balanceInput = page.locator('input[placeholder="Ex: 850.00"]');
-    await expect(balanceInput).toHaveValue('1450.50');
+    // Encontra o botão "Marcar Saldo" e submete
+    const submitBtn = page.locator('button[type="submit"]', { hasText: 'Marcar Saldo' });
+    await submitBtn.click();
+
+    // Encontra a linha da tabela para o dia do registro (23/07/2026)
+    const row23 = page.locator('tr', { hasText: '23/07/2026' });
+    await expect(row23).toBeVisible();
+    await expect(row23.locator('td').nth(2)).toContainText('R$ 1.450,50');
 
     // Salva um screenshot da página final para verificação visual
     await page.screenshot({ path: 'calculator-applied-check.png', fullPage: true });
