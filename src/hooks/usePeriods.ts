@@ -51,7 +51,14 @@ export const usePeriods = (userId?: string) => {
       if (localData) {
         try {
           const parsed = JSON.parse(localData) as Period[];
-          const sorted = parsed.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          const sorted = parsed.sort((a, b) => {
+            const orderA = a.sortOrder !== undefined ? a.sortOrder : Number.MIN_SAFE_INTEGER;
+            const orderB = b.sortOrder !== undefined ? b.sortOrder : Number.MIN_SAFE_INTEGER;
+            if (orderA !== orderB) {
+              return orderA - orderB;
+            }
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          });
           setPeriods(sorted);
           
           if (sorted.length > 0) {
@@ -206,6 +213,27 @@ export const usePeriods = (userId?: string) => {
     }
   };
 
+  const reorderPeriods = async (updatedPeriods: Period[]) => {
+    const periodsWithNewOrder = updatedPeriods.map((p, idx) => ({
+      ...p,
+      sortOrder: idx
+    }));
+
+    setPeriods(periodsWithNewOrder);
+
+    try {
+      setError(null);
+      const promises = periodsWithNewOrder.map((p) => 
+        dbService.updatePeriod(p.id, { sortOrder: p.sortOrder })
+      );
+      await Promise.all(promises);
+    } catch (err: any) {
+      console.error('Failed to save reordered periods:', err);
+      setError(err.message || 'Falha ao salvar a nova ordem dos contadores.');
+      fetchPeriods();
+    }
+  };
+
   const selectedPeriod = periods.find(p => p.id === selectedPeriodId) || null;
 
   return {
@@ -221,6 +249,7 @@ export const usePeriods = (userId?: string) => {
     recordBalance,
     deleteBalance,
     syncLocalData,
+    reorderPeriods,
     refresh: fetchPeriods
   };
 };

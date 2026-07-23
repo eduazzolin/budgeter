@@ -10,6 +10,7 @@ export interface Period {
   balanceHistory?: Record<string, number>; // date YYYY-MM-DD -> balance
   createdAt: string;
   userId?: string;
+  sortOrder?: number;
 }
 
 export interface FirebaseConfig {

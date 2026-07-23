@@ -55,12 +55,20 @@ export const dbService = {
             currentBalanceDate: data.currentBalanceDate || undefined,
             balanceHistory: data.balanceHistory || {},
             createdAt: data.createdAt || new Date().toISOString(),
-            userId: data.userId
+            userId: data.userId,
+            sortOrder: data.sortOrder !== undefined ? Number(data.sortOrder) : undefined
           });
         });
         
         // Sort in memory to avoid custom index configuration
-        return periods.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return periods.sort((a, b) => {
+          const orderA = a.sortOrder !== undefined ? a.sortOrder : Number.MIN_SAFE_INTEGER;
+          const orderB = b.sortOrder !== undefined ? b.sortOrder : Number.MIN_SAFE_INTEGER;
+          if (orderA !== orderB) {
+            return orderA - orderB;
+          }
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
       } catch (error) {
         console.error('Firebase getPeriods error:', error);
       }
@@ -71,7 +79,14 @@ export const dbService = {
     if (userId) {
       periods = periods.filter(p => p.userId === userId || !p.userId);
     }
-    return periods.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return periods.sort((a, b) => {
+      const orderA = a.sortOrder !== undefined ? a.sortOrder : Number.MIN_SAFE_INTEGER;
+      const orderB = b.sortOrder !== undefined ? b.sortOrder : Number.MIN_SAFE_INTEGER;
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
   },
 
   createPeriod: async (periodData: Omit<Period, 'id' | 'createdAt'>, userId?: string): Promise<Period> => {
@@ -176,7 +191,8 @@ export const dbService = {
           currentBalanceDate: p.currentBalanceDate || null,
           balanceHistory: p.balanceHistory || {},
           createdAt: p.createdAt,
-          userId: userId
+          userId: userId,
+          sortOrder: p.sortOrder !== undefined ? p.sortOrder : null
         };
         await addDoc(periodsRef, newPeriod);
       }

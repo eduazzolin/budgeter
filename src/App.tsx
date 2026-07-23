@@ -42,7 +42,8 @@ function App() {
     deletePeriod,
     recordBalance,
     deleteBalance,
-    syncLocalData
+    syncLocalData,
+    reorderPeriods
   } = usePeriods(user?.uid);
 
   const isLoading = (authLoading && isFirebaseEnabled()) || periodsLoading;
@@ -240,6 +241,7 @@ function App() {
                 onEditPeriod={handleEditClick}
                 onDeletePeriod={deletePeriod}
                 onAddNewClick={handleAddNewClick}
+                onReorderPeriods={reorderPeriods}
               />
             )}
           </div>
