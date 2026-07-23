@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Calculadora de Apoio ao Saldo Real (Unificada)', () => {
-  test('deve permitir digitação direta de expressões no input de saldo e salvar diretamente', async ({ page }) => {
+test.describe('Calculadora de Apoio ao Saldo Real (Alternável)', () => {
+  test('deve alternar para a calculadora, digitar expressão e salvar diretamente', async ({ page }) => {
     // Definimos uma data de hoje fixa (2026-07-23) para consistência dos testes
     const today = new Date('2026-07-23T12:00:00');
     
@@ -31,26 +31,40 @@ test.describe('Calculadora de Apoio ao Saldo Real (Unificada)', () => {
     // Abre a página principal
     await page.goto('/');
 
-    // Encontra o input inteligente de Saldo Real
-    const balanceInput = page.locator('input[placeholder="Ex: 850.00 ou 1200 + 250"]');
-    await expect(balanceInput).toBeVisible();
+    // Encontra o botão no cabeçalho do card
+    const toggleBtn = page.locator('button.calculator-btn-trigger').first();
+    await expect(toggleBtn).toHaveText('Calculadora');
 
-    // Digita uma expressão matemática
-    await balanceInput.fill('1200,50 + 350');
+    // Clica no botão para abrir a calculadora
+    await toggleBtn.click();
 
-    // Clica no botão operador '-' da barra de atalhos
-    const minusOperatorBtn = page.locator('button.calculator-btn-trigger', { hasText: '-' });
+    // O botão deve alternar o texto para "Registro Padrão"
+    await expect(toggleBtn).toHaveText('Registro Padrão');
+
+    // Verifica se a visualização mudou para a calculadora (mostrando a label correspondente)
+    const calcLabel = page.locator('label.form-label', { hasText: 'Expressão Matemática' });
+    await expect(calcLabel).toBeVisible();
+
+    // Seleciona o input da calculadora
+    const calcInput = page.locator('input[placeholder="Ex: 800 + 450 - 120"]');
+    await expect(calcInput).toBeVisible();
+    await expect(calcInput).toBeFocused();
+
+    // Digita uma parte da expressão
+    await calcInput.fill('1200,50 + 350');
+
+    // Clica no botão operador '-' da barra de atalhos (que agora fica visível no desktop também no modo calc)
+    const minusOperatorBtn = page.locator('button.calculator-btn-trigger', { hasText: '-' }).last();
     await expect(minusOperatorBtn).toBeVisible();
     await minusOperatorBtn.click();
 
     // Adiciona o restante da fórmula ('100')
-    await balanceInput.pressSequentially('100');
+    await calcInput.pressSequentially('100');
 
     // O input deve conter a expressão completa
-    await expect(balanceInput).toHaveValue('1200,50 + 350-100');
+    await expect(calcInput).toHaveValue('1200,50 + 350-100');
 
     // Verifica se o resultado calculado dinamicamente está correto
-    // Deve mostrar R$ 1.450,50 formatado
     const resultDisplay = page.locator('strong', { hasText: 'R$ 1.450,50' });
     await expect(resultDisplay).toBeVisible();
 
