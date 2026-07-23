@@ -54,7 +54,7 @@ function App() {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [editingPeriod, setEditingPeriod] = useState<Period | null>(null);
   const [showSettings, setShowSettings] = useState(false);
-  const [isMobileListOpen, setIsMobileListOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth > 968);
 
   // Theme state
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
@@ -123,9 +123,9 @@ function App() {
       <header className="glass app-header">
         <div>
           <button 
-            className="btn btn-secondary hide-desktop"
+            className="btn btn-secondary"
             style={{ padding: '4px', border: 'none', background: 'transparent', boxShadow: 'none' }}
-            onClick={() => setIsMobileListOpen(!isMobileListOpen)}
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
             <Menu size={24} style={{ color: 'var(--text-primary)' }} />
           </button>
@@ -212,10 +212,10 @@ function App() {
       )}
 
       {/* Main Grid Layout */}
-      <main className="dashboard-container animate-in">
+      <main className={`dashboard-container animate-in ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
         
         {/* Left Side: Period List + Settings (if open) */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div className={`sidebar-panel-container ${isSidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'}`} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {/* Settings Box (Collapsible) */}
           {showSettings && (
@@ -230,7 +230,7 @@ function App() {
           )}
 
           {/* Period List Panel */}
-          <div className={isMobileListOpen ? '' : 'mobile-panel-hidden'} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="period-list-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {isLoading ? (
               <SkeletonPeriodList />
             ) : (

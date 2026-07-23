@@ -307,6 +307,19 @@ h1, h2, h3, h4, .font-display {
   grid-template-columns: 350px minmax(0, 1fr);
   gap: 30px;
   min-height: calc(100vh - 80px);
+  transition: grid-template-columns 0.2s ease-in-out;
+}
+
+@media (min-width: 969px) {
+  .dashboard-container.sidebar-collapsed {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sidebar-panel-container.sidebar-collapsed {
+    display: none !important;
+  }
+  .hide-desktop {
+    display: none !important;
+  }
 }
 
 @media (max-width: 968px) {
@@ -317,14 +330,11 @@ h1, h2, h3, h4, .font-display {
   .mobile-panel-hidden {
     display: none !important;
   }
+  .sidebar-panel-container.sidebar-collapsed .period-list-wrapper {
+    display: none !important;
+  }
   .hide-desktop {
     display: flex !important;
-  }
-}
-
-@media (min-width: 969px) {
-  .hide-desktop {
-    display: none !important;
   }
 }
 
