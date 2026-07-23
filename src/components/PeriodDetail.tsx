@@ -460,50 +460,52 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
             />
             
             {/* Operators shortcut bar */}
-            <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
-              {['+', '-', '*', '/', '(', ')'].map((op) => (
+            {isMobile && (
+              <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
+                {['+', '-', '*', '/', '(', ')'].map((op) => (
+                  <button
+                    key={op}
+                    type="button"
+                    onClick={() => handleInsertOperator(op)}
+                    className="calculator-btn-trigger"
+                    style={{
+                      background: 'var(--bg-secondary)',
+                      border: '1px solid var(--card-border)',
+                      color: 'var(--text-secondary)',
+                      cursor: 'pointer',
+                      padding: '3px 8px',
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      borderRadius: 'var(--border-radius-sm)',
+                      transition: 'all 0.1s ease',
+                      userSelect: 'none'
+                    }}
+                  >
+                    {op}
+                  </button>
+                ))}
                 <button
-                  key={op}
                   type="button"
-                  onClick={() => handleInsertOperator(op)}
+                  onClick={() => setBalanceInput('')}
                   className="calculator-btn-trigger"
                   style={{
                     background: 'var(--bg-secondary)',
                     border: '1px solid var(--card-border)',
-                    color: 'var(--text-secondary)',
+                    color: 'var(--color-below)',
                     cursor: 'pointer',
                     padding: '3px 8px',
-                    fontSize: '0.85rem',
+                    fontSize: '0.8rem',
                     fontWeight: 600,
                     borderRadius: 'var(--border-radius-sm)',
                     transition: 'all 0.1s ease',
-                    userSelect: 'none'
+                    userSelect: 'none',
+                    marginLeft: 'auto'
                   }}
                 >
-                  {op}
+                  Limpar
                 </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => setBalanceInput('')}
-                className="calculator-btn-trigger"
-                style={{
-                  background: 'var(--bg-secondary)',
-                  border: '1px solid var(--card-border)',
-                  color: 'var(--color-below)',
-                  cursor: 'pointer',
-                  padding: '3px 8px',
-                  fontSize: '0.8rem',
-                  fontWeight: 600,
-                  borderRadius: 'var(--border-radius-sm)',
-                  transition: 'all 0.1s ease',
-                  userSelect: 'none',
-                  marginLeft: 'auto'
-                }}
-              >
-                Limpar
-              </button>
-            </div>
+              </div>
+            )}
           </div>
 
           <div style={{ flex: '1 1 150px' }}>
