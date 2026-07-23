@@ -34,29 +34,29 @@ test.describe('Calculadora de Apoio ao Saldo Real', () => {
     // Clica no botão para abrir a calculadora
     await calculateBtn.click();
 
-    // Verifica se o modal abriu e mostra o título
-    const modalTitle = page.locator('h3', { hasText: 'Calculadora de Saldo' });
-    await expect(modalTitle).toBeVisible();
-
+    // Verifica se a visualização mudou para a calculadora (mostrando a label correspondente)
+    const calcLabel = page.locator('label.form-label', { hasText: 'Expressão Matemática' });
+    await expect(calcLabel).toBeVisible();
+ 
     // Seleciona o input da calculadora
     const calcInput = page.locator('input[placeholder="Ex: 800 + 450 - 120"]');
     await expect(calcInput).toBeVisible();
     await expect(calcInput).toBeFocused();
-
+ 
     // Digita a expressão "1200.50 + 350 - 100" na calculadora
     await calcInput.fill('1200,50 + 350 - 100');
-
+ 
     // Verifica se o resultado calculado dinamicamente está correto
     // Deve mostrar R$ 1.450,50 formatado
     const resultDisplay = page.locator('span', { hasText: 'R$ 1.450,50' });
     await expect(resultDisplay).toBeVisible();
-
+ 
     // Clica em "Aplicar no Saldo"
     const applyBtn = page.locator('button', { hasText: 'Aplicar no Saldo' });
     await applyBtn.click();
-
-    // O modal deve fechar
-    await expect(modalTitle).not.toBeVisible();
+ 
+    // A calculadora deve sumir
+    await expect(calcLabel).not.toBeVisible();
 
     // O input do Saldo Real principal deve agora conter "1450.50"
     const balanceInput = page.locator('input[placeholder="Ex: 850.00"]');
