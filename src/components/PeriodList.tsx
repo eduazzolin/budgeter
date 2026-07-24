@@ -73,7 +73,10 @@ export const PeriodList: React.FC<PeriodListProps> = ({
         </button>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', overflowY: 'auto', maxHeight: '70vh', paddingRight: '4px' }}>
+      <div 
+        className="period-list-scroll-container"
+        style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingRight: '4px' }}
+      >
         {localPeriods.length === 0 ? (
           <div className="glass" style={{ padding: '30px 20px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
             Nenhum período cadastrado. Clique em "Novo" para começar!
