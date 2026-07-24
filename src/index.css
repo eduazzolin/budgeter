@@ -298,6 +298,19 @@ h1, h2, h3, h4, .font-display {
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* KPI Cards Grid */
+.kpi-cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.kpi-cards-grid > * {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+
 /* Dashboard Grid Layout */
 .dashboard-container {
   max-width: 1440px;

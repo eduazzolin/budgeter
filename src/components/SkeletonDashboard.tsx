@@ -104,7 +104,7 @@ export const SkeletonPeriodDetail: React.FC = () => {
       </div>
 
       {/* SECTION 2: Metrics Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
+      <div className="kpi-cards-grid">
         {/* Metric 1 */}
         <div className="glass" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', minHeight: '140px', justifyContent: 'space-between' }}>
           <div className="skeleton-pulse" style={{ height: '14px', width: '120px', borderRadius: '4px' }} />

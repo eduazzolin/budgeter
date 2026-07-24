@@ -668,7 +668,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       </div>
 
       {/* SECTION 3: Grid of Main KPIs */}
-      <div className="animate-in delay-200" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
+      <div className="kpi-cards-grid animate-in delay-200">
         
         {/* Budget Goals Card */}
         <div className="glass glass-enhanced-hover" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
