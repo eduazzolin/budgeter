@@ -8,6 +8,7 @@ export interface Period {
   currentBalance?: number;
   currentBalanceDate?: string; // YYYY-MM-DD
   balanceHistory?: Record<string, number>; // date YYYY-MM-DD -> balance
+  notes?: string;
   createdAt: string;
   userId?: string;
   sortOrder?: number;

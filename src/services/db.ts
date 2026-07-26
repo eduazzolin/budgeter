@@ -54,6 +54,7 @@ export const dbService = {
             currentBalance: data.currentBalance !== undefined ? Number(data.currentBalance) : undefined,
             currentBalanceDate: data.currentBalanceDate || undefined,
             balanceHistory: data.balanceHistory || {},
+            notes: data.notes || undefined,
             createdAt: data.createdAt || new Date().toISOString(),
             userId: data.userId,
             sortOrder: data.sortOrder !== undefined ? Number(data.sortOrder) : undefined
@@ -190,6 +191,7 @@ export const dbService = {
           currentBalance: p.currentBalance !== undefined ? p.currentBalance : null,
           currentBalanceDate: p.currentBalanceDate || null,
           balanceHistory: p.balanceHistory || {},
+          notes: p.notes || null,
           createdAt: p.createdAt,
           userId: userId,
           sortOrder: p.sortOrder !== undefined ? p.sortOrder : null

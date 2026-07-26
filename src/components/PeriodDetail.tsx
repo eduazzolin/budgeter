@@ -25,16 +25,20 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 
+import { PeriodNotes } from './PeriodNotes';
+
 interface PeriodDetailProps {
   period: Period;
   onRecordBalance: (id: string, balance: number, date: string) => Promise<void>;
   onDeleteBalance: (id: string, date: string) => Promise<void>;
+  onUpdateNotes: (id: string, notes: string) => Promise<void>;
 }
 
 export const PeriodDetail: React.FC<PeriodDetailProps> = ({
   period,
   onRecordBalance,
-  onDeleteBalance
+  onDeleteBalance,
+  onUpdateNotes
 }) => {
   const metrics = calculateBudgetMetrics(period);
   const [balanceInput, setBalanceInput] = useState('');
@@ -844,8 +848,6 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
       </div>
 
-
-
       {/* SECTION 6: Chart (New Feature) */}
       <div className="glass animate-in delay-300" style={{ padding: isMobile ? '16px 12px' : '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -1005,6 +1007,9 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* Period Notes Section */}
+      <PeriodNotes period={period} onUpdateNotes={onUpdateNotes} />
 
       {/* SECTION 5: Table of Daily Projections (New Feature) */}
       <div className="glass animate-in delay-400" style={{ padding: '24px' }}>

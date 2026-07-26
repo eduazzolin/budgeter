@@ -256,6 +256,7 @@ function App() {
               period={selectedPeriod}
               onRecordBalance={recordBalance}
               onDeleteBalance={deleteBalance}
+              onUpdateNotes={(id, notes) => updatePeriod(id, { notes })}
             />
           ) : (
             <div className="glass" style={{ 

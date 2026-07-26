@@ -68,6 +68,10 @@ test.describe('Calculadora de Apoio ao Saldo Real (Alternável)', () => {
     const resultDisplay = page.locator('strong', { hasText: 'R$ 1.450,50' });
     await expect(resultDisplay).toBeVisible();
 
+    // Garante a data de registro como 2026-07-23 no input de data
+    const dateInput = page.locator('input[type="date"]');
+    await dateInput.fill('2026-07-23');
+
     // Encontra o botão "Marcar Saldo" e submete
     const submitBtn = page.locator('button[type="submit"]', { hasText: 'Marcar Saldo' });
     await submitBtn.click();
