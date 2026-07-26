@@ -1,7 +1,5 @@
 # Budgeter - Contagem Regressiva de Orçamento
 
-> **Produção:** Acesse o aplicativo ao vivo em [https://db-budgeter.web.app/](https://db-budgeter.web.app/)
-
 > **Nota:** Este é um projeto **Vibe Coded** 🔮✨ construído de forma iterativa com foco na experiência e estética, utilizando inteligência artificial para orquestrar o código.
 
 O **Budgeter** é um aplicativo de planejamento e contagem regressiva financeira minimalista e moderno, projetado em React + TypeScript com Vite e integrado ao Firebase. Ele ajuda usuários a controlarem seus gastos de forma linear ao longo de períodos customizados.
