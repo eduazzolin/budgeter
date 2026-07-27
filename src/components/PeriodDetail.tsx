@@ -675,7 +675,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       <div className="kpi-cards-grid animate-in delay-200">
         
         {/* Budget Goals Card */}
-        <div className="glass glass-enhanced-hover" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="glass" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           {(() => {
             let predictedNormalizationDate: Date | null = null;
             let isZeroSpendAssumption = false;
@@ -770,7 +770,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         </div>
 
         {/* Daily Spending Card */}
-        <div className="glass glass-enhanced-hover" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="glass" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
             Valores totais
           </span>
@@ -803,7 +803,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         </div>
 
         {/* Countdown Card */}
-        <div className="glass glass-enhanced-hover" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="glass" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
             Contagem Regressiva
           </span>
