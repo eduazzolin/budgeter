@@ -10,7 +10,7 @@ test.describe('Previsão de Alta - Teste com dados do Usuário', () => {
       startDate: "2026-07-01",
       endDate: "2026-07-31",
       initialBudget: 4000,
-      finalBudget: 411.77, // R$ 411.77 garante dailyBudget de R$ 115.75, resultando em margem de -243.26 no dia 18/07
+      finalBudget: 527.50, // R$ 527.50 garante dailyBudget de R$ 115.75 com a nova fórmula (totalDays - 1), resultando em margem de -243.26 no dia 18/07
       currentBalance: 1789,
       currentBalanceDate: "2026-07-18",
       balanceHistory: {
@@ -60,7 +60,7 @@ test.describe('Previsão de Alta - Teste com dados do Usuário', () => {
       startDate: "2026-07-01",
       endDate: "2026-07-31",
       initialBudget: 4000,
-      finalBudget: 411.77,
+      finalBudget: 527.50,
       currentBalance: 1789,
       currentBalanceDate: "2026-07-18",
       balanceHistory: {

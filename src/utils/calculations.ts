@@ -42,7 +42,9 @@ export const calculateBudgetMetrics = (period: Period, referenceDateStr?: string
   const todayStr = referenceDateStr || getLocalDateString();
   
   const totalDays = Math.max(1, getCalendarDaysBetween(period.startDate, period.endDate));
-  const dailyBudget = (period.initialBudget - period.finalBudget) / totalDays;
+  const dailyBudget = totalDays > 1
+    ? (period.initialBudget - period.finalBudget) / (totalDays - 1)
+    : (period.initialBudget - period.finalBudget);
   
   const isPeriodNotStarted = todayStr < period.startDate;
   const isPeriodEnded = todayStr > period.endDate;
