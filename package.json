@@ -1,7 +1,7 @@
 {
   "name": "budgeter",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,7 +9,11 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "deploy": "firebase deploy",
-    "build:deploy": "npm run build && firebase deploy"
+    "build:deploy": "npm run build && firebase deploy",
+    "bump:patch": "npm version patch",
+    "bump:minor": "npm version minor",
+    "bump:major": "npm version major",
+    "release": "npm run build && npm version patch"
   },
   "dependencies": {
     "date-fns": "^4.4.0",

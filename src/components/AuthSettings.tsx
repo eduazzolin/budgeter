@@ -3,6 +3,7 @@ import type { AppUser } from '../services/auth';
 import { isFirebaseEnabled } from '../firebase';
 import { dbService } from '../services/db';
 import { authService } from '../services/auth';
+import { APP_VERSION } from '../version';
 import { 
   Cloud, 
   CloudOff, 
@@ -312,6 +313,31 @@ export const AuthSettings: React.FC<AuthSettingsProps> = ({
             <Moon size={14} /> Escuro
           </button>
         </div>
+      </div>
+
+      {/* System Version Info */}
+      <div style={{ 
+        borderTop: '1px solid var(--card-border)', 
+        paddingTop: '12px',
+        marginTop: '4px',
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        fontSize: '0.78rem',
+        color: 'var(--text-muted)'
+      }}>
+        <span>Versão do sistema</span>
+        <span style={{ 
+          fontFamily: 'monospace', 
+          fontWeight: 700, 
+          padding: '2px 6px', 
+          borderRadius: '4px', 
+          background: 'var(--bg-secondary)', 
+          border: '1px solid var(--card-border)',
+          color: 'var(--text-secondary)' 
+        }}>
+          v{APP_VERSION}
+        </span>
       </div>
 
       <style>{`

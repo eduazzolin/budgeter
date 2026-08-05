@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, HelpCircle, DollarSign, Target, TrendingUp, Activity, Milestone, Mail, Sparkles } from 'lucide-react';
+import { APP_VERSION } from '../version';
 
 interface HelpModalProps {
   isOpen: boolean;
@@ -75,10 +76,24 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '1.5rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <HelpCircle size={24} style={{ color: 'var(--color-primary)' }} />
-            Guia de Termos do Budgeter
-          </h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 style={{ fontSize: '1.5rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+              <HelpCircle size={24} style={{ color: 'var(--color-primary)' }} />
+              Guia do Budgeter
+            </h3>
+            <span style={{ 
+              fontSize: '0.75rem', 
+              fontWeight: 700, 
+              padding: '2px 8px', 
+              borderRadius: '12px', 
+              background: 'rgba(99, 102, 241, 0.15)', 
+              color: 'var(--color-primary)', 
+              border: '1px solid rgba(99, 102, 241, 0.25)',
+              fontFamily: 'sans-serif'
+            }}>
+              v{APP_VERSION}
+            </span>
+          </div>
           <button 
             onClick={onClose} 
             className="btn btn-secondary" 
