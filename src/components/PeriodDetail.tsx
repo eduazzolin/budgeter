@@ -202,16 +202,11 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     return `${d}/${m}`;
   };
 
-  // Prepare chart data & Regression
+  // Prepare chart data (Gasto Zero Assumption)
   const chartData = [];
   const start = parseLocalDate(period.startDate);
   
-  // 1. Gather data for linear regression (Least Squares)
-  let sumX = 0;
-  let sumY = 0;
-  let sumXY = 0;
-  let sumXX = 0;
-  let nPoints = 0;
+  // 1. Encontra o último saldo real registrado no período
   let lastRecordedDayIndex = -1;
   let lastRecordedBalance: number | null = null;
 
@@ -219,35 +214,10 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     const nextDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
     const dateStr = getLocalDateString(nextDate);
     
-    let y = null;
-    if (i === 0) {
-      y = period.initialBudget; // Ponto inicial garantido
-    }
-    
     const actualBalance = period.balanceHistory?.[dateStr];
     if (actualBalance !== undefined) {
-      y = actualBalance;
       lastRecordedDayIndex = i;
-      lastRecordedBalance = y;
-    }
-
-    if (y !== null) {
-      sumX += i;
-      sumY += y;
-      sumXY += i * y;
-      sumXX += i * i;
-      nPoints++;
-    }
-  }
-
-  // Calculate slope (m) and intercept (b) if we have at least 2 points
-  let m = 0;
-  let canProject = false;
-  if (nPoints >= 2) {
-    const denominator = nPoints * sumXX - sumX * sumX;
-    if (denominator !== 0) {
-      m = (nPoints * sumXY - sumX * sumY) / denominator;
-      canProject = true;
+      lastRecordedBalance = actualBalance;
     }
   }
 
@@ -259,9 +229,9 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     const actualBalance = period.balanceHistory?.[dateStr];
     
     let projectedBalance = null;
-    if (canProject && lastRecordedBalance !== null && i >= lastRecordedDayIndex) {
-      // Projeta a partir do último saldo real conhecido usando a taxa de consumo histórica (m)
-      projectedBalance = lastRecordedBalance + m * (i - lastRecordedDayIndex);
+    if (lastRecordedBalance !== null && i >= lastRecordedDayIndex) {
+      // Projeta a partir do último saldo real conhecido assumindo gasto zero no período
+      projectedBalance = lastRecordedBalance;
     }
     
     const margemReal = actualBalance !== undefined ? actualBalance - expectedBalance : null;
@@ -1050,8 +1020,8 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                   const isToday = todayStr === dateStr;
                   
                   let projectedBalance = null;
-                  if (canProject && lastRecordedBalance !== null && index >= lastRecordedDayIndex) {
-                    projectedBalance = lastRecordedBalance + m * (index - lastRecordedDayIndex);
+                  if (lastRecordedBalance !== null && index >= lastRecordedDayIndex) {
+                    projectedBalance = lastRecordedBalance;
                   }
 
                   let diffText = '—';

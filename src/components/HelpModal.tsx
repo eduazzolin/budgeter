@@ -50,13 +50,13 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
     {
       icon: <TrendingUp size={20} style={{ color: 'var(--color-above, #10b981)' }} />,
       title: 'Saldo Projetado',
-      desc: 'A extrapolação matemática (linha de tendência) que indica como o seu Saldo Real vai se comportar no futuro se você mantiver a taxa de gastos atual.',
+      desc: 'A estimativa de como seu saldo se comportará no futuro considerando que nenhum valor adicional será gasto a partir do último Saldo Real registrado.',
       badge: 'projectedBalance',
     },
     {
       icon: <Milestone size={20} style={{ color: 'var(--color-above, #10b981)' }} />,
       title: 'Ponto de Equilíbrio',
-      desc: 'A data prevista em que a linha do Saldo Projetado cruza a linha do Saldo Esperado. Indica quando a sua Margem deixará de ser negativa e voltará a ficar positiva.',
+      desc: 'A data prevista em que a linha do Saldo Projetado cruza a linha do Saldo Esperado (sob a premissa de gasto zero). Indica quando a sua Margem deixará de ser negativa e voltará a ficar positiva.',
       badge: 'breakEvenDate',
     },
   ];

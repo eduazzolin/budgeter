@@ -20,7 +20,7 @@ Sempre utilize a seguinte nomenclatura padrão ao lidar com variáveis no códig
    - **UI:** "Margem", "Desempenho" ou "Saldo do Orçamento".
 
 4. **Saldo Projetado (Projected Balance)**
-   - **Definição:** A extrapolação matemática (linha de tendência) indicando como o Saldo Real vai se comportar no futuro se a taxa de gastos atual for mantida.
+   - **Definição:** A estimativa financeira no futuro considerando a hipótese de que o usuário não realizará novos gastos a partir do último Saldo Real registrado.
    - **Código:** `projectedBalance`
    - **UI:** "Saldo Projetado" ou "Projeção".
 

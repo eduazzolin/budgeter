@@ -36,3 +36,7 @@ dist-ssr
 # Agent Customizations & Skills
 .agents/
 skills-lock.json
+
+# Test results & reports
+test-results/
+playwright-report/

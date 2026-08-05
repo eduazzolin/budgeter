@@ -16,7 +16,7 @@ O Budgeter funciona baseado em um princípio simples: **distribuição linear do
 2. **Cálculo Diário:** O sistema divide automaticamente o valor total pelo número de dias do período, gerando uma "meta" fixa de gasto/economia por dia.
 3. **Acompanhamento de Saldo Real:** Você pode registrar seu saldo em conta a qualquer momento.
 4. **Margem de Desempenho:** A aplicação cruza o Saldo Real atual com o Saldo Esperado daquele dia, indicando instantaneamente se você está acima (verde) ou abaixo (vermelho) do planejado.
-5. **Previsão de Alta:** Com base no seu comportamento de gastos recentes, o sistema calcula quando a sua Margem voltará a ficar positiva.
+5. **Previsão de Alta:** Com base no seu último Saldo Real registrado, o sistema calcula quando a sua Margem voltará a ficar positiva considerando a premissa de gasto zero.
 
 Os dados são salvos preferencialmente offline-first no navegador (`localStorage`) para velocidade e privacidade, mas podem ser sincronizados na nuvem usando Firebase via Login com o Google.
 
@@ -29,8 +29,8 @@ Para garantir clareza e evitar ambiguidades, o **Budgeter** adota a seguinte ter
 *   **Saldo Real:** O dinheiro de fato que você possui na conta bancária (o valor físico lançado).
 *   **Saldo Esperado:** O valor ideal (alvo) que você deveria ter na conta em um dia específico para terminar o período exatamente dentro da meta estabelecida.
 *   **Margem ou Desempenho:** A diferença calculada entre o Saldo Real e o Saldo Esperado (`Saldo Real - Saldo Esperado`). Se positivo, indica economia; se negativo, indica que gastou a mais.
-*   **Saldo Projetado:** A projeção matemática (linha de tendência) indicando como o seu Saldo Real vai se comportar no futuro se a taxa de gastos atual for mantida.
-*   **Previsão de Alta (Ponto de Equilíbrio):** A data prevista em que a linha do Saldo Projetado cruza a linha do Saldo Esperado, indicando quando a Margem deixará de ser negativa e voltará a ficar positiva.
+*   **Saldo Projetado:** A estimativa indicando como o seu Saldo Real vai se comportar no futuro se você não realizar nenhum gasto adicional a partir do último registro.
+*   **Previsão de Alta (Ponto de Equilíbrio):** A data prevista em que a linha do Saldo Projetado cruza a linha do Saldo Esperado (sob a premissa de gasto zero), indicando quando a Margem deixará de ser negativa e voltará a ficar positiva.
 
 ---
 
