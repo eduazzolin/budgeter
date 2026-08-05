@@ -8,6 +8,7 @@ import { AuthSettings } from './components/AuthSettings';
 import { HelpModal } from './components/HelpModal';
 import { PrivacyModal } from './components/PrivacyModal';
 import { CookieBanner } from './components/CookieBanner';
+import { Footer } from './components/Footer';
 import { isFirebaseEnabled } from './firebase';
 import { SkeletonPeriodList, SkeletonPeriodDetail } from './components/SkeletonDashboard';
 import type { Period } from './types';
@@ -315,6 +316,13 @@ function App() {
           )}
         </div>
       </main>
+
+      {/* App Footer */}
+      <Footer 
+        onOpenHelp={() => setIsHelpOpen(true)}
+        onOpenPrivacy={() => setIsPrivacyOpen(true)}
+        onToggleSettings={() => setShowSettings(!showSettings)}
+      />
 
       {/* Add / Edit Period Modal Form */}
       <PeriodForm 
