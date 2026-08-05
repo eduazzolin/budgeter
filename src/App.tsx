@@ -12,7 +12,6 @@ import { Footer } from './components/Footer';
 import { isFirebaseEnabled } from './firebase';
 import { SkeletonPeriodList, SkeletonPeriodDetail } from './components/SkeletonDashboard';
 import type { Period } from './types';
-import { APP_VERSION } from './version';
 import { 
   User, 
   Plus, 
@@ -144,26 +143,6 @@ function App() {
           </div>
           <span className="font-display" style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>
             Budgeter
-          </span>
-          <span 
-            className="version-badge"
-            title={`Versão atual do Budgeter: v${APP_VERSION}`}
-            style={{
-              fontSize: '0.7rem',
-              fontWeight: 700,
-              padding: '2px 8px',
-              borderRadius: '20px',
-              background: 'rgba(99, 102, 241, 0.12)',
-              color: 'var(--color-primary)',
-              border: '1px solid rgba(99, 102, 241, 0.25)',
-              letterSpacing: '0.03em',
-              lineHeight: 1.2,
-              display: 'inline-flex',
-              alignItems: 'center',
-              marginLeft: '4px'
-            }}
-          >
-            v{APP_VERSION}
           </span>
         </div>
 
@@ -318,11 +297,7 @@ function App() {
       </main>
 
       {/* App Footer */}
-      <Footer 
-        onOpenHelp={() => setIsHelpOpen(true)}
-        onOpenPrivacy={() => setIsPrivacyOpen(true)}
-        onToggleSettings={() => setShowSettings(!showSettings)}
-      />
+      <Footer />
 
       {/* Add / Edit Period Modal Form */}
       <PeriodForm 
