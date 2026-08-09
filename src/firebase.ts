@@ -1,6 +1,6 @@
 import { initializeApp, getApps } from 'firebase/app';
 import type { FirebaseApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import type { Firestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import type { Auth } from 'firebase/auth';
@@ -35,9 +35,13 @@ if (config.apiKey && config.projectId) {
     } else {
       app = getApps()[0];
     }
-    db = getFirestore(app);
+    db = initializeFirestore(app, {
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager()
+      })
+    });
     auth = getAuth(app);
-    console.log('Firebase initialized successfully from environment.');
+    console.log('Firebase initialized successfully from environment with persistent local cache.');
   } catch (error) {
     console.error('Failed to initialize Firebase with environment config:', error);
   }

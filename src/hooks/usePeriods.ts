@@ -3,11 +3,39 @@ import type { Period } from '../types';
 import { dbService } from '../services/db';
 
 export const usePeriods = (userId?: string) => {
-  const [periods, setPeriods] = useState<Period[]>([]);
-  const [loading, setLoading] = useState(true);
+  // 1. Synchronously hydrate state from local storage cache for instant 0ms startup
+  const [periods, setPeriods] = useState<Period[]>(() => {
+    const cached = localStorage.getItem('budgeter_periods');
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached) as Period[];
+        return parsed.sort((a, b) => {
+          const orderA = a.sortOrder !== undefined ? a.sortOrder : Number.MIN_SAFE_INTEGER;
+          const orderB = b.sortOrder !== undefined ? b.sortOrder : Number.MIN_SAFE_INTEGER;
+          if (orderA !== orderB) return orderA - orderB;
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  });
+
+  // If we have cached periods locally, do not show loading state on open
+  const [loading, setLoading] = useState<boolean>(() => periods.length === 0);
   const [error, setError] = useState<string | null>(null);
   const [selectedPeriodId, setSelectedPeriodId] = useState<string | null>(() => {
-    return localStorage.getItem('budgeter_selected_period_id');
+    const storedId = localStorage.getItem('budgeter_selected_period_id');
+    if (storedId) return storedId;
+    const cached = localStorage.getItem('budgeter_periods');
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached) as Period[];
+        return parsed.length > 0 ? parsed[0].id : null;
+      } catch {}
+    }
+    return null;
   });
 
   const selectPeriod = useCallback((id: string | null) => {
@@ -21,7 +49,10 @@ export const usePeriods = (userId?: string) => {
 
   const fetchPeriods = useCallback(async () => {
     try {
-      setLoading(true);
+      // Only set loading to true if we have no local cached periods to prevent UI flicker
+      if (periods.length === 0) {
+        setLoading(true);
+      }
       setError(null);
       const data = await dbService.getPeriods(userId);
       setPeriods(data);
@@ -29,7 +60,6 @@ export const usePeriods = (userId?: string) => {
       // Auto-select period if none is selected or if the selected one doesn't exist anymore
       if (data.length > 0) {
         if (!selectedPeriodId || !data.some(p => p.id === selectedPeriodId)) {
-          // If we had a selection that was lost, pick the first one
           const storedId = localStorage.getItem('budgeter_selected_period_id');
           const exists = storedId ? data.some(p => p.id === storedId) : false;
           if (exists && storedId) {
@@ -45,41 +75,10 @@ export const usePeriods = (userId?: string) => {
     } catch (err: any) {
       console.error('Failed to fetch from Firestore, falling back to LocalStorage:', err);
       setError(err.message || 'Falha ao sincronizar dados com o Firebase.');
-      
-      // Fallback to loading periods from local storage so user data remains visible
-      const localData = localStorage.getItem('budgeter_periods');
-      if (localData) {
-        try {
-          const parsed = JSON.parse(localData) as Period[];
-          const sorted = parsed.sort((a, b) => {
-            const orderA = a.sortOrder !== undefined ? a.sortOrder : Number.MIN_SAFE_INTEGER;
-            const orderB = b.sortOrder !== undefined ? b.sortOrder : Number.MIN_SAFE_INTEGER;
-            if (orderA !== orderB) {
-              return orderA - orderB;
-            }
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-          });
-          setPeriods(sorted);
-          
-          if (sorted.length > 0) {
-            if (!selectedPeriodId || !sorted.some(p => p.id === selectedPeriodId)) {
-              const storedId = localStorage.getItem('budgeter_selected_period_id');
-              const exists = storedId ? sorted.some(p => p.id === storedId) : false;
-              if (exists && storedId) {
-                setSelectedPeriodId(storedId);
-              } else {
-                selectPeriod(sorted[0].id);
-              }
-            }
-          }
-        } catch (e) {
-          console.error('Error parsing fallback local periods:', e);
-        }
-      }
     } finally {
       setLoading(false);
     }
-  }, [userId, selectedPeriodId, selectPeriod]);
+  }, [userId, selectedPeriodId, selectPeriod, periods.length]);
 
   // Fetch data on user change
   useEffect(() => {
