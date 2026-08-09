@@ -1,16 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { usePeriods } from './hooks/usePeriods';
 import { PeriodList } from './components/PeriodList';
-import { PeriodDetail } from './components/PeriodDetail';
-import { PeriodForm } from './components/PeriodForm';
-import { AuthSettings } from './components/AuthSettings';
-import { HelpModal } from './components/HelpModal';
-import { PrivacyModal } from './components/PrivacyModal';
-import { CookieBanner } from './components/CookieBanner';
 import { Footer } from './components/Footer';
 import { isFirebaseEnabled } from './firebase';
 import { SkeletonPeriodList, SkeletonPeriodDetail } from './components/SkeletonDashboard';
+
+const PeriodDetail = lazy(() => import('./components/PeriodDetail').then(m => ({ default: m.PeriodDetail })));
+const PeriodForm = lazy(() => import('./components/PeriodForm').then(m => ({ default: m.PeriodForm })));
+const AuthSettings = lazy(() => import('./components/AuthSettings').then(m => ({ default: m.AuthSettings })));
+const HelpModal = lazy(() => import('./components/HelpModal').then(m => ({ default: m.HelpModal })));
+const PrivacyModal = lazy(() => import('./components/PrivacyModal').then(m => ({ default: m.PrivacyModal })));
+const CookieBanner = lazy(() => import('./components/CookieBanner').then(m => ({ default: m.CookieBanner })));
 import type { Period } from './types';
 import { 
   User, 
@@ -220,14 +221,16 @@ function App() {
           
           {/* Settings Box (Collapsible) */}
           {showSettings && (
-            <AuthSettings 
-              user={user}
-              onLogout={logout}
-              onLoginWithGoogle={loginWithGoogle}
-              onSyncLocalData={syncLocalData}
-              theme={theme}
-              onThemeChange={setTheme}
-            />
+            <Suspense fallback={<div className="skeleton-pulse" style={{ height: '300px', borderRadius: '12px', marginBottom: '24px' }} />}>
+              <AuthSettings 
+                user={user}
+                onLogout={logout}
+                onLoginWithGoogle={loginWithGoogle}
+                onSyncLocalData={syncLocalData}
+                theme={theme}
+                onThemeChange={setTheme}
+              />
+            </Suspense>
           )}
 
           {/* Period List Panel */}
@@ -253,12 +256,14 @@ function App() {
           {isLoading ? (
             <SkeletonPeriodDetail />
           ) : selectedPeriod ? (
-            <PeriodDetail 
-              period={selectedPeriod}
-              onRecordBalance={recordBalance}
-              onDeleteBalance={deleteBalance}
-              onUpdateNotes={(id, notes) => updatePeriod(id, { notes })}
-            />
+            <Suspense fallback={<SkeletonPeriodDetail />}>
+              <PeriodDetail 
+                period={selectedPeriod}
+                onRecordBalance={recordBalance}
+                onDeleteBalance={deleteBalance}
+                onUpdateNotes={(id, notes) => updatePeriod(id, { notes })}
+              />
+            </Suspense>
           ) : (
             <div className="glass" style={{ 
               padding: '60px 30px', 
@@ -300,29 +305,37 @@ function App() {
       <Footer />
 
       {/* Add / Edit Period Modal Form */}
-      <PeriodForm 
-        isOpen={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
-        onSubmit={handleFormSubmit}
-        editPeriod={editingPeriod}
-      />
+      <Suspense fallback={null}>
+        <PeriodForm 
+          isOpen={isFormOpen}
+          onClose={() => setIsFormOpen(false)}
+          onSubmit={handleFormSubmit}
+          editPeriod={editingPeriod}
+        />
+      </Suspense>
 
       {/* Help Modal */}
-      <HelpModal 
-        isOpen={isHelpOpen}
-        onClose={() => setIsHelpOpen(false)}
-      />
+      <Suspense fallback={null}>
+        <HelpModal 
+          isOpen={isHelpOpen}
+          onClose={() => setIsHelpOpen(false)}
+        />
+      </Suspense>
 
       {/* Privacy Modal */}
-      <PrivacyModal 
-        isOpen={isPrivacyOpen}
-        onClose={() => setIsPrivacyOpen(false)}
-      />
+      <Suspense fallback={null}>
+        <PrivacyModal 
+          isOpen={isPrivacyOpen}
+          onClose={() => setIsPrivacyOpen(false)}
+        />
+      </Suspense>
 
       {/* LGPD Cookie Banner */}
-      <CookieBanner 
-        onOpenPrivacy={() => setIsPrivacyOpen(true)}
-      />
+      <Suspense fallback={null}>
+        <CookieBanner 
+          onOpenPrivacy={() => setIsPrivacyOpen(true)}
+        />
+      </Suspense>
     </div>
   );
 }
