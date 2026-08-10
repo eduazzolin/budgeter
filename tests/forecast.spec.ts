@@ -40,6 +40,7 @@ test.describe('Previsão de Alta - Teste com dados do Usuário', () => {
     await page.addInitScript((data) => {
       window.localStorage.setItem('budgeter_periods', JSON.stringify([data]));
       window.localStorage.setItem('budgeter_selected_period_id', data.id);
+      window.localStorage.setItem('lgpd_consent_accepted', 'true');
     }, mockPeriod);
 
     // Abre a página principal
@@ -75,6 +76,7 @@ test.describe('Previsão de Alta - Teste com dados do Usuário', () => {
     await page.addInitScript((data) => {
       window.localStorage.setItem('budgeter_periods', JSON.stringify([data]));
       window.localStorage.setItem('budgeter_selected_period_id', data.id);
+      window.localStorage.setItem('lgpd_consent_accepted', 'true');
     }, mockPeriod);
 
     // Abre a página principal

@@ -26,6 +26,7 @@ test.describe('Calculadora de Apoio ao Saldo Real (Alternável)', () => {
     await page.addInitScript((data) => {
       window.localStorage.setItem('budgeter_periods', JSON.stringify([data]));
       window.localStorage.setItem('budgeter_selected_period_id', data.id);
+      window.localStorage.setItem('lgpd_consent_accepted', 'true');
     }, mockPeriod);
 
     // Abre a página principal
