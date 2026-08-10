@@ -28,12 +28,12 @@ export const GIF_STATES: Record<GifStateType, GifStateConfig> = {
   GOD_OF_WEALTH: {
     id: 'GOD_OF_WEALTH',
     name: 'Deus da Riqueza',
-    searchTerm: 'ostentando rico dinheiro'
+    searchTerm: 'ostentando rico gratidao'
   },
   BALLING: {
     id: 'BALLING',
     name: 'Ostentação',
-    searchTerm: 'ostentacao rico'
+    searchTerm: 'ostentacao rico paz'
   },
   CHILL: {
     id: 'CHILL',
