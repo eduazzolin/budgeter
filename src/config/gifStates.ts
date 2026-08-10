@@ -1,124 +1,98 @@
 import type { BudgetMetrics } from '../types';
 
-export type GifStateType = 
-  | 'UNKNOWN'
-  | 'GOD_OF_WEALTH'
-  | 'BALLING'
-  | 'CHILL'
-  | 'ON_TRACK'
-  | 'ATTENTION'
-  | 'SWEATING'
-  | 'SURVIVAL'
-  | 'DESPAIR'
-  | 'BURNING'
-  | 'MISSION_ACCOMPLISHED';
+export type GifStateType = 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE' | 'UNKNOWN';
 
 export interface GifStateConfig {
   id: GifStateType;
   name: string;
-  searchTerm: string;
+  keywords: string[];
 }
 
 export const GIF_STATES: Record<GifStateType, GifStateConfig> = {
   UNKNOWN: {
     id: 'UNKNOWN',
-    name: 'Desconhecido',
-    searchTerm: 'esperando entediado'
+    name: 'Aguardando Dados',
+    keywords: ['esperando', 'entediado', 'carregando', 'aguardando']
   },
-  GOD_OF_WEALTH: {
-    id: 'GOD_OF_WEALTH',
-    name: 'Deus da Riqueza',
-    searchTerm: 'ostentando rico gratidao'
+  POSITIVE: {
+    id: 'POSITIVE',
+    name: 'Saldo Positivo',
+    keywords: [
+      'ostentacao',
+      'rico',
+      'festa',
+      'comemoracao',
+      'dinheiro',
+      'sucesso',
+      'vitoria',
+      'favoravel',
+      'aleluia',
+      'gratidao',
+      'deus',
+      'de boa'
+    ]
   },
-  BALLING: {
-    id: 'BALLING',
-    name: 'Ostentação',
-    searchTerm: 'ostentacao rico paz'
+  NEUTRAL: {
+    id: 'NEUTRAL',
+    name: 'Saldo Neutro',
+    keywords: [
+      'tranquilo',
+      'equilibrado',
+      'na paz',
+      'tudo certo',
+      'calma',
+      'ok',
+      'estavel',
+      'normal'
+    ]
   },
-  CHILL: {
-    id: 'CHILL',
-    name: 'Tranquilo e Favorável',
-    searchTerm: 'tranquilo favoravel de boa'
-  },
-  ON_TRACK: {
-    id: 'ON_TRACK',
-    name: 'No Caminho Certo',
-    searchTerm: 'caminho certo joinha'
-  },
-  ATTENTION: {
-    id: 'ATTENTION',
-    name: 'Atenção',
-    searchTerm: 'atencao alerta'
-  },
-  SWEATING: {
-    id: 'SWEATING',
-    name: 'Suando Frio',
-    searchTerm: 'suando frio nervoso'
-  },
-  SURVIVAL: {
-    id: 'SURVIVAL',
-    name: 'Modo Sobrevivência',
-    searchTerm: 'modo sobrevivencia liso'
-  },
-  DESPAIR: {
-    id: 'DESPAIR',
-    name: 'Desespero',
-    searchTerm: 'desespero chorando sem dinheiro'
-  },
-  BURNING: {
-    id: 'BURNING',
-    name: 'Tudo em Chamas',
-    searchTerm: 'tudo em chamas fogo'
-  },
-  MISSION_ACCOMPLISHED: {
-    id: 'MISSION_ACCOMPLISHED',
-    name: 'Missão Cumprida',
-    searchTerm: 'missao cumprida festa'
+  NEGATIVE: {
+    id: 'NEGATIVE',
+    name: 'Saldo Negativo',
+    keywords: [
+      'desespero',
+      'chorando',
+      'sem dinheiro',
+      'liso',
+      'falido',
+      'suando frio',
+      'perigo',
+      'emergencia',
+      'fogo'
+    ]
   }
 };
 
 /**
- * Determina o estado atual do GIF com base nas métricas do orçamento.
+ * Classifica as métricas do orçamento em um dos 3 estados principais:
+ * - Saldo Positivo (difference > 0)
+ * - Saldo Neutro (difference === 0)
+ * - Saldo Negativo (difference < 0)
+ * Ou UNKNOWN se nenhum saldo tiver sido registrado ainda.
  */
 export const determineGifState = (metrics: BudgetMetrics): GifStateConfig => {
   if (metrics.recordedBalance === undefined || metrics.difference === undefined) {
     return GIF_STATES.UNKNOWN;
   }
 
-  const { difference, dailyBudget, daysRemaining, status, isPeriodEnded } = metrics;
+  const { difference } = metrics;
 
-  if (isPeriodEnded) {
-    if (status === 'above' || status === 'neutral') {
-      return GIF_STATES.MISSION_ACCOMPLISHED;
-    } else {
-      return GIF_STATES.BURNING;
-    }
-  }
-
-  if (status === 'above' || status === 'neutral') {
-    if (dailyBudget > 0) {
-      const daysAhead = difference / dailyBudget;
-      if (daysAhead >= 15) return GIF_STATES.GOD_OF_WEALTH;
-      if (daysAhead >= 7) return GIF_STATES.BALLING;
-      if (daysAhead >= 3) return GIF_STATES.CHILL;
-    }
-    return GIF_STATES.ON_TRACK;
+  if (difference > 0) {
+    return GIF_STATES.POSITIVE;
+  } else if (difference < 0) {
+    return GIF_STATES.NEGATIVE;
   } else {
-    if (dailyBudget > 0) {
-      const daysToRecover = Math.ceil(Math.abs(difference) / dailyBudget);
-      
-      if (daysToRecover > daysRemaining) {
-        return GIF_STATES.DESPAIR;
-      }
-      if (daysToRecover > 7) {
-        return GIF_STATES.SURVIVAL;
-      }
-      if (daysToRecover > 3) {
-        return GIF_STATES.SWEATING;
-      }
-      return GIF_STATES.ATTENTION;
-    } else {
-      return GIF_STATES.BURNING;
-    }
+    return GIF_STATES.NEUTRAL;
   }
+};
+
+/**
+ * Seleciona aleatoriamente uma palavra-chave da lista de palavras do estado fornecido.
+ */
+export const getRandomKeyword = (stateConfig: GifStateConfig): string => {
+  if (!stateConfig.keywords || stateConfig.keywords.length === 0) {
+    return 'gif';
+  }
+  const randomIndex = Math.floor(Math.random() * stateConfig.keywords.length);
+  return stateConfig.keywords[randomIndex];
 };
