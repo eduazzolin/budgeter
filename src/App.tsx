@@ -216,23 +216,9 @@ function App() {
       {/* Main Grid Layout */}
       <main className={`dashboard-container animate-in ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
         
-        {/* Left Side: Period List + Settings (if open) */}
+        {/* Left Side: Period List */}
         <div className={`sidebar-panel-container ${isSidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'}`} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
-          {/* Settings Box (Collapsible) */}
-          {showSettings && (
-            <Suspense fallback={<div className="skeleton-pulse" style={{ height: '300px', borderRadius: '12px', marginBottom: '24px' }} />}>
-              <AuthSettings 
-                user={user}
-                onLogout={logout}
-                onLoginWithGoogle={loginWithGoogle}
-                onSyncLocalData={syncLocalData}
-                theme={theme}
-                onThemeChange={setTheme}
-              />
-            </Suspense>
-          )}
-
           {/* Period List Panel */}
           <div className="period-list-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {isLoading ? (
@@ -303,6 +289,20 @@ function App() {
 
       {/* App Footer */}
       <Footer />
+
+      {/* Auth Settings / Minha Conta Modal */}
+      <Suspense fallback={null}>
+        <AuthSettings 
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+          user={user}
+          onLogout={logout}
+          onLoginWithGoogle={loginWithGoogle}
+          onSyncLocalData={syncLocalData}
+          theme={theme}
+          onThemeChange={setTheme}
+        />
+      </Suspense>
 
       {/* Add / Edit Period Modal Form */}
       <Suspense fallback={null}>
