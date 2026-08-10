@@ -28,7 +28,6 @@ import {
 } from 'recharts';
 
 import { PeriodNotes } from './PeriodNotes';
-import { VibeCheck } from './VibeCheck';
 import { GifDisplay } from './GifDisplay';
 
 interface PeriodDetailProps {
@@ -165,7 +164,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       await onRecordBalance(period.id, balance, balanceDate);
       setSuccessMsg(true);
       setBalanceInput(balance.toFixed(2));
-      setTimeout(() => setSuccessMsg(false), 3000);
+      setTimeout(() => setSuccessMsg(false), 6000);
     } catch (error) {
       console.error('Error saving balance:', error);
     } finally {
@@ -185,7 +184,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       setSuccessMsg(true);
       setCalcExpression('');
       setBalanceInput(balance.toFixed(2));
-      setTimeout(() => setSuccessMsg(false), 3000);
+      setTimeout(() => setSuccessMsg(false), 6000);
     } catch (error) {
       console.error('Error saving balance:', error);
     } finally {
@@ -437,11 +436,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         </div>
       </div>
 
-      {/* Vibe Check Panel */}
-      <div className="animate-in" style={{ animationDelay: '0.05s' }}>
-        <VibeCheck metrics={metrics} />
-        <GifDisplay metrics={metrics} />
-      </div>
+
 
       {/* SECTION 1: Record Current Balance (Moved Up for Quick Access) */}
       <div className="glass animate-in delay-100" style={{ padding: '24px' }}>
@@ -617,7 +612,6 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               {submitting ? 'Salvando...' : successMsg ? 'Registrado!' : 'Marcar Saldo'}
             </button>
 
-            {/* Real-time preview row (appears when there's an expression) */}
             {calcExpression.trim() !== '' && (
               <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginTop: '2px' }}>
                 <div 
@@ -649,6 +643,13 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               </div>
             )}
           </form>
+        )}
+
+        {/* Gif Feedback (shows only on success) */}
+        {successMsg && (
+          <div className="animate-in" style={{ width: '100%', marginTop: '16px' }}>
+            <GifDisplay metrics={metrics} />
+          </div>
         )}
       </div>
 
