@@ -82,7 +82,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Set default values when period changes
+  // Set default values when selected period ID changes
   useEffect(() => {
     setBalanceInput(period.currentBalance !== undefined ? period.currentBalance.toString() : '');
     
@@ -96,7 +96,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       setBalanceDate(today);
     }
     setSuccessMsg(false);
-  }, [period]);
+  }, [period.id]);
 
   // Auto focus the calculator input when opened
   useEffect(() => {
