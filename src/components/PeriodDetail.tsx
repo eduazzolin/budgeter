@@ -12,7 +12,9 @@ import {
   Trash2,
   AlertCircle,
   Calculator,
-  ArrowLeft
+  ArrowLeft,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { 
   ComposedChart, 
@@ -46,6 +48,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
   const [showChartHelp, setShowChartHelp] = useState(false);
+  const [showProjection, setShowProjection] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [deleteTargetDate, setDeleteTargetDate] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -256,7 +259,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       if (d.Real > maxMargin) maxMargin = d.Real;
       if (d.Real < minMargin) minMargin = d.Real;
     }
-    if (d.Projetado !== null) {
+    if (showProjection && d.Projetado !== null) {
       if (d.Projetado > maxMargin) maxMargin = d.Projetado;
       if (d.Projetado < minMargin) minMargin = d.Projetado;
     }
@@ -375,7 +378,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               <span style={{ fontWeight: 600 }}>{data.Real !== null ? formatCurrency(data.Real) : '-'}</span>
             </div>
 
-            {data.Projetado !== null && data.Real === null && (
+            {showProjection && data.Projetado !== null && data.Real === null && (
               <div style={{ color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', gap: '16px' }}>
                 <span>Margem Projetada:</span>
                 <span style={{ fontWeight: 600 }}>{formatCurrency(data.Projetado)}</span>
@@ -400,7 +403,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                 <span>Saldo Esperado Absoluto:</span>
                 <span>{formatCurrency(data._rawEsperado)}</span>
               </div>
-              {data._rawProjetado !== null && data._rawReal === undefined && (
+              {showProjection && data._rawProjetado !== null && data._rawReal === undefined && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px' }}>
                   <span>Saldo Projetado Absoluto:</span>
                   <span>{formatCurrency(data._rawProjetado)}</span>
@@ -820,7 +823,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
       {/* SECTION 6: Chart (New Feature) */}
       <div className="glass animate-in delay-300" style={{ padding: isMobile ? '16px 12px' : '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
           <div>
             <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <TrendingUp size={18} style={{ color: 'var(--color-primary)' }} /> Evolução do Orçamento
@@ -830,12 +833,30 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
             </p>
           </div>
           
-          <div 
-            style={{ position: 'relative', display: 'flex', alignItems: 'center', cursor: 'help' }}
-            onMouseEnter={() => setShowChartHelp(true)}
-            onMouseLeave={() => setShowChartHelp(false)}
-            onClick={() => setShowChartHelp(!showChartHelp)}
-          >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button
+              type="button"
+              className="btn btn-secondary toggle-projection-btn"
+              onClick={() => setShowProjection(!showProjection)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '0.85rem',
+                padding: '6px 12px'
+              }}
+              title={showProjection ? "Ocultar linha de projeção no gráfico" : "Exibir linha de projeção no gráfico"}
+            >
+              {showProjection ? <EyeOff size={16} /> : <Eye size={16} />}
+              <span>{showProjection ? 'Ocultar Projeção' : 'Exibir Projeção'}</span>
+            </button>
+
+            <div 
+              style={{ position: 'relative', display: 'flex', alignItems: 'center', cursor: 'help' }}
+              onMouseEnter={() => setShowChartHelp(true)}
+              onMouseLeave={() => setShowChartHelp(false)}
+              onClick={() => setShowChartHelp(!showChartHelp)}
+            >
             <Info size={18} style={{ color: 'var(--text-muted)' }} />
             
             {showChartHelp && (
@@ -860,6 +881,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
             )}
           </div>
         </div>
+      </div>
         
         <div style={{ width: '100%', height: isMobile ? 280 : 320 }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -951,15 +973,17 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                 strokeDasharray="4 4"
               />
               
-              <Line 
-                name="Projetado" 
-                type="monotone" 
-                dataKey="Projetado" 
-                stroke="var(--text-muted)" 
-                strokeWidth={1.5} 
-                strokeDasharray="2 4" 
-                dot={false} 
-              />
+              {showProjection && (
+                <Line 
+                  name="Projetado" 
+                  type="monotone" 
+                  dataKey="Projetado" 
+                  stroke="var(--text-muted)" 
+                  strokeWidth={1.5} 
+                  strokeDasharray="2 4" 
+                  dot={false} 
+                />
+              )}
               
               <Area 
                 name="Real" 
