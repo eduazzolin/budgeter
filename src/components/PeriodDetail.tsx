@@ -28,6 +28,8 @@ import {
 } from 'recharts';
 
 import { PeriodNotes } from './PeriodNotes';
+import { VibeCheck } from './VibeCheck';
+import { GifDisplay } from './GifDisplay';
 
 interface PeriodDetailProps {
   period: Period;
@@ -433,6 +435,12 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
             <Clock size={16} /> {metrics.totalDays} dias no total
           </span>
         </div>
+      </div>
+
+      {/* Vibe Check Panel */}
+      <div className="animate-in" style={{ animationDelay: '0.05s' }}>
+        <VibeCheck metrics={metrics} />
+        <GifDisplay metrics={metrics} />
       </div>
 
       {/* SECTION 1: Record Current Balance (Moved Up for Quick Access) */}
