@@ -823,65 +823,73 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
       {/* SECTION 6: Chart (New Feature) */}
       <div className="glass animate-in delay-300" style={{ padding: isMobile ? '16px 12px' : '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
-          <div>
-            <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ marginBottom: isMobile ? '16px' : '20px' }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            flexWrap: 'wrap', 
+            gap: '8px',
+            marginBottom: '8px'
+          }}>
+            <h3 style={{ fontSize: isMobile ? '1.05rem' : '1.2rem', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
               <TrendingUp size={18} style={{ color: 'var(--color-primary)' }} /> Evolução do Orçamento
             </h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>
-              Acompanhe visualmente se os seus gastos reais estão seguindo o orçamento esperado.
-            </p>
-          </div>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <button
-              type="button"
-              className="btn btn-secondary toggle-projection-btn"
-              onClick={() => setShowProjection(!showProjection)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                fontSize: '0.85rem',
-                padding: '6px 12px'
-              }}
-              title={showProjection ? "Ocultar linha de projeção no gráfico" : "Exibir linha de projeção no gráfico"}
-            >
-              {showProjection ? <EyeOff size={16} /> : <Eye size={16} />}
-              <span>{showProjection ? 'Ocultar Projeção' : 'Exibir Projeção'}</span>
-            </button>
-
-            <div 
-              style={{ position: 'relative', display: 'flex', alignItems: 'center', cursor: 'help' }}
-              onMouseEnter={() => setShowChartHelp(true)}
-              onMouseLeave={() => setShowChartHelp(false)}
-              onClick={() => setShowChartHelp(!showChartHelp)}
-            >
-            <Info size={18} style={{ color: 'var(--text-muted)' }} />
             
-            {showChartHelp && (
-              <div className="glass animate-in" style={{ 
-                position: 'absolute', 
-                top: '24px', 
-                right: 0, 
-                width: '300px', 
-                padding: '16px', 
-                zIndex: 10,
-                fontSize: '0.85rem',
-                color: 'var(--text-secondary)',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.1)'
-              }}>
-                <p style={{ margin: '0 0 12px 0', fontWeight: 'bold', color: 'var(--text-primary)' }}>Como ler o gráfico?</p>
-                <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <li>A linha reta tracejada <strong style={{ color: 'var(--text-primary)' }}>R$0</strong> representa o seu limite diário ideal para terminar no azul.</li>
-                  <li>Pontos <strong>acima de R$0</strong> significam que você está economizando (Margem positiva).</li>
-                  <li>Pontos <strong>abaixo de R$0</strong> significam que você ultrapassou a meta no momento (Margem negativa).</li>
-                </ul>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                type="button"
+                className="btn btn-secondary toggle-projection-btn"
+                onClick={() => setShowProjection(!showProjection)}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '0.8rem',
+                  padding: isMobile ? '5px 10px' : '6px 12px',
+                  whiteSpace: 'nowrap'
+                }}
+                title={showProjection ? "Ocultar linha de projeção no gráfico" : "Exibir linha de projeção no gráfico"}
+              >
+                {showProjection ? <EyeOff size={15} /> : <Eye size={15} />}
+                <span>{showProjection ? 'Ocultar Projeção' : 'Exibir Projeção'}</span>
+              </button>
+
+              <div 
+                style={{ position: 'relative', display: 'flex', alignItems: 'center', cursor: 'help' }}
+                onMouseEnter={() => setShowChartHelp(true)}
+                onMouseLeave={() => setShowChartHelp(false)}
+                onClick={() => setShowChartHelp(!showChartHelp)}
+              >
+                <Info size={18} style={{ color: 'var(--text-muted)' }} />
+                
+                {showChartHelp && (
+                  <div className="glass animate-in" style={{ 
+                    position: 'absolute', 
+                    top: '24px', 
+                    right: 0, 
+                    width: isMobile ? '250px' : '300px', 
+                    padding: '14px', 
+                    zIndex: 10,
+                    fontSize: '0.85rem',
+                    color: 'var(--text-secondary)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.1)'
+                  }}>
+                    <p style={{ margin: '0 0 12px 0', fontWeight: 'bold', color: 'var(--text-primary)' }}>Como ler o gráfico?</p>
+                    <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <li>A linha reta tracejada <strong style={{ color: 'var(--text-primary)' }}>R$0</strong> representa o seu limite diário ideal para terminar no azul.</li>
+                      <li>Pontos <strong>acima de R$0</strong> significam que você está economizando (Margem positiva).</li>
+                      <li>Pontos <strong>abaixo de R$0</strong> significam que você ultrapassou a meta no momento (Margem negativa).</li>
+                    </ul>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
+            Acompanhe visualmente se os seus gastos reais estão seguindo o orçamento esperado.
+          </p>
         </div>
-      </div>
         
         <div style={{ width: '100%', height: isMobile ? 280 : 320 }}>
           <ResponsiveContainer width="100%" height="100%">
