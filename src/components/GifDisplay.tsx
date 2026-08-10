@@ -76,12 +76,6 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({ metrics }) => {
       marginTop: '16px',
       background: 'rgba(255, 255, 255, 0.03)'
     }}>
-      <div style={{ width: '100%', textAlign: 'center' }}>
-        <h4 style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          Mood Atual do Orçamento: <strong style={{ color: 'var(--color-primary)' }}>{gifState.name}</strong>
-        </h4>
-      </div>
-      
       <div style={{ 
         width: '100%', 
         maxWidth: '300px', 
