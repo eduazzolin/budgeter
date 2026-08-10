@@ -645,8 +645,8 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           </form>
         )}
 
-        {/* Gif Feedback (shows only on success) */}
-        {successMsg && (
+        {/* Gif Feedback (shows inside balance container once a balance is registered or upon saving) */}
+        {(metrics.recordedBalance !== undefined || successMsg) && (
           <div className="animate-in" style={{ width: '100%', marginTop: '16px' }}>
             <GifDisplay metrics={metrics} />
           </div>
