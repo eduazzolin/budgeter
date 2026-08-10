@@ -23,57 +23,57 @@ export const GIF_STATES: Record<GifStateType, GifStateConfig> = {
   UNKNOWN: {
     id: 'UNKNOWN',
     name: 'Desconhecido',
-    searchTerm: 'waiting bored'
+    searchTerm: 'esperando entediado'
   },
   GOD_OF_WEALTH: {
     id: 'GOD_OF_WEALTH',
     name: 'Deus da Riqueza',
-    searchTerm: 'making it rain rich'
+    searchTerm: 'ostentando rico dinheiro'
   },
   BALLING: {
     id: 'BALLING',
     name: 'Ostentação',
-    searchTerm: 'balling luxury'
+    searchTerm: 'ostentacao rico'
   },
   CHILL: {
     id: 'CHILL',
     name: 'Tranquilo e Favorável',
-    searchTerm: 'chill relax'
+    searchTerm: 'tranquilo favoravel de boa'
   },
   ON_TRACK: {
     id: 'ON_TRACK',
     name: 'No Caminho Certo',
-    searchTerm: 'thumbs up steady'
+    searchTerm: 'caminho certo joinha'
   },
   ATTENTION: {
     id: 'ATTENTION',
     name: 'Atenção',
-    searchTerm: 'cautious hmm'
+    searchTerm: 'atencao alerta'
   },
   SWEATING: {
     id: 'SWEATING',
     name: 'Suando Frio',
-    searchTerm: 'sweating nervous'
+    searchTerm: 'suando frio nervoso'
   },
   SURVIVAL: {
     id: 'SURVIVAL',
     name: 'Modo Sobrevivência',
-    searchTerm: 'struggle empty wallet'
+    searchTerm: 'modo sobrevivencia liso'
   },
   DESPAIR: {
     id: 'DESPAIR',
     name: 'Desespero',
-    searchTerm: 'crying broke'
+    searchTerm: 'desespero chorando sem dinheiro'
   },
   BURNING: {
     id: 'BURNING',
     name: 'Tudo em Chamas',
-    searchTerm: 'this is fine burning'
+    searchTerm: 'tudo em chamas fogo'
   },
   MISSION_ACCOMPLISHED: {
     id: 'MISSION_ACCOMPLISHED',
     name: 'Missão Cumprida',
-    searchTerm: 'mission accomplished celebration'
+    searchTerm: 'missao cumprida festa'
   }
 };
 

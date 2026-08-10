@@ -23,8 +23,8 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({ metrics }) => {
     const fetchGif = async () => {
       setLoading(true);
       try {
-        // Search gifs with tag for higher reliability than random endpoint
-        const res = await gf.search(gifState.searchTerm, { limit: 10, rating: 'g' });
+        // Search gifs with tag in Portuguese (lang: 'pt')
+        const res = await gf.search(gifState.searchTerm, { limit: 10, rating: 'g', lang: 'pt' });
         if (mounted && res.data && res.data.length > 0) {
           const randomIndex = Math.floor(Math.random() * res.data.length);
           const selectedGif = res.data[randomIndex];
@@ -40,7 +40,7 @@ export const GifDisplay: React.FC<GifDisplayProps> = ({ metrics }) => {
         console.error('Error fetching GIF from Giphy SDK:', error);
         // Fallback fetch directly from Giphy API endpoint if SDK encounters issue
         try {
-          const response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}&q=${encodeURIComponent(gifState.searchTerm)}&limit=10&rating=g`);
+          const response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}&q=${encodeURIComponent(gifState.searchTerm)}&limit=10&rating=g&lang=pt`);
           const json = await response.json();
           if (mounted && json.data && json.data.length > 0) {
             const randomIndex = Math.floor(Math.random() * json.data.length);
