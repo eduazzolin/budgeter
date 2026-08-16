@@ -12,9 +12,7 @@ import {
   Trash2,
   AlertCircle,
   Calculator,
-  ArrowLeft,
-  Eye,
-  EyeOff
+  ArrowLeft
 } from 'lucide-react';
 import { 
   ComposedChart, 
@@ -51,7 +49,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
   const [showChartHelp, setShowChartHelp] = useState(false);
-  const [showProjection, setShowProjection] = useState(false);
+  const showProjection = metrics.difference !== undefined && metrics.difference < 0;
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [deleteTargetDate, setDeleteTargetDate] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -848,24 +846,6 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
             </h3>
             
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <button
-                type="button"
-                className="btn btn-secondary toggle-projection-btn"
-                onClick={() => setShowProjection(!showProjection)}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '0.8rem',
-                  padding: isMobile ? '5px 10px' : '6px 12px',
-                  whiteSpace: 'nowrap'
-                }}
-                title={showProjection ? "Ocultar linha de projeção no gráfico" : "Exibir linha de projeção no gráfico"}
-              >
-                {showProjection ? <EyeOff size={15} /> : <Eye size={15} />}
-                <span>{showProjection ? 'Ocultar Projeção' : 'Exibir Projeção'}</span>
-              </button>
-
               <div 
                 style={{ position: 'relative', display: 'flex', alignItems: 'center', cursor: 'help' }}
                 onMouseEnter={() => setShowChartHelp(true)}
