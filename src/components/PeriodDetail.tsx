@@ -1009,11 +1009,10 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           <table className="budget-table">
             <thead>
               <tr>
-                <th style={{ width: '20%' }}>Data</th>
-                <th style={{ width: '20%' }}>Saldo Esperado</th>
-                <th style={{ width: '20%' }}>Saldo Real</th>
-                <th style={{ width: '20%' }}>Saldo Projetado</th>
-                <th style={{ width: '20%' }}>Margem</th>
+                <th style={{ width: '25%' }}>Data</th>
+                <th style={{ width: '25%' }}>Saldo Esperado</th>
+                <th style={{ width: '25%' }}>Saldo Real</th>
+                <th style={{ width: '25%' }}>Margem</th>
               </tr>
             </thead>
             <tbody>
@@ -1033,23 +1032,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                   const recordedBalanceForDay = period.balanceHistory?.[dateStr];
                   const hasRecord = recordedBalanceForDay !== undefined;
                   const isToday = todayStr === dateStr;
-                  
-                  // Projeta o saldo para o dia com base no último saldo real registrado até este dia (ou no orçamento inicial)
-                  let refIndex = -1;
-                  let refBalance: number | null = null;
 
-                  for (let j = 0; j <= index; j++) {
-                    const dStr = dates[j];
-                    const bal = period.balanceHistory?.[dStr];
-                    if (bal !== undefined) {
-                      refIndex = j;
-                      refBalance = bal;
-                    }
-                  }
-
-                  const projectedBalance = refBalance !== null
-                    ? refBalance - (index - refIndex) * metrics.dailyBudget
-                    : period.initialBudget - index * metrics.dailyBudget;
 
                   let diffText = '—';
                   let diffColor = 'inherit';
@@ -1120,9 +1103,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                           )}
                         </div>
                       </td>
-                      <td style={{ color: 'var(--text-secondary)' }}>
-                        {formatCurrency(projectedBalance)}
-                      </td>
+
                       <td style={{ color: diffColor, fontWeight: diffWeight as any }}>
                         {diffText}
                       </td>
