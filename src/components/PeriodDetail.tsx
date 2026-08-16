@@ -1027,7 +1027,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
             <tbody>
               {(() => {
                 const totalDays = metrics.totalDays;
-                const dates = [];
+                const dates: string[] = [];
                 const start = parseLocalDate(period.startDate);
                 for (let i = 0; i < totalDays; i++) {
                   const nextDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
@@ -1042,10 +1042,22 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                   const hasRecord = recordedBalanceForDay !== undefined;
                   const isToday = todayStr === dateStr;
                   
-                  let projectedBalance = null;
-                  if (lastRecordedBalance !== null && index >= lastRecordedDayIndex) {
-                    projectedBalance = lastRecordedBalance;
+                  // Projeta o saldo para o dia com base no último saldo real registrado até este dia (ou no orçamento inicial)
+                  let refIndex = -1;
+                  let refBalance: number | null = null;
+
+                  for (let j = 0; j <= index; j++) {
+                    const dStr = dates[j];
+                    const bal = period.balanceHistory?.[dStr];
+                    if (bal !== undefined) {
+                      refIndex = j;
+                      refBalance = bal;
+                    }
                   }
+
+                  const projectedBalance = refBalance !== null
+                    ? refBalance - (index - refIndex) * metrics.dailyBudget
+                    : period.initialBudget - index * metrics.dailyBudget;
 
                   let diffText = '—';
                   let diffColor = 'inherit';
@@ -1116,10 +1128,8 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                           )}
                         </div>
                       </td>
-                      <td style={{ color: 'var(--text-secondary)', fontStyle: projectedBalance !== null ? 'normal' : 'italic' }}>
-                        {projectedBalance !== null
-                          ? formatCurrency(projectedBalance)
-                          : '—'}
+                      <td style={{ color: 'var(--text-secondary)' }}>
+                        {formatCurrency(projectedBalance)}
                       </td>
                       <td style={{ color: diffColor, fontWeight: diffWeight as any }}>
                         {diffText}
