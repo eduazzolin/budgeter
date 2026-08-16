@@ -62,7 +62,7 @@ export const dbService = {
         });
         
         // Sort in memory to avoid custom index configuration
-        const sortedPeriods = periods.sort((a, b) => {
+        return periods.sort((a, b) => {
           const orderA = a.sortOrder !== undefined ? a.sortOrder : Number.MIN_SAFE_INTEGER;
           const orderB = b.sortOrder !== undefined ? b.sortOrder : Number.MIN_SAFE_INTEGER;
           if (orderA !== orderB) {
@@ -70,10 +70,6 @@ export const dbService = {
           }
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         });
-
-        // Update local storage cache for instant 0ms startup hydration
-        saveLocalPeriods(sortedPeriods);
-        return sortedPeriods;
       } catch (error) {
         console.error('Firebase getPeriods error:', error);
       }
