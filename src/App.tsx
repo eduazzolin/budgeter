@@ -76,6 +76,16 @@ function App() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
+  // Enable GIFs state (disabled by default)
+  const [enableGifs, setEnableGifs] = useState<boolean>(() => {
+    return localStorage.getItem('enable_random_gifs') === 'true';
+  });
+
+  const handleEnableGifsChange = (enabled: boolean) => {
+    setEnableGifs(enabled);
+    localStorage.setItem('enable_random_gifs', enabled ? 'true' : 'false');
+  };
+
   // Handle Create or Edit Period form submit
   const handleFormSubmit = async (
     name: string,
@@ -248,6 +258,7 @@ function App() {
                 onRecordBalance={recordBalance}
                 onDeleteBalance={deleteBalance}
                 onUpdateNotes={(id, notes) => updatePeriod(id, { notes })}
+                enableGifs={enableGifs}
               />
             </Suspense>
           ) : (
@@ -301,6 +312,8 @@ function App() {
           onSyncLocalData={syncLocalData}
           theme={theme}
           onThemeChange={setTheme}
+          enableGifs={enableGifs}
+          onEnableGifsChange={handleEnableGifsChange}
         />
       </Suspense>
 

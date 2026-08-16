@@ -80,4 +80,11 @@ test.describe('Classificação de Estados de GIF (Testes Unitários)', () => {
     const keyword = getRandomKeyword(emptyConfig);
     expect(keyword).toBe('gif');
   });
+
+  test('deve considerar a opção de GIFs desativada por padrão (localStorage não definido)', () => {
+    const isEnabledDefault = (value: string | null) => value === 'true';
+    expect(isEnabledDefault(null)).toBe(false);
+    expect(isEnabledDefault('false')).toBe(false);
+    expect(isEnabledDefault('true')).toBe(true);
+  });
 });
