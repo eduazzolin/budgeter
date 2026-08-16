@@ -13,9 +13,7 @@ import {
   Sun,
   Moon,
   X,
-  User,
-  Sparkles,
-  Film
+  User
 } from 'lucide-react';
 
 interface AuthSettingsProps {
@@ -27,8 +25,6 @@ interface AuthSettingsProps {
   onSyncLocalData: () => Promise<void>;
   theme: 'light' | 'dark';
   onThemeChange: (theme: 'light' | 'dark') => void;
-  enableGifs: boolean;
-  onEnableGifsChange: (enabled: boolean) => void;
 }
 
 export const AuthSettings: React.FC<AuthSettingsProps> = ({
@@ -39,9 +35,7 @@ export const AuthSettings: React.FC<AuthSettingsProps> = ({
   onLoginWithGoogle,
   onSyncLocalData,
   theme,
-  onThemeChange,
-  enableGifs,
-  onEnableGifsChange
+  onThemeChange
 }) => {
   const firebaseActive = isFirebaseEnabled();
   const [syncing, setSyncing] = useState(false);
@@ -302,43 +296,7 @@ export const AuthSettings: React.FC<AuthSettingsProps> = ({
             </div>
           </div>
 
-          {/* Random GIFs Toggle */}
-          <div style={{ 
-            borderTop: '1px solid var(--card-border)', 
-            paddingTop: '16px',
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: '8px' 
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block' }}>
-                  GIFs Animados
-                </span>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                  Exibir GIFs aleatórios de reação ao registrar o saldo
-                </span>
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-              <button 
-                type="button"
-                onClick={() => onEnableGifsChange(false)}
-                className={`btn ${!enableGifs ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, padding: '8px 12px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-              >
-                <Film size={14} style={{ opacity: !enableGifs ? 1 : 0.6 }} /> Desativado
-              </button>
-              <button 
-                type="button"
-                onClick={() => onEnableGifsChange(true)}
-                className={`btn ${enableGifs ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, padding: '8px 12px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-              >
-                <Sparkles size={14} /> Ativado
-              </button>
-            </div>
-          </div>
+
 
           {/* System Version Info */}
           <div style={{ 

@@ -26,22 +26,19 @@ import {
 } from 'recharts';
 
 import { PeriodNotes } from './PeriodNotes';
-import { GifDisplay } from './GifDisplay';
 
 interface PeriodDetailProps {
   period: Period;
   onRecordBalance: (id: string, balance: number, date: string) => Promise<void>;
   onDeleteBalance: (id: string, date: string) => Promise<void>;
   onUpdateNotes: (id: string, notes: string) => Promise<void>;
-  enableGifs?: boolean;
 }
 
 export const PeriodDetail: React.FC<PeriodDetailProps> = ({
   period,
   onRecordBalance,
   onDeleteBalance,
-  onUpdateNotes,
-  enableGifs = false
+  onUpdateNotes
 }) => {
   const metrics = calculateBudgetMetrics(period);
   const [balanceInput, setBalanceInput] = useState('');
@@ -645,12 +642,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           </form>
         )}
 
-        {/* Gif Feedback (shows only if enabled in settings and upon saving the balance) */}
-        {enableGifs && successMsg && (
-          <div className="animate-in" style={{ width: '100%', marginTop: '16px' }}>
-            <GifDisplay metrics={metrics} />
-          </div>
-        )}
+
       </div>
 
       {/* SECTION 3: Grid of Main KPIs */}
