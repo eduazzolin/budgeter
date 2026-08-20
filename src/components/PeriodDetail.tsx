@@ -997,7 +997,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       <PeriodNotes period={period} onUpdateNotes={onUpdateNotes} />
 
       {/* SECTION 5: Table of Daily Projections (New Feature) */}
-      <div className="glass animate-in delay-400" style={{ padding: '24px' }}>
+      <div className="glass animate-in delay-400 table-card">
         <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Calendar size={18} style={{ color: 'var(--color-primary)' }} /> Tabela de Evolução do Orçamento
         </h3>
@@ -1076,14 +1076,14 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                       <td style={{ color: isToday ? 'var(--color-primary)' : 'inherit', fontWeight: isToday ? 600 : 'normal' }}>
                         {formatDate(dateStr)}
                         {isToday && (
-                          <span className="badge badge-neutral" style={{ marginLeft: '8px', padding: '2px 8px', fontSize: '0.65rem', textTransform: 'none' }}>
+                          <span className="badge badge-neutral today-badge" style={{ marginLeft: '8px', padding: '2px 8px', fontSize: '0.65rem', textTransform: 'none' }}>
                             Hoje
                           </span>
                         )}
                       </td>
                       <td>{formatCurrency(expectedBalance)}</td>
                       <td>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                        <div className="table-recorded-cell" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
                           <span>
                             {hasRecord ? formatCurrency(recordedBalanceForDay!) : '—'}
                           </span>

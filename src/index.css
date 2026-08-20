@@ -447,6 +447,10 @@ h1, h2, h3, h4, .font-display {
 }
 
 /* Responsive Table Styling */
+.table-card {
+  padding: 24px;
+}
+
 .table-container {
   width: 100%;
   overflow-x: auto;
@@ -519,6 +523,13 @@ h1, h2, h3, h4, .font-display {
   align-items: center;
   gap: 16px;
 }
+
+.app-header button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .header-btn {
   padding: 8px 12px;
   font-size: 0.85rem;
@@ -528,6 +539,59 @@ h1, h2, h3, h4, .font-display {
 }
 
 @media (max-width: 640px) {
+  .table-card {
+    padding: 12px 8px !important;
+  }
+
+  .table-container {
+    margin-top: 10px;
+    overflow-x: hidden;
+    border-radius: var(--border-radius-xs, 6px);
+  }
+
+  .budget-table {
+    min-width: 0 !important;
+    width: 100%;
+    font-size: 0.68rem;
+    table-layout: auto;
+  }
+
+  .budget-table th, .budget-table td {
+    padding: 5px 3px;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .budget-table th {
+    width: auto !important;
+    font-size: 0.6rem;
+    letter-spacing: 0;
+    padding: 5px 2px;
+    text-align: center;
+    line-height: 1.15;
+    white-space: normal;
+  }
+
+  .budget-table td {
+    text-align: left;
+    line-height: 1.2;
+  }
+
+  .today-badge {
+    display: inline-block;
+    margin-left: 2px !important;
+    padding: 1px 3px !important;
+    font-size: 0.55rem !important;
+  }
+
+  .table-recorded-cell {
+    gap: 2px !important;
+  }
+
+  .delete-balance-btn {
+    padding: 1px !important;
+  }
+
   .app-header {
     margin: 10px 12px 0 12px;
     padding: 12px 14px;
