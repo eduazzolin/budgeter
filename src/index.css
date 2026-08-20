@@ -439,10 +439,17 @@ h1, h2, h3, h4, .font-display {
   color: var(--color-below) !important;
 }
 
-/* Hide on mobile utility */
+/* Responsive visibility utilities */
+.show-mobile {
+  display: none !important;
+}
+
 @media (max-width: 640px) {
   .hide-mobile {
     display: none !important;
+  }
+  .show-mobile {
+    display: inline !important;
   }
 }
 
@@ -552,21 +559,21 @@ h1, h2, h3, h4, .font-display {
   .budget-table {
     min-width: 0 !important;
     width: 100%;
-    font-size: 0.68rem;
+    font-size: 0.78rem;
     table-layout: auto;
   }
 
   .budget-table th, .budget-table td {
-    padding: 5px 3px;
+    padding: 6px 4px;
     word-break: break-word;
     overflow-wrap: anywhere;
   }
 
   .budget-table th {
     width: auto !important;
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     letter-spacing: 0;
-    padding: 5px 2px;
+    padding: 6px 2px;
     text-align: center;
     line-height: 1.15;
     white-space: normal;
@@ -574,7 +581,7 @@ h1, h2, h3, h4, .font-display {
 
   .budget-table td {
     text-align: left;
-    line-height: 1.2;
+    line-height: 1.25;
   }
 
   .today-badge {

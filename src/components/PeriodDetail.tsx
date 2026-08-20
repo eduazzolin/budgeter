@@ -193,6 +193,15 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   };
 
+  const formatCurrencyNoCents = (val: number) => {
+    return val.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+  };
+
   const formatDate = (dateStr: string) => {
     const [y, m, d] = dateStr.split('-');
     return `${d}/${m}/${y}`;
@@ -1009,10 +1018,19 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           <table className="budget-table">
             <thead>
               <tr>
-                <th style={{ width: '20%' }}>Data</th>
-                <th style={{ width: '20%' }}>Saldo Esperado</th>
-                <th style={{ width: '20%' }}>Saldo Real</th>
-                <th style={{ width: '20%' }}>Margem Projetada</th>
+                <th style={{ width: '18%' }}>Data</th>
+                <th style={{ width: '21%' }}>
+                  <span className="hide-mobile">Saldo Esperado</span>
+                  <span className="show-mobile">Esperado</span>
+                </th>
+                <th style={{ width: '21%' }}>
+                  <span className="hide-mobile">Saldo Real</span>
+                  <span className="show-mobile">Real</span>
+                </th>
+                <th style={{ width: '20%' }}>
+                  <span className="hide-mobile">Margem Projetada</span>
+                  <span className="show-mobile">M. Proj.</span>
+                </th>
                 <th style={{ width: '20%' }}>Margem</th>
               </tr>
             </thead>
@@ -1036,7 +1054,8 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                   const isToday = todayStr === dateStr;
                   const isPast = dateStr < todayStr;
 
-                  let diffText = '—';
+                  let diffTextFull = '—';
+                  let diffTextCompact = '—';
                   let diffColor = 'inherit';
                   let diffWeight = 'normal';
 
@@ -1044,48 +1063,64 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                     const diff = recordedBalanceForDay - expectedBalance;
                     const diffAbs = Math.abs(diff);
                     if (diff > 0.01) {
-                      diffText = `+ ${formatCurrency(diffAbs)}`;
+                      diffTextFull = `+ ${formatCurrency(diffAbs)}`;
+                      diffTextCompact = formatCurrencyNoCents(diffAbs);
                       diffColor = 'var(--color-above)';
                       diffWeight = '700';
                     } else if (diff < -0.01) {
-                      diffText = `- ${formatCurrency(diffAbs)}`;
+                      diffTextFull = `- ${formatCurrency(diffAbs)}`;
+                      diffTextCompact = formatCurrencyNoCents(diffAbs);
                       diffColor = 'var(--color-below)';
                       diffWeight = '700';
                     } else {
-                      diffText = 'Margem OK';
+                      diffTextFull = 'Margem OK';
+                      diffTextCompact = 'Margem OK';
                       diffColor = 'var(--color-neutral)';
                       diffWeight = '700';
                     }
                   }
 
-                  let projMarginText = '—';
+                  let projMarginTextFull = '—';
+                  let projMarginTextCompact = '—';
                   if (!isPast) {
                     const projMargin = projectedVal - expectedBalance;
                     const projMarginAbs = Math.abs(projMargin);
                     if (projMargin > 0.01) {
-                      projMarginText = `+ ${formatCurrency(projMarginAbs)}`;
+                      projMarginTextFull = `+ ${formatCurrency(projMarginAbs)}`;
+                      projMarginTextCompact = formatCurrencyNoCents(projMarginAbs);
                     } else if (projMargin < -0.01) {
-                      projMarginText = `- ${formatCurrency(projMarginAbs)}`;
+                      projMarginTextFull = `- ${formatCurrency(projMarginAbs)}`;
+                      projMarginTextCompact = formatCurrencyNoCents(projMarginAbs);
                     } else {
-                      projMarginText = 'Margem OK';
+                      projMarginTextFull = 'Margem OK';
+                      projMarginTextCompact = 'Margem OK';
                     }
                   }
 
                   return (
                     <tr key={dateStr} className={isToday ? 'today-row' : ''}>
                       <td style={{ color: isToday ? 'var(--color-primary)' : 'inherit', fontWeight: isToday ? 600 : 'normal' }}>
-                        {formatDate(dateStr)}
+                        <span className="hide-mobile">{formatDate(dateStr)}</span>
+                        <span className="show-mobile">{formatShortDate(dateStr)}</span>
                         {isToday && (
                           <span className="badge badge-neutral today-badge" style={{ marginLeft: '8px', padding: '2px 8px', fontSize: '0.65rem', textTransform: 'none' }}>
                             Hoje
                           </span>
                         )}
                       </td>
-                      <td>{formatCurrency(expectedBalance)}</td>
+                      <td>
+                        <span className="hide-mobile">{formatCurrency(expectedBalance)}</span>
+                        <span className="show-mobile">{formatCurrencyNoCents(expectedBalance)}</span>
+                      </td>
                       <td>
                         <div className="table-recorded-cell" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
                           <span>
-                            {hasRecord ? formatCurrency(recordedBalanceForDay!) : '—'}
+                            {hasRecord ? (
+                              <>
+                                <span className="hide-mobile">{formatCurrency(recordedBalanceForDay!)}</span>
+                                <span className="show-mobile">{formatCurrencyNoCents(recordedBalanceForDay!)}</span>
+                              </>
+                            ) : '—'}
                           </span>
                           {hasRecord && (
                             <button
@@ -1119,11 +1154,13 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                         </div>
                       </td>
                       <td style={{ color: 'var(--text-muted)' }}>
-                        {projMarginText}
+                        <span className="hide-mobile">{projMarginTextFull}</span>
+                        <span className="show-mobile">{projMarginTextCompact}</span>
                       </td>
 
                       <td style={{ color: diffColor, fontWeight: diffWeight as any }}>
-                        {diffText}
+                        <span className="hide-mobile">{diffTextFull}</span>
+                        <span className="show-mobile">{diffTextCompact}</span>
                       </td>
                     </tr>
                   );
