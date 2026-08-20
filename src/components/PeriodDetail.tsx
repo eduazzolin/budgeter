@@ -1012,7 +1012,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                 <th style={{ width: '20%' }}>Data</th>
                 <th style={{ width: '20%' }}>Saldo Esperado</th>
                 <th style={{ width: '20%' }}>Saldo Real</th>
-                <th style={{ width: '20%' }}>Saldo Projetado</th>
+                <th style={{ width: '20%' }}>Margem Projetada</th>
                 <th style={{ width: '20%' }}>Margem</th>
               </tr>
             </thead>
@@ -1055,6 +1055,19 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                       diffText = 'Margem OK';
                       diffColor = 'var(--color-neutral)';
                       diffWeight = '700';
+                    }
+                  }
+
+                  let projMarginText = '—';
+                  if (!isPast) {
+                    const projMargin = projectedVal - expectedBalance;
+                    const projMarginAbs = Math.abs(projMargin);
+                    if (projMargin > 0.01) {
+                      projMarginText = `+ ${formatCurrency(projMarginAbs)}`;
+                    } else if (projMargin < -0.01) {
+                      projMarginText = `- ${formatCurrency(projMarginAbs)}`;
+                    } else {
+                      projMarginText = 'Margem OK';
                     }
                   }
 
@@ -1105,8 +1118,8 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                           )}
                         </div>
                       </td>
-                      <td>
-                        {!isPast ? formatCurrency(projectedVal) : '—'}
+                      <td style={{ color: 'var(--text-muted)' }}>
+                        {projMarginText}
                       </td>
 
                       <td style={{ color: diffColor, fontWeight: diffWeight as any }}>

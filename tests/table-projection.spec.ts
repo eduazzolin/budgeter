@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Coluna de Saldo Projetado na Tabela', () => {
-  test('deve exibir a coluna Saldo Projetado, mostrando traço para dias passados e saldo projetado para dias hoje/futuros', async ({ page }) => {
+test.describe('Coluna de Margem Projetada na Tabela', () => {
+  test('deve exibir a coluna Margem Projetada, mostrando traço para dias passados e margem projetada em cinza para dias hoje/futuros', async ({ page }) => {
     const mockPeriod = {
       id: "test-table-projection",
       name: "Teste Tabela Projeção",
@@ -27,13 +27,13 @@ test.describe('Coluna de Saldo Projetado na Tabela', () => {
 
     await page.goto('/');
 
-    // Verifica se o cabeçalho "Saldo Projetado" está visível
-    const thProjetado = page.locator('th', { hasText: 'Saldo Projetado' });
+    // Verifica se o cabeçalho "Margem Projetada" está visível
+    const thProjetado = page.locator('th', { hasText: 'Margem Projetada' });
     await expect(thProjetado).toBeVisible();
 
     // Na tabela, verifica que a coluna existe
     const tableHeaderCols = page.locator('table.budget-table th');
     await expect(tableHeaderCols).toHaveCount(5);
-    await expect(tableHeaderCols.nth(3)).toContainText('Saldo Projetado');
+    await expect(tableHeaderCols.nth(3)).toContainText('Margem Projetada');
   });
 });

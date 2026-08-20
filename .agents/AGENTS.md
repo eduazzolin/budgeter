@@ -44,3 +44,6 @@ Ao testar a aplicação utilizando o Playwright ou ferramentas de automação vi
    - `npm run bump:major` (para grandes mudanças arquiteturais ex: 1.0.0 -> 2.0.0)
    - `npm run release` (executa build e incrementa a versão patch automaticamente)
 
+## Fluxo de Execução e Aprovação de Planos
+
+1. **Aprovação Automática em Solicitações de Push:** Quando a solicitação do usuário incluir termos que indicam a publicação/envio final (ex: "depois push", "e faz o push", "e publique"), NÃO é necessário pausar para aguardar a confirmação manual do plano de implementação. O agente deve criar/atualizar a documentação necessária e prosseguir diretamente para a execução completa (código, testes, incremento de versão e `git push`).
