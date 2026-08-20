@@ -110,6 +110,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  background-color: var(--bg-primary);
+}
+
 body {
   background-color: var(--bg-primary);
   background-image: 

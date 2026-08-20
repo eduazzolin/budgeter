@@ -74,6 +74,18 @@ function App() {
       root.classList.remove('dark');
     }
     localStorage.setItem('theme', theme);
+
+    // Update theme-color meta tags for mobile status bar matching
+    const themeColor = theme === 'dark' ? '#09090b' : '#fafafa';
+    const metaTags = document.querySelectorAll('meta[name="theme-color"]');
+    if (metaTags.length > 0) {
+      metaTags.forEach(meta => meta.setAttribute('content', themeColor));
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      meta.content = themeColor;
+      document.head.appendChild(meta);
+    }
   }, [theme]);
 
 
