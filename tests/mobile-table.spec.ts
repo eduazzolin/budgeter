@@ -39,9 +39,14 @@ test.describe('Tabela de Evolução em Telas Mobile e Desktop', () => {
     // scrollWidth deve ser igual ou muito próximo de clientWidth (tolerância de até 2px por conta de arredondamento de subpixel)
     expect(scrollWidth - clientWidth).toBeLessThanOrEqual(2);
 
-    // Verifica se as colunas estão visíveis
+    // Verifica se as colunas estão visíveis e possuem texto centralizado sem quebra de linha em mobile
     const ths = page.locator('.budget-table th');
     await expect(ths).toHaveCount(5);
+    const firstTd = page.locator('.budget-table td').first();
+    const textAlign = await firstTd.evaluate((el) => window.getComputedStyle(el).textAlign);
+    const whiteSpace = await firstTd.evaluate((el) => window.getComputedStyle(el).whiteSpace);
+    expect(textAlign).toBe('center');
+    expect(whiteSpace).toBe('nowrap');
   });
 
   test('deve manter o tamanho original da tabela em telas desktop', async ({ page }) => {

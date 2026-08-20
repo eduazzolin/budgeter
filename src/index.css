@@ -559,29 +559,32 @@ h1, h2, h3, h4, .font-display {
   .budget-table {
     min-width: 0 !important;
     width: 100%;
-    font-size: 0.78rem;
+    font-size: clamp(0.55rem, 2.4vw, 0.72rem);
     table-layout: auto;
   }
 
   .budget-table th, .budget-table td {
-    padding: 6px 4px;
-    word-break: break-word;
-    overflow-wrap: anywhere;
+    padding: 5px 2px;
+    white-space: nowrap !important;
+    word-break: keep-all;
+    overflow-wrap: normal;
+    text-align: center;
   }
 
   .budget-table th {
     width: auto !important;
-    font-size: 0.65rem;
+    font-size: clamp(0.52rem, 2.1vw, 0.65rem);
     letter-spacing: 0;
     padding: 6px 2px;
     text-align: center;
     line-height: 1.15;
-    white-space: normal;
+    white-space: nowrap !important;
   }
 
   .budget-table td {
-    text-align: left;
+    text-align: center;
     line-height: 1.25;
+    white-space: nowrap !important;
   }
 
   .today-badge {
@@ -589,11 +592,14 @@ h1, h2, h3, h4, .font-display {
   }
 
   .table-recorded-cell {
-    gap: 2px !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    white-space: nowrap !important;
   }
 
   .delete-balance-btn {
     padding: 1px !important;
+    flex-shrink: 0;
   }
 
   .app-header {
