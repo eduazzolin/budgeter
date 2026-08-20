@@ -1009,10 +1009,11 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           <table className="budget-table">
             <thead>
               <tr>
-                <th style={{ width: '25%' }}>Data</th>
-                <th style={{ width: '25%' }}>Saldo Esperado</th>
-                <th style={{ width: '25%' }}>Saldo Real</th>
-                <th style={{ width: '25%' }}>Margem</th>
+                <th style={{ width: '20%' }}>Data</th>
+                <th style={{ width: '20%' }}>Saldo Esperado</th>
+                <th style={{ width: '20%' }}>Saldo Real</th>
+                <th style={{ width: '20%' }}>Saldo Projetado</th>
+                <th style={{ width: '20%' }}>Margem</th>
               </tr>
             </thead>
             <tbody>
@@ -1026,13 +1027,14 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                 }
                 
                 const todayStr = getLocalDateString();
+                const projectedVal = lastRecordedBalance !== null ? lastRecordedBalance : period.initialBudget;
 
                 return dates.map((dateStr, index) => {
                   const expectedBalance = period.initialBudget - index * metrics.dailyBudget;
                   const recordedBalanceForDay = period.balanceHistory?.[dateStr];
                   const hasRecord = recordedBalanceForDay !== undefined;
                   const isToday = todayStr === dateStr;
-
+                  const isPast = dateStr < todayStr;
 
                   let diffText = '—';
                   let diffColor = 'inherit';
@@ -1102,6 +1104,9 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                             </button>
                           )}
                         </div>
+                      </td>
+                      <td>
+                        {!isPast ? formatCurrency(projectedVal) : '—'}
                       </td>
 
                       <td style={{ color: diffColor, fontWeight: diffWeight as any }}>
