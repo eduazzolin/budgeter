@@ -585,10 +585,7 @@ h1, h2, h3, h4, .font-display {
   }
 
   .today-badge {
-    display: inline-block;
-    margin-left: 2px !important;
-    padding: 1px 3px !important;
-    font-size: 0.55rem !important;
+    display: none !important;
   }
 
   .table-recorded-cell {

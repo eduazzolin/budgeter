@@ -1103,7 +1103,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                         <span className="hide-mobile">{formatDate(dateStr)}</span>
                         <span className="show-mobile">{formatShortDate(dateStr)}</span>
                         {isToday && (
-                          <span className="badge badge-neutral today-badge" style={{ marginLeft: '8px', padding: '2px 8px', fontSize: '0.65rem', textTransform: 'none' }}>
+                          <span className="badge badge-neutral today-badge hide-mobile" style={{ marginLeft: '8px', padding: '2px 8px', fontSize: '0.65rem', textTransform: 'none' }}>
                             Hoje
                           </span>
                         )}
