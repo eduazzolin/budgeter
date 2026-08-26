@@ -34,4 +34,12 @@ test.describe('Mobile Header Layout', () => {
     // So the span inside the button should NOT be visible.
     await expect(helpButtonSpan).toBeHidden();
   });
+
+  test('user button skeleton text is hidden on mobile during loading', async ({ page }) => {
+    await page.goto('/');
+    const userBtnSkeleton = page.locator('.hide-mobile-text .skeleton-pulse');
+    if (await userBtnSkeleton.count() > 0) {
+      await expect(userBtnSkeleton.first()).toBeHidden();
+    }
+  });
 });

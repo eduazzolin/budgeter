@@ -204,7 +204,7 @@ function App() {
           >
             <User size={15} /> 
             {isLoading ? (
-              <div className="skeleton-pulse" style={{ width: '80px', height: '14px', borderRadius: '3px' }} />
+              <span className="skeleton-pulse" style={{ width: '80px', height: '14px', borderRadius: '3px' }} />
             ) : (
               <span>{user ? 'Minha Conta' : 'Entrar / Login'}</span>
             )}

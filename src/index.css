@@ -618,8 +618,9 @@ h1, h2, h3, h4, .font-display {
     align-items: center;
     gap: 8px; /* reduce gap slightly on mobile */
   }
-  .hide-mobile-text span {
-    display: none;
+  .hide-mobile-text span,
+  .hide-mobile-text .skeleton-pulse {
+    display: none !important;
   }
   .header-btn {
     padding: 8px !important;
@@ -724,6 +725,7 @@ h1, h2, h3, h4, .font-display {
   border-radius: var(--border-radius-sm);
   display: inline-block;
   vertical-align: middle;
+  max-width: 100%;
 }
 
 @keyframes skeleton-shimmer {
