@@ -212,6 +212,12 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     return `${d}/${m}`;
   };
 
+  const getWeekdayShort = (dateStr: string) => {
+    const date = parseLocalDate(dateStr);
+    const weekdays = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+    return weekdays[date.getDay()];
+  };
+
   // Prepare chart data (Gasto Zero Assumption)
   const chartData = [];
   const start = parseLocalDate(period.startDate);
@@ -1063,12 +1069,12 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                     const diff = recordedBalanceForDay - expectedBalance;
                     const diffAbs = Math.abs(diff);
                     if (diff > 0.01) {
-                      diffTextFull = `+ ${formatCurrency(diffAbs)}`;
+                      diffTextFull = formatCurrency(diffAbs);
                       diffTextCompact = formatCurrencyNoCents(diffAbs);
                       diffColor = 'var(--color-above)';
                       diffWeight = '700';
                     } else if (diff < -0.01) {
-                      diffTextFull = `- ${formatCurrency(diffAbs)}`;
+                      diffTextFull = formatCurrency(diffAbs);
                       diffTextCompact = formatCurrencyNoCents(diffAbs);
                       diffColor = 'var(--color-below)';
                       diffWeight = '700';
@@ -1100,13 +1106,8 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                   return (
                     <tr key={dateStr} className={isToday ? 'today-row' : ''}>
                       <td style={{ color: isToday ? 'var(--color-primary)' : 'inherit', fontWeight: isToday ? 600 : 'normal' }}>
-                        <span className="hide-mobile">{formatDate(dateStr)}</span>
-                        <span className="show-mobile">{formatShortDate(dateStr)}</span>
-                        {isToday && (
-                          <span className="badge badge-neutral today-badge hide-mobile" style={{ marginLeft: '8px', padding: '2px 8px', fontSize: '0.65rem', textTransform: 'none' }}>
-                            Hoje
-                          </span>
-                        )}
+                        <span className="hide-mobile">{formatDate(dateStr)} ({getWeekdayShort(dateStr)})</span>
+                        <span className="show-mobile">{formatShortDate(dateStr)} {getWeekdayShort(dateStr)}</span>
                       </td>
                       <td>
                         <span className="hide-mobile">{formatCurrency(expectedBalance)}</span>
