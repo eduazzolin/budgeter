@@ -71,4 +71,36 @@ test.describe('Coluna de Margem Projetada na Tabela', () => {
     await page.setViewportSize({ width: 393, height: 851 });
     await expect(rowTdCol4.locator('.show-mobile')).toContainText('-');
   });
+
+  test('não deve exibir sinal "+" na quarta coluna quando o valor for positivo', async ({ page }) => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const mockPeriod = {
+      id: "test-positive-proj-margin",
+      name: "Teste Margem Projetada Positiva",
+      startDate: todayStr,
+      endDate: todayStr,
+      initialBudget: 1000,
+      finalBudget: 500,
+      currentBalance: 1500,
+      currentBalanceDate: todayStr,
+      balanceHistory: {
+        [todayStr]: 1500
+      },
+      createdAt: "2026-08-01T10:00:00Z",
+      userId: "teste"
+    };
+
+    await page.addInitScript((data) => {
+      window.localStorage.setItem('budgeter_periods', JSON.stringify([data]));
+      window.localStorage.setItem('budgeter_selected_period_id', data.id);
+      window.localStorage.setItem('lgpd_consent_accepted', 'true');
+    }, mockPeriod);
+
+    // Initial budget = 1000, current balance = 1500, so projected margin = 1500 - 1000 = +500 (positive)
+    await page.goto('/');
+
+    const rowTdCol4 = page.locator('table.budget-table tbody tr').first().locator('td').nth(3);
+    const col4Text = await rowTdCol4.innerText();
+    expect(col4Text).not.toContain('+');
+  });
 });

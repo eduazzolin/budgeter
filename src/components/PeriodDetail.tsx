@@ -1086,8 +1086,8 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                     const projMargin = projectedVal - expectedBalance;
                     const projMarginAbs = Math.abs(projMargin);
                     if (projMargin > 0.01) {
-                      projMarginTextFull = `+ ${formatCurrency(projMarginAbs)}`;
-                      projMarginTextCompact = `+ ${formatCurrencyNoCents(projMarginAbs)}`;
+                      projMarginTextFull = formatCurrency(projMarginAbs);
+                      projMarginTextCompact = formatCurrencyNoCents(projMarginAbs);
                     } else if (projMargin < -0.01) {
                       projMarginTextFull = `- ${formatCurrency(projMarginAbs)}`;
                       projMarginTextCompact = `- ${formatCurrencyNoCents(projMarginAbs)}`;
