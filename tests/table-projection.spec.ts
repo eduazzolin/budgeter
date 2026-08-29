@@ -36,4 +36,39 @@ test.describe('Coluna de Margem Projetada na Tabela', () => {
     await expect(tableHeaderCols).toHaveCount(5);
     await expect(tableHeaderCols.nth(3)).toContainText('Margem Projetada');
   });
+
+  test('deve exibir sinal "-" na quarta coluna (Margem Projetada) quando o valor for negativo tanto em desktop quanto em mobile', async ({ page }) => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const mockPeriod = {
+      id: "test-negative-proj-margin",
+      name: "Teste Margem Projetada Negativa",
+      startDate: todayStr,
+      endDate: todayStr,
+      initialBudget: 1000,
+      finalBudget: 500,
+      currentBalance: 200,
+      currentBalanceDate: todayStr,
+      balanceHistory: {
+        [todayStr]: 200
+      },
+      createdAt: "2026-08-01T10:00:00Z",
+      userId: "teste"
+    };
+
+    await page.addInitScript((data) => {
+      window.localStorage.setItem('budgeter_periods', JSON.stringify([data]));
+      window.localStorage.setItem('budgeter_selected_period_id', data.id);
+      window.localStorage.setItem('lgpd_consent_accepted', 'true');
+    }, mockPeriod);
+
+    // Initial budget = 1000, current balance = 200, so projected margin = 200 - 1000 = -800 (negative)
+    await page.goto('/');
+
+    const rowTdCol4 = page.locator('table.budget-table tbody tr').first().locator('td').nth(3);
+    await expect(rowTdCol4).toContainText('-');
+
+    // Test in mobile view
+    await page.setViewportSize({ width: 393, height: 851 });
+    await expect(rowTdCol4.locator('.show-mobile')).toContainText('-');
+  });
 });

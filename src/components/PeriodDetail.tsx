@@ -1087,10 +1087,10 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                     const projMarginAbs = Math.abs(projMargin);
                     if (projMargin > 0.01) {
                       projMarginTextFull = `+ ${formatCurrency(projMarginAbs)}`;
-                      projMarginTextCompact = formatCurrencyNoCents(projMarginAbs);
+                      projMarginTextCompact = `+ ${formatCurrencyNoCents(projMarginAbs)}`;
                     } else if (projMargin < -0.01) {
                       projMarginTextFull = `- ${formatCurrency(projMarginAbs)}`;
-                      projMarginTextCompact = formatCurrencyNoCents(projMarginAbs);
+                      projMarginTextCompact = `- ${formatCurrencyNoCents(projMarginAbs)}`;
                     } else {
                       projMarginTextFull = 'Margem OK';
                       projMarginTextCompact = 'Margem OK';
