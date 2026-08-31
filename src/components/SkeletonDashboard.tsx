@@ -74,6 +74,10 @@ export const SkeletonPeriodDetail: React.FC = () => {
             <Clock size={16} /> 
             <span className="skeleton-pulse" style={{ height: '14px', width: '80px', borderRadius: '3px' }} />
           </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <DollarSign size={16} /> 
+            <span className="skeleton-pulse" style={{ height: '14px', width: '100px', borderRadius: '3px' }} />
+          </span>
         </div>
       </div>
 

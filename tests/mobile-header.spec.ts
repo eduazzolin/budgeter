@@ -42,4 +42,31 @@ test.describe('Mobile Header Layout', () => {
       await expect(userBtnSkeleton.first()).toBeHidden();
     }
   });
+
+  test('period header displays total budget', async ({ page }) => {
+    const mockPeriod = {
+      id: 'test-period-header',
+      name: 'ago26',
+      startDate: '2026-08-01',
+      endDate: '2026-08-31',
+      initialBudget: 2500,
+      finalBudget: 0,
+      currentBalance: 2000,
+      currentBalanceDate: '2026-08-10',
+      balanceHistory: { '2026-08-10': 2000 },
+      createdAt: new Date().toISOString(),
+      userId: 'test-user'
+    };
+
+    await page.addInitScript((data) => {
+      window.localStorage.setItem('budgeter_periods', JSON.stringify([data]));
+      window.localStorage.setItem('budgeter_selected_period_id', data.id);
+      window.localStorage.setItem('lgpd_consent_accepted', 'true');
+    }, mockPeriod);
+
+    await page.goto('/');
+    await expect(page.locator('h1')).toContainText('ago26');
+    await expect(page.getByText('R$ 2.500,00 de orçamento total')).toBeVisible();
+  });
 });
+

@@ -445,6 +445,9 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Clock size={16} /> {metrics.totalDays} dias no total
           </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <DollarSign size={16} /> {formatCurrency(period.initialBudget)} de orçamento total
+          </span>
         </div>
       </div>
 
