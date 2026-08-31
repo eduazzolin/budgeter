@@ -302,6 +302,38 @@ h1, h2, h3, h4, .font-display {
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.segmented-progress-bar {
+  display: flex;
+  background: var(--card-border);
+  position: relative;
+  width: 100%;
+  height: 8px;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-segment {
+  height: 100%;
+  flex: 1;
+  transition: opacity 0.2s ease;
+}
+
+.progress-segment:hover {
+  opacity: 0.8;
+}
+
+.progress-segment.segment-positive {
+  background-color: var(--color-above);
+}
+
+.progress-segment.segment-negative {
+  background-color: var(--color-below);
+}
+
+.progress-segment.segment-future {
+  background-color: transparent;
+}
+
 /* KPI Cards Grid */
 .kpi-cards-grid {
   display: flex;

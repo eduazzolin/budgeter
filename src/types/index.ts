@@ -23,6 +23,27 @@ export interface FirebaseConfig {
   appId: string;
 }
 
+export interface TimelineDaySegment {
+  date: string;
+  dayIndex: number;
+  isElapsed: boolean;
+  expectedBalance: number;
+  recordedBalance?: number;
+  activeBalance: number;
+  margin: number;
+  status: 'positive' | 'negative' | 'future';
+}
+
+export interface TimelineStats {
+  hasRecordedData: boolean;
+  positiveDays: number;
+  negativeDays: number;
+  totalElapsedDays: number;
+  positivePercentage: number;
+  negativePercentage: number;
+  segments: TimelineDaySegment[];
+}
+
 export interface BudgetMetrics {
   totalDays: number;
   daysPassed: number;
@@ -37,4 +58,5 @@ export interface BudgetMetrics {
   status: 'above' | 'below' | 'neutral';
   isPeriodEnded: boolean;
   isPeriodNotStarted: boolean;
+  timelineStats: TimelineStats;
 }

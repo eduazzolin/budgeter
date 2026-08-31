@@ -1,4 +1,4 @@
-import type { Period, BudgetMetrics } from '../types';
+import type { Period, BudgetMetrics, TimelineStats, TimelineDaySegment } from '../types';
 
 /**
  * Parses a YYYY-MM-DD string into a local Date object.
@@ -33,6 +33,85 @@ export const getCalendarDaysBetween = (startStr: string, endStr: string): number
   
   // End date is inclusive, so we add 1 day
   return Math.round((utc2 - utc1) / oneDay) + 1;
+};
+
+/**
+ * Calculates timeline breakdown of positive and negative days across the period.
+ */
+export const calculatePeriodTimelineStats = (period: Period, referenceDateStr?: string): TimelineStats => {
+  const todayStr = referenceDateStr || getLocalDateString();
+  const totalDays = Math.max(1, getCalendarDaysBetween(period.startDate, period.endDate));
+  const dailyBudget = totalDays > 1
+    ? (period.initialBudget - period.finalBudget) / (totalDays - 1)
+    : (period.initialBudget - period.finalBudget);
+
+  const start = parseLocalDate(period.startDate);
+  const segments: TimelineDaySegment[] = [];
+
+  const history = period.balanceHistory || {};
+  const hasRecordedData = Object.keys(history).length > 0 || period.currentBalance !== undefined;
+
+  let lastKnownBalance = period.initialBudget;
+  let hasEverEncounteredRecord = false;
+  let positiveDays = 0;
+  let negativeDays = 0;
+  let totalElapsedDays = 0;
+
+  for (let i = 0; i < totalDays; i++) {
+    const nextDate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    const dateStr = getLocalDateString(nextDate);
+    const expectedBalance = period.initialBudget - i * dailyBudget;
+    
+    const isElapsed = dateStr <= todayStr;
+    const recordedVal = history[dateStr];
+
+    if (recordedVal !== undefined) {
+      lastKnownBalance = recordedVal;
+      hasEverEncounteredRecord = true;
+    }
+
+    const activeBalance = hasEverEncounteredRecord 
+      ? lastKnownBalance 
+      : (period.currentBalance !== undefined ? period.currentBalance : period.initialBudget);
+    const margin = activeBalance - expectedBalance;
+
+    let dayStatus: 'positive' | 'negative' | 'future' = 'future';
+
+    if (isElapsed) {
+      totalElapsedDays++;
+      if (margin >= -0.01) {
+        dayStatus = 'positive';
+        positiveDays++;
+      } else {
+        dayStatus = 'negative';
+        negativeDays++;
+      }
+    }
+
+    segments.push({
+      date: dateStr,
+      dayIndex: i,
+      isElapsed,
+      expectedBalance,
+      recordedBalance: recordedVal,
+      activeBalance,
+      margin,
+      status: dayStatus
+    });
+  }
+
+  const positivePercentage = totalElapsedDays > 0 ? Math.round((positiveDays / totalElapsedDays) * 100) : 0;
+  const negativePercentage = totalElapsedDays > 0 ? 100 - positivePercentage : 0;
+
+  return {
+    hasRecordedData,
+    positiveDays,
+    negativeDays,
+    totalElapsedDays,
+    positivePercentage,
+    negativePercentage,
+    segments
+  };
 };
 
 /**
@@ -112,6 +191,8 @@ export const calculateBudgetMetrics = (period: Period, referenceDateStr?: string
     }
   }
 
+  const timelineStats = calculatePeriodTimelineStats(period, todayStr);
+
   return {
     totalDays,
     daysPassed,
@@ -125,6 +206,8 @@ export const calculateBudgetMetrics = (period: Period, referenceDateStr?: string
     difference,
     status,
     isPeriodEnded,
-    isPeriodNotStarted
+    isPeriodNotStarted,
+    timelineStats
   };
 };
+

@@ -793,9 +793,12 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
         {/* Countdown Card */}
         <div className="glass" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
-            Contagem Regressiva
-          </span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
+              Contagem Regressiva
+            </span>
+          </div>
+
           <div style={{ margin: '12px 0' }}>
             {metrics.isPeriodNotStarted ? (
               <div>
@@ -812,7 +815,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                   Finalizado
                 </span>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                  Contador encerrado
+                  Contador encerrado ({metrics.totalDays} dias)
                 </p>
               </div>
             ) : (
@@ -829,10 +832,84 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               </div>
             )}
 
+            {/* Positive vs Negative Percentage Stats */}
+            {metrics.timelineStats.hasRecordedData && metrics.timelineStats.totalElapsedDays > 0 && (
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between', 
+                gap: '8px', 
+                marginTop: '10px',
+                paddingTop: '8px',
+                borderTop: '1px solid var(--card-border)',
+                fontSize: '0.75rem'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span style={{ 
+                    width: '7px', 
+                    height: '7px', 
+                    borderRadius: '50%', 
+                    backgroundColor: 'var(--color-above)', 
+                    display: 'inline-block',
+                    flexShrink: 0
+                  }} />
+                  <span style={{ color: 'var(--color-above)', fontWeight: 700 }}>
+                    {metrics.timelineStats.positivePercentage}% Positivo
+                  </span>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>
+                    ({metrics.timelineStats.positiveDays}d)
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span style={{ 
+                    width: '7px', 
+                    height: '7px', 
+                    borderRadius: '50%', 
+                    backgroundColor: 'var(--color-below)', 
+                    display: 'inline-block',
+                    flexShrink: 0
+                  }} />
+                  <span style={{ color: 'var(--color-below)', fontWeight: 700 }}>
+                    {metrics.timelineStats.negativePercentage}% Negativo
+                  </span>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>
+                    ({metrics.timelineStats.negativeDays}d)
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="progress-bar-container" style={{ margin: 0 }}>
-            <div className="progress-bar-fill" style={{ width: `${metrics.currentProgressPercent}%` }} />
-          </div>
+
+          {/* Segmented Multi-colored Progress Bar */}
+          {metrics.timelineStats.hasRecordedData && metrics.timelineStats.segments.length > 0 ? (
+            <div 
+              className="segmented-progress-bar" 
+              style={{ margin: 0 }}
+              title={`Progresso: ${metrics.daysPassed} de ${metrics.totalDays} dias decorridos | ${metrics.timelineStats.positivePercentage}% Positivo, ${metrics.timelineStats.negativePercentage}% Negativo`}
+            >
+              {metrics.timelineStats.segments.map((seg) => {
+                const isElapsed = seg.isElapsed;
+                const isPos = seg.status === 'positive';
+
+                const tooltip = isElapsed
+                  ? `${formatShortDate(seg.date)}: ${isPos ? 'Margem Positiva (economizando)' : 'Margem Negativa (acima da meta)'}`
+                  : `${formatShortDate(seg.date)}: Dia futuro`;
+
+                return (
+                  <div
+                    key={seg.date}
+                    className={`progress-segment ${isElapsed ? (isPos ? 'segment-positive' : 'segment-negative') : 'segment-future'}`}
+                    title={tooltip}
+                  />
+                );
+              })}
+            </div>
+          ) : (
+            <div className="progress-bar-container" style={{ margin: 0 }}>
+              <div className="progress-bar-fill" style={{ width: `${metrics.currentProgressPercent}%` }} />
+            </div>
+          )}
         </div>
 
       </div>
