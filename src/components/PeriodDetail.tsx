@@ -443,10 +443,10 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
             <Calendar size={16} /> {formatDate(period.startDate)} até {formatDate(period.endDate)}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Clock size={16} /> {metrics.totalDays} dias no total
+            <Clock size={16} /> {metrics.totalDays} dias
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <DollarSign size={16} /> {formatCurrency(period.initialBudget)} de orçamento total
+            <DollarSign size={16} /> {formatCurrency(period.initialBudget)}
           </span>
         </div>
       </div>

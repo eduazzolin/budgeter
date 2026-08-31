@@ -65,8 +65,10 @@ test.describe('Mobile Header Layout', () => {
     }, mockPeriod);
 
     await page.goto('/');
-    await expect(page.locator('h1')).toContainText('ago26');
-    await expect(page.getByText('R$ 2.500,00 de orçamento total')).toBeVisible();
+    const header = page.locator('h1').locator('..');
+    await expect(header.locator('h1')).toContainText('ago26');
+    await expect(header.getByText('31 dias')).toBeVisible();
+    await expect(header.getByText('R$ 2.500,00')).toBeVisible();
   });
 });
 
