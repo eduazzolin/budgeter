@@ -312,61 +312,43 @@ h1, h2, h3, h4, .font-display {
   overflow: hidden;
 }
 
-.segmented-progress-bar .progress-segment {
-  height: 100%;
-  flex: 1;
-  transition: opacity 0.2s ease;
-}
-
-.segmented-progress-bar .progress-segment:hover {
-  opacity: 0.8;
-}
-
-.segmented-progress-bar .progress-segment.segment-positive {
-  background-color: var(--color-above);
-}
-
-.segmented-progress-bar .progress-segment.segment-negative {
-  background-color: var(--color-below);
-}
-
-.segmented-progress-bar .progress-segment.segment-future {
-  background-color: transparent;
-}
-
 .segmented-progress-bar-subtle {
   display: flex;
   background: var(--card-border);
   position: relative;
   width: 100%;
-  height: 4px;
+  height: 3px;
   border-radius: 9999px;
   overflow: hidden;
-  gap: 0.5px;
 }
 
-.segmented-progress-bar-subtle .progress-segment {
+.progress-segment {
   height: 100%;
   flex: 1;
-  transition: opacity 0.2s ease, transform 0.15s ease;
+  transition: opacity 0.2s ease;
 }
 
-.segmented-progress-bar-subtle .progress-segment:hover {
-  opacity: 1;
-  filter: brightness(1.2);
+.progress-segment:hover {
+  opacity: 0.8;
+}
+
+.progress-segment.segment-positive {
+  background-color: var(--color-above);
+}
+
+.progress-segment.segment-negative {
+  background-color: var(--color-below);
 }
 
 .segmented-progress-bar-subtle .progress-segment.segment-positive {
-  background-color: var(--text-primary);
-  opacity: 0.85;
+  background-color: rgba(16, 185, 129, 0.45);
 }
 
 .segmented-progress-bar-subtle .progress-segment.segment-negative {
-  background-color: var(--text-muted);
-  opacity: 0.35;
+  background-color: rgba(239, 68, 68, 0.45);
 }
 
-.segmented-progress-bar-subtle .progress-segment.segment-future {
+.progress-segment.segment-future {
   background-color: transparent;
 }
 
