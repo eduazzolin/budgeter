@@ -219,21 +219,41 @@ export const PeriodList: React.FC<PeriodListProps> = ({
 
                   {/* Progress bar of days */}
                   <div style={{ marginTop: '12px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
                       <span>Progresso</span>
-                      <span>{Math.round(metrics.currentProgressPercent)}% ({metrics.daysPassed}d / {metrics.totalDays}d)</span>
+                      <span>{metrics.daysPassed}d de {metrics.totalDays}d ({Math.round(metrics.currentProgressPercent)}%)</span>
                     </div>
-                    <div className="progress-bar-container" style={{ margin: '0', height: '4px' }}>
+
+                    {metrics.timelineStats.hasRecordedData && metrics.timelineStats.segments.length > 0 ? (
                       <div 
-                        className="progress-bar-fill" 
-                        style={{ 
-                          width: `${metrics.currentProgressPercent}%`,
-                          background: isSelected 
-                            ? 'linear-gradient(90deg, var(--color-primary), var(--color-secondary))'
-                            : 'rgba(255, 255, 255, 0.25)' 
-                        }} 
-                      />
-                    </div>
+                        className="segmented-progress-bar-subtle" 
+                        style={{ margin: 0 }}
+                        title={`Progresso: ${metrics.daysPassed} de ${metrics.totalDays} dias | ${metrics.timelineStats.positivePercentage}% Positivo, ${metrics.timelineStats.negativePercentage}% Negativo`}
+                      >
+                        {metrics.timelineStats.segments.map((seg) => {
+                          const isElapsed = seg.isElapsed;
+                          const isPos = seg.status === 'positive';
+                          return (
+                            <div
+                              key={seg.date}
+                              className={`progress-segment ${isElapsed ? (isPos ? 'segment-positive' : 'segment-negative') : 'segment-future'}`}
+                            />
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="progress-bar-container" style={{ margin: '0', height: '3px' }}>
+                        <div 
+                          className="progress-bar-fill" 
+                          style={{ 
+                            width: `${metrics.currentProgressPercent}%`,
+                            background: isSelected 
+                              ? 'linear-gradient(90deg, var(--color-primary), var(--color-secondary))'
+                              : 'rgba(255, 255, 255, 0.25)' 
+                          }} 
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

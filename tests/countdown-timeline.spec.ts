@@ -69,23 +69,28 @@ test.describe('Countdown Positive/Negative Timeline Feature', () => {
       window.localStorage.setItem('lgpd_consent_accepted', 'true');
     }, mockPeriod);
 
+    await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto('/');
 
     // Check period title
     await expect(page.locator('h1')).toContainText('Período com Linha do Tempo');
 
     // Wait for the countdown card and segmented bar
-    const segmentedBar = page.locator('.segmented-progress-bar');
-    await expect(segmentedBar).toBeVisible();
+    const countdownBar = page.locator('.kpi-cards-grid .segmented-progress-bar');
+    await expect(countdownBar).toBeVisible();
 
-    // Check that positive and negative stats are rendered
+    // Check that positive and negative stats are rendered in the countdown card
     await expect(page.getByText('83% Positivo')).toBeVisible();
     await expect(page.getByText('17% Negativo')).toBeVisible();
 
-    // Verify segment counts: 5 positive (green), 1 negative (red), 5 future
-    const positiveSegments = page.locator('.progress-segment.segment-positive');
-    const negativeSegments = page.locator('.progress-segment.segment-negative');
-    const futureSegments = page.locator('.progress-segment.segment-future');
+    // Check sidebar subtle bar representation
+    const sidebarBar = page.locator('.segmented-progress-bar-subtle').first();
+    await expect(sidebarBar).toBeVisible();
+
+    // Verify segment counts in countdown card
+    const positiveSegments = countdownBar.locator('.progress-segment.segment-positive');
+    const negativeSegments = countdownBar.locator('.progress-segment.segment-negative');
+    const futureSegments = countdownBar.locator('.progress-segment.segment-future');
 
     await expect(positiveSegments).toHaveCount(5);
     await expect(negativeSegments).toHaveCount(1);
@@ -106,14 +111,14 @@ test.describe('Countdown Positive/Negative Timeline Feature', () => {
 
     await page.goto('/');
 
-    const segmentedBar = page.locator('.segmented-progress-bar');
-    await expect(segmentedBar).toBeVisible();
+    const countdownBar = page.locator('.kpi-cards-grid .segmented-progress-bar');
+    await expect(countdownBar).toBeVisible();
 
     await expect(page.getByText('0% Positivo')).toBeVisible();
     await expect(page.getByText('100% Negativo')).toBeVisible();
 
-    const positiveSegments = page.locator('.progress-segment.segment-positive');
-    const negativeSegments = page.locator('.progress-segment.segment-negative');
+    const positiveSegments = countdownBar.locator('.progress-segment.segment-positive');
+    const negativeSegments = countdownBar.locator('.progress-segment.segment-negative');
 
     await expect(positiveSegments).toHaveCount(0);
     await expect(negativeSegments).toHaveCount(6);

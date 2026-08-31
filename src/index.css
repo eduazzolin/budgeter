@@ -312,6 +312,16 @@ h1, h2, h3, h4, .font-display {
   overflow: hidden;
 }
 
+.segmented-progress-bar-subtle {
+  display: flex;
+  background: var(--card-border);
+  position: relative;
+  width: 100%;
+  height: 3px;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
 .progress-segment {
   height: 100%;
   flex: 1;
@@ -328,6 +338,14 @@ h1, h2, h3, h4, .font-display {
 
 .progress-segment.segment-negative {
   background-color: var(--color-below);
+}
+
+.segmented-progress-bar-subtle .progress-segment.segment-positive {
+  background-color: rgba(16, 185, 129, 0.45);
+}
+
+.segmented-progress-bar-subtle .progress-segment.segment-negative {
+  background-color: rgba(239, 68, 68, 0.45);
 }
 
 .progress-segment.segment-future {
