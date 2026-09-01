@@ -1,23 +1,42 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Period } from '../types';
 import { dbService } from '../services/db';
+import { isFirebaseEnabled } from '../firebase';
 
-export const usePeriods = (userId?: string) => {
+const getStoredPeriodId = (userId?: string) => {
+  if (userId) {
+    const userStored = localStorage.getItem(`budgeter_selected_period_id_${userId}`);
+    if (userStored) return userStored;
+  }
+  return localStorage.getItem('budgeter_selected_period_id');
+};
+
+const setStoredPeriodId = (id: string | null, userId?: string) => {
+  if (id) {
+    localStorage.setItem('budgeter_selected_period_id', id);
+    if (userId) {
+      localStorage.setItem(`budgeter_selected_period_id_${userId}`, id);
+    }
+  } else {
+    localStorage.removeItem('budgeter_selected_period_id');
+    if (userId) {
+      localStorage.removeItem(`budgeter_selected_period_id_${userId}`);
+    }
+  }
+};
+
+export const usePeriods = (userId?: string, authLoading?: boolean) => {
   const [periods, setPeriods] = useState<Period[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPeriodId, setSelectedPeriodId] = useState<string | null>(() => {
-    return localStorage.getItem('budgeter_selected_period_id');
+    return getStoredPeriodId(userId);
   });
 
   const selectPeriod = useCallback((id: string | null) => {
     setSelectedPeriodId(id);
-    if (id) {
-      localStorage.setItem('budgeter_selected_period_id', id);
-    } else {
-      localStorage.removeItem('budgeter_selected_period_id');
-    }
-  }, []);
+    setStoredPeriodId(id, userId);
+  }, [userId]);
 
   const fetchPeriods = useCallback(async () => {
     try {
@@ -26,20 +45,17 @@ export const usePeriods = (userId?: string) => {
       const data = await dbService.getPeriods(userId);
       setPeriods(data);
       
-      // Auto-select period if none is selected or if the selected one doesn't exist anymore
+      // Auto-select period: restore previously saved/selected period, or fallback to first available
       if (data.length > 0) {
-        if (!selectedPeriodId || !data.some(p => p.id === selectedPeriodId)) {
-          const storedId = localStorage.getItem('budgeter_selected_period_id');
-          const exists = storedId ? data.some(p => p.id === storedId) : false;
-          if (exists && storedId) {
-            setSelectedPeriodId(storedId);
-          } else {
-            selectPeriod(data[0].id);
-          }
-        }
+        const storedId = getStoredPeriodId(userId);
+        const targetId = (selectedPeriodId && data.some(p => p.id === selectedPeriodId))
+          ? selectedPeriodId
+          : (storedId && data.some(p => p.id === storedId) ? storedId : data[0].id);
+
+        setSelectedPeriodId(targetId);
+        setStoredPeriodId(targetId, userId);
       } else {
         setSelectedPeriodId(null);
-        localStorage.removeItem('budgeter_selected_period_id');
       }
     } catch (err: any) {
       console.error('Failed to fetch from Firestore, falling back to LocalStorage:', err);
@@ -61,15 +77,13 @@ export const usePeriods = (userId?: string) => {
           setPeriods(sorted);
           
           if (sorted.length > 0) {
-            if (!selectedPeriodId || !sorted.some(p => p.id === selectedPeriodId)) {
-              const storedId = localStorage.getItem('budgeter_selected_period_id');
-              const exists = storedId ? sorted.some(p => p.id === storedId) : false;
-              if (exists && storedId) {
-                setSelectedPeriodId(storedId);
-              } else {
-                selectPeriod(sorted[0].id);
-              }
-            }
+            const storedId = getStoredPeriodId(userId);
+            const targetId = (selectedPeriodId && sorted.some(p => p.id === selectedPeriodId))
+              ? selectedPeriodId
+              : (storedId && sorted.some(p => p.id === storedId) ? storedId : sorted[0].id);
+
+            setSelectedPeriodId(targetId);
+            setStoredPeriodId(targetId, userId);
           }
         } catch (e) {
           console.error('Error parsing fallback local periods:', e);
@@ -80,12 +94,13 @@ export const usePeriods = (userId?: string) => {
     }
   }, [userId, selectedPeriodId, selectPeriod]);
 
-  // Fetch data on user change
+  // Fetch data on user change or once auth is ready
   useEffect(() => {
+    if (authLoading && isFirebaseEnabled()) {
+      return;
+    }
     fetchPeriods();
-    // We intentionally only run this when the userId changes to prevent infinite fetch loops
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, [userId, authLoading]);
 
   const addPeriod = async (
     name: string,

@@ -46,7 +46,7 @@ function App() {
     deleteBalance,
     syncLocalData,
     reorderPeriods
-  } = usePeriods(user?.uid);
+  } = usePeriods(user?.uid, authLoading);
 
   const isLoading = (authLoading && isFirebaseEnabled()) || periodsLoading;
 
