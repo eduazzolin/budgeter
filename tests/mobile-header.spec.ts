@@ -70,5 +70,28 @@ test.describe('Mobile Header Layout', () => {
     await expect(header.getByText('31 dias')).toBeVisible();
     await expect(header.getByText('R$ 2.500,00')).toBeVisible();
   });
+
+  test('canonical theme-color meta tag matches app theme and has no media query interference', async ({ page }) => {
+    // Test dark mode
+    await page.addInitScript(() => {
+      window.localStorage.setItem('theme', 'dark');
+      window.localStorage.setItem('lgpd_consent_accepted', 'true');
+    });
+    await page.goto('/');
+
+    const metaTags = page.locator('meta[name="theme-color"]');
+    await expect(metaTags).toHaveCount(1);
+    await expect(metaTags.first()).toHaveAttribute('content', '#09090b');
+    // Ensure no media query on the tag to prevent Android Chrome bugs
+    const mediaAttr = await metaTags.first().getAttribute('media');
+    expect(mediaAttr).toBeNull();
+
+    // Test light mode
+    await page.addInitScript(() => {
+      window.localStorage.setItem('theme', 'light');
+    });
+    await page.goto('/');
+    await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute('content', '#fafafa');
+  });
 });
 

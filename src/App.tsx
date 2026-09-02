@@ -79,10 +79,14 @@ function App() {
     const themeColor = theme === 'dark' ? '#09090b' : '#fafafa';
     const metaTags = document.querySelectorAll('meta[name="theme-color"]');
     if (metaTags.length > 0) {
-      metaTags.forEach(meta => meta.setAttribute('content', themeColor));
+      metaTags.forEach(meta => {
+        meta.removeAttribute('media');
+        meta.setAttribute('content', themeColor);
+      });
     } else {
       const meta = document.createElement('meta');
       meta.name = 'theme-color';
+      meta.id = 'theme-color-meta';
       meta.content = themeColor;
       document.head.appendChild(meta);
     }
