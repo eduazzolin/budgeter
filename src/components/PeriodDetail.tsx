@@ -1287,20 +1287,28 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
       {/* SECTION 6: Chart (New Feature) */}
       <div className="glass animate-in delay-300" style={{ padding: isMobile ? '16px 12px' : '24px' }}>
-        <div style={{ marginBottom: isMobile ? '16px' : '20px' }}>
+        <div style={{ marginBottom: isMobile ? '12px' : '16px' }}>
           <div style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center', 
-            flexWrap: 'wrap', 
-            gap: '10px',
-            marginBottom: '8px'
+            flexWrap: compPeriod && isMobile ? 'wrap' : 'nowrap', 
+            gap: isMobile ? '6px' : '10px'
           }}>
-            <h3 style={{ fontSize: isMobile ? '1.05rem' : '1.2rem', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <TrendingUp size={18} style={{ color: 'var(--color-primary)' }} /> Evolução do Orçamento
+            <h3 style={{ 
+              fontSize: isMobile ? '0.95rem' : '1.2rem', 
+              margin: 0, 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: isMobile ? '6px' : '8px',
+              whiteSpace: 'nowrap',
+              minWidth: 0
+            }}>
+              <TrendingUp size={isMobile ? 16 : 18} style={{ color: 'var(--color-primary)', flexShrink: 0 }} /> 
+              <span>Evolução do Orçamento</span>
             </h3>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '8px', flexShrink: 0 }}>
               {/* Metric Toggle: Margem vs Saldo Real (exibido apenas durante a comparação) */}
               {compPeriod && (
                 <div style={{ 
@@ -1357,12 +1365,12 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                   onClick={() => setShowCompareDropdown(!showCompareDropdown)}
                   className={`btn ${compPeriod ? 'btn-primary' : 'btn-secondary'}`}
                   style={{
-                    padding: '5px 12px',
-                    fontSize: '0.82rem',
+                    padding: isMobile ? '4px 8px' : '5px 12px',
+                    fontSize: isMobile ? '0.78rem' : '0.82rem',
                     height: 'auto',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '6px',
+                    gap: isMobile ? '4px' : '6px',
                     borderColor: compPeriod ? '#3b82f6' : 'var(--card-border)',
                     background: compPeriod ? '#3b82f6' : 'var(--card-bg)',
                     color: compPeriod ? '#ffffff' : 'var(--text-primary)'
@@ -1598,7 +1606,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
                 onMouseLeave={() => setShowChartHelp(false)}
                 onClick={() => setShowChartHelp(!showChartHelp)}
               >
-                <Info size={18} style={{ color: 'var(--text-muted)' }} />
+                <Info size={isMobile ? 16 : 18} style={{ color: 'var(--text-muted)' }} />
                 
                 {showChartHelp && (
                   <div className="glass animate-in" style={{ 
@@ -1625,12 +1633,6 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               </div>
             </div>
           </div>
-
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
-            {chartMode === 'margin'
-              ? 'Acompanhe visualmente a Margem (Saldo Real - Saldo Esperado) ao longo dos dias.'
-              : 'Acompanhe visualmente se os seus gastos reais estão seguindo o orçamento esperado.'}
-          </p>
         </div>
 
         {/* Active Comparison Banner */}
