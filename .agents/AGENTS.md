@@ -46,4 +46,4 @@ Ao testar a aplicação utilizando o Playwright ou ferramentas de automação vi
 
 ## Fluxo de Execução e Aprovação de Planos
 
-1. **Aprovação Automática em Solicitações de Push:** Quando a solicitação do usuário incluir termos que indicam a publicação/envio final (ex: "depois push", "e faz o push", "e publique"), NÃO é necessário pausar para aguardar a confirmação manual do plano de implementação. O agente deve criar/atualizar a documentação necessária e prosseguir diretamente para a execução completa (código, testes, incremento de versão e `git push`).
+1. **Aprovação Automática em Solicitações de Push / Deploy:** Quando a solicitação do usuário incluir termos que indicam a publicação/envio final (ex: `/deploy`, "depois push", "e faz o push", "e publique", "deploy"), NÃO é necessário pausar para aguardar a confirmação manual do plano de implementação. O agente deve seguir as diretrizes da skill de deploy (`.agents/skills/deploy/SKILL.md`) e prosseguir diretamente para a execução completa (testes locais, build, incremento de versão, `git push`, monitoramento do GitHub Actions e autorremediação em caso de erro).

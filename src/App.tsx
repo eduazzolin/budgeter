@@ -264,6 +264,7 @@ function App() {
             <Suspense fallback={<SkeletonPeriodDetail />}>
               <PeriodDetail 
                 period={selectedPeriod}
+                periods={periods}
                 onRecordBalance={recordBalance}
                 onDeleteBalance={deleteBalance}
                 onUpdateNotes={(id, notes) => updatePeriod(id, { notes })}
