@@ -831,32 +831,10 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
       {/* SECTION 1: Record Current Balance (Moved Up for Quick Access) */}
       <div className="glass animate-in delay-100" style={{ padding: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-            <h3 style={{ fontSize: '1.2rem', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <DollarSign size={18} style={{ color: 'var(--color-primary)' }} /> Registrar Saldo Real
-            </h3>
-            {lastRecordedDate && (
-              <span
-                style={{
-                  fontSize: '0.75rem',
-                  color: 'var(--text-secondary)',
-                  background: 'var(--bg-secondary)',
-                  border: '1px solid var(--card-border)',
-                  padding: '2px 8px',
-                  borderRadius: '12px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                  fontWeight: 500
-                }}
-                title={`Data do último registro: ${formatDate(lastRecordedDate)}`}
-              >
-                <Clock size={11} style={{ opacity: 0.7 }} />
-                Último registro: {formatDate(lastRecordedDate)}
-              </span>
-            )}
-          </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h3 style={{ fontSize: '1.2rem', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <DollarSign size={18} style={{ color: 'var(--color-primary)' }} /> Registrar Saldo Real
+          </h3>
           <button
             type="button"
             onClick={() => setShowCalculator(!showCalculator)}
@@ -1058,6 +1036,13 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
           </form>
         )}
 
+        {lastRecordedDate && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px', marginBottom: '-6px' }}>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', opacity: 0.75 }}>
+              Último registro: {formatDate(lastRecordedDate)}
+            </span>
+          </div>
+        )}
 
       </div>
 
