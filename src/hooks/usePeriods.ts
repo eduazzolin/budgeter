@@ -165,12 +165,19 @@ export const usePeriods = (userId?: string, authLoading?: boolean) => {
       setError(null);
       const period = periods.find(p => p.id === id);
       const history = period?.balanceHistory || {};
+      const timestamps = period?.balanceTimestamps || {};
+      const nowIso = new Date().toISOString();
       const updates = {
         currentBalance: balance,
         currentBalanceDate: date,
+        lastRecordedAt: nowIso,
         balanceHistory: {
           ...history,
           [date]: balance
+        },
+        balanceTimestamps: {
+          ...timestamps,
+          [date]: nowIso
         }
       };
       await dbService.updatePeriod(id, updates);
@@ -190,20 +197,27 @@ export const usePeriods = (userId?: string, authLoading?: boolean) => {
       const history = { ...period.balanceHistory };
       delete history[date];
 
+      const timestamps = { ...(period.balanceTimestamps || {}) };
+      delete timestamps[date];
+
       const dates = Object.keys(history).sort();
       let currentBalance: number | undefined = undefined;
       let currentBalanceDate: string | undefined = undefined;
+      let lastRecordedAt: string | undefined = undefined;
 
       if (dates.length > 0) {
         const latestDate = dates[dates.length - 1];
         currentBalance = history[latestDate];
         currentBalanceDate = latestDate;
+        lastRecordedAt = timestamps[latestDate];
       }
 
       const updates = {
         currentBalance,
         currentBalanceDate,
-        balanceHistory: history
+        lastRecordedAt,
+        balanceHistory: history,
+        balanceTimestamps: timestamps
       };
 
       await dbService.updatePeriod(id, updates);
@@ -211,7 +225,9 @@ export const usePeriods = (userId?: string, authLoading?: boolean) => {
         ...p,
         currentBalance,
         currentBalanceDate,
-        balanceHistory: history
+        lastRecordedAt,
+        balanceHistory: history,
+        balanceTimestamps: timestamps
       } : p));
     } catch (err: any) {
       setError(err.message || 'Falha ao remover Saldo Real.');

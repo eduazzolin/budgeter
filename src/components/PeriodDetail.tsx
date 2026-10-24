@@ -237,6 +237,20 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     return `${d}/${m}/${y}`;
   };
 
+  const formatDateTime = (dateStr: string, timestamp?: string) => {
+    const formattedDate = formatDate(dateStr);
+    if (!timestamp) return formattedDate;
+    try {
+      const d = new Date(timestamp);
+      if (isNaN(d.getTime())) return formattedDate;
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      return `${formattedDate} às ${hours}:${minutes}`;
+    } catch {
+      return formattedDate;
+    }
+  };
+
   const formatShortDate = (dateStr: string) => {
     const [, m, d] = dateStr.split('-');
     return `${d}/${m}`;
@@ -271,13 +285,19 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     }
   }
 
-  // Data do último saldo real registrado
+  // Data e timestamp do último saldo real registrado
   const historyDates = Object.keys(period.balanceHistory || {})
     .filter((d) => period.balanceHistory?.[d] !== undefined)
     .sort();
   const lastRecordedDate = historyDates.length > 0
     ? historyDates[historyDates.length - 1]
     : (period.currentBalanceDate || null);
+
+  const lastRecordedTimestamp = lastRecordedDate
+    ? (period.balanceTimestamps?.[lastRecordedDate] ||
+       (lastRecordedDate === period.currentBalanceDate ? period.lastRecordedAt : undefined) ||
+       (period.createdAt && getLocalDateString(new Date(period.createdAt)) === lastRecordedDate ? period.createdAt : undefined))
+    : undefined;
 
   // Encontra o último saldo real registrado no período comparado (se ativo)
   let compStart: Date | null = null;
@@ -1039,7 +1059,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         {lastRecordedDate && (
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px', marginBottom: '-6px' }}>
             <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', opacity: 0.75 }}>
-              Último registro: {formatDate(lastRecordedDate)}
+              Último registro: {formatDateTime(lastRecordedDate, lastRecordedTimestamp)}
             </span>
           </div>
         )}

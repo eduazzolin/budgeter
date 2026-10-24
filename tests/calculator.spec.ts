@@ -85,8 +85,8 @@ test.describe('Calculadora de Apoio ao Saldo Real (Alternável)', () => {
     await expect(row23).toBeVisible();
     await expect(row23.locator('td').nth(2)).toContainText('R$ 1.450,50');
 
-    // Verifica se a data do último registro foi atualizada discretamente para 23/07/2026
-    await expect(page.locator('text=Último registro: 23/07/2026')).toBeVisible();
+    // Verifica se a data e hora do último registro foram atualizadas discretamente
+    await expect(page.locator('text=/Último registro: 23\\/07\\/2026 às \\d{2}:\\d{2}/')).toBeVisible();
 
     // Salva um screenshot da página final para verificação visual
     await page.screenshot({ path: 'calculator-applied-check.png', fullPage: true });
