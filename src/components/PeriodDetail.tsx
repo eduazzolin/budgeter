@@ -271,6 +271,14 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     }
   }
 
+  // Data do último saldo real registrado
+  const historyDates = Object.keys(period.balanceHistory || {})
+    .filter((d) => period.balanceHistory?.[d] !== undefined)
+    .sort();
+  const lastRecordedDate = historyDates.length > 0
+    ? historyDates[historyDates.length - 1]
+    : (period.currentBalanceDate || null);
+
   // Encontra o último saldo real registrado no período comparado (se ativo)
   let compStart: Date | null = null;
   let compLastRecordedDayIndex = -1;
@@ -823,10 +831,32 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
       {/* SECTION 1: Record Current Balance (Moved Up for Quick Access) */}
       <div className="glass animate-in delay-100" style={{ padding: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h3 style={{ fontSize: '1.2rem', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <DollarSign size={18} style={{ color: 'var(--color-primary)' }} /> Registrar Saldo Real
-          </h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <h3 style={{ fontSize: '1.2rem', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <DollarSign size={18} style={{ color: 'var(--color-primary)' }} /> Registrar Saldo Real
+            </h3>
+            {lastRecordedDate && (
+              <span
+                style={{
+                  fontSize: '0.75rem',
+                  color: 'var(--text-secondary)',
+                  background: 'var(--bg-secondary)',
+                  border: '1px solid var(--card-border)',
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  fontWeight: 500
+                }}
+                title={`Data do último registro: ${formatDate(lastRecordedDate)}`}
+              >
+                <Clock size={11} style={{ opacity: 0.7 }} />
+                Último registro: {formatDate(lastRecordedDate)}
+              </span>
+            )}
+          </div>
           <button
             type="button"
             onClick={() => setShowCalculator(!showCalculator)}

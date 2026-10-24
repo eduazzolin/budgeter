@@ -32,6 +32,9 @@ test.describe('Calculadora de Apoio ao Saldo Real (Alternável)', () => {
     // Abre a página principal
     await page.goto('/');
 
+    // Verifica se exibe discretamente a data do último registro existente
+    await expect(page.locator('text=Último registro: 18/07/2026')).toBeVisible();
+
     // Encontra o botão no cabeçalho do card
     const toggleBtn = page.locator('button.calculator-btn-trigger').first();
     await expect(toggleBtn).toHaveAttribute('title', 'Usar calculadora de saldo');
@@ -81,6 +84,9 @@ test.describe('Calculadora de Apoio ao Saldo Real (Alternável)', () => {
     const row23 = page.locator('tr', { hasText: '23/07/2026' });
     await expect(row23).toBeVisible();
     await expect(row23.locator('td').nth(2)).toContainText('R$ 1.450,50');
+
+    // Verifica se a data do último registro foi atualizada discretamente para 23/07/2026
+    await expect(page.locator('text=Último registro: 23/07/2026')).toBeVisible();
 
     // Salva um screenshot da página final para verificação visual
     await page.screenshot({ path: 'calculator-applied-check.png', fullPage: true });
