@@ -65,12 +65,12 @@ def generate_icon(base_emoji_img, size=512):
     bbox = base_emoji_img.getbbox()
     cropped_emoji = base_emoji_img.crop(bbox) if bbox else base_emoji_img
 
-    # Resize maintaining aspect ratio (target ~68% of canvas)
+    # Resize maintaining aspect ratio (target ~58% of canvas for better breathing room)
     if cropped_emoji.width >= cropped_emoji.height:
-        target_w = int(size * 0.68)
+        target_w = int(size * 0.58)
         target_h = int(target_w * (cropped_emoji.height / cropped_emoji.width))
     else:
-        target_h = int(size * 0.68)
+        target_h = int(size * 0.58)
         target_w = int(target_h * (cropped_emoji.width / cropped_emoji.height))
 
     emoji_resized = cropped_emoji.resize((target_w, target_h), Image.Resampling.LANCZOS)
