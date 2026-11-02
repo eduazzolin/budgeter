@@ -16,7 +16,6 @@ import type { Period } from './types';
 import { 
   User, 
   Plus, 
-  Briefcase,
   LayoutDashboard,
   Menu,
   HelpCircle,
@@ -150,17 +149,19 @@ function App() {
           >
             <Menu size={24} style={{ color: 'var(--text-primary)' }} />
           </button>
-          <div style={{ 
-            background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-            padding: '8px',
-            borderRadius: '10px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 0 15px var(--color-primary-glow)'
-          }}>
-            <Briefcase size={22} style={{ color: 'var(--bg-primary)' }} />
-          </div>
+          <img
+            src="/favicon.svg"
+            alt="Budgeter Logo"
+            style={{
+              width: '38px',
+              height: '38px',
+              flexShrink: 0,
+              borderRadius: '22%',
+              objectFit: 'contain',
+              userSelect: 'none',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.22)'
+            }}
+          />
           <span className="font-display" style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>
             Budgeter
           </span>
