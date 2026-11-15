@@ -63,6 +63,16 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
   const [calcExpression, setCalcExpression] = useState('');
   const calcInputRef = useRef<HTMLInputElement>(null);
 
+  // Gas-pump (odometer) animation state for Margin card when recording a new Real Balance
+  const [animatedDifference, setAnimatedDifference] = useState<number | undefined>(metrics.difference);
+  const [animatingPeriodId, setAnimatingPeriodId] = useState<string | null>(null);
+  const isMarginAnimating = animatingPeriodId === period.id;
+  const [marginAnimDirection, setMarginAnimDirection] = useState<'up' | 'down'>('up');
+  const [balanceRecordTick, setBalanceRecordTick] = useState(0);
+  const marginAnimFromRef = useRef<number>(metrics.difference ?? 0);
+  const pendingMarginAnimRef = useRef<boolean>(false);
+  const marginAnimFrameRef = useRef<number | null>(null);
+
   const handleDeleteClick = (dateStr: string) => {
     setDeleteTargetDate(dateStr);
   };
@@ -90,6 +100,12 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
   // Set default values when selected period ID changes
   useEffect(() => {
+    if (marginAnimFrameRef.current !== null) {
+      cancelAnimationFrame(marginAnimFrameRef.current);
+      marginAnimFrameRef.current = null;
+    }
+    pendingMarginAnimRef.current = false;
+
     setBalanceInput(period.currentBalance !== undefined ? period.currentBalance.toString() : '');
     
     // Set default date to today, but clamped to period bounds if today is outside the period
@@ -108,6 +124,76 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       setComparedPeriodId(null);
     }
   }, [period.id, comparedPeriodId]);
+
+  // Gas-pump counter animation when a new Real Balance is recorded
+  useEffect(() => {
+    if (!pendingMarginAnimRef.current || balanceRecordTick === 0) return;
+    pendingMarginAnimRef.current = false;
+
+    if (marginAnimFrameRef.current !== null) {
+      cancelAnimationFrame(marginAnimFrameRef.current);
+      marginAnimFrameRef.current = null;
+    }
+
+    const toVal = metrics.difference;
+    if (toVal === undefined) {
+      marginAnimFrameRef.current = requestAnimationFrame(() => {
+        setAnimatingPeriodId(null);
+      });
+      return;
+    }
+
+    const fromVal = marginAnimFromRef.current;
+    const delta = toVal - fromVal;
+    const effectiveFrom = Math.abs(delta) < 0.005
+      ? (toVal >= 0 ? Math.max(0, toVal - 5.35) : toVal + 5.35)
+      : fromVal;
+
+    const direction: 'up' | 'down' = toVal >= effectiveFrom ? 'up' : 'down';
+    const duration = 1350; // ms - fast initial spin, decelerating at final cents like a gas pump
+    const startTime = performance.now();
+    let lastUpdateTime = 0;
+    let initialized = false;
+    const targetPeriodId = period.id;
+
+    const step = (now: number) => {
+      if (!initialized) {
+        initialized = true;
+        setMarginAnimDirection(direction);
+        setAnimatedDifference(effectiveFrom);
+        setAnimatingPeriodId(targetPeriodId);
+      }
+
+      const elapsed = now - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      // Quartic ease-out: spins rapidly at first, then ticks cent-by-cent at the end
+      const eased = 1 - Math.pow(1 - progress, 4);
+      const currentVal = effectiveFrom + (toVal - effectiveFrom) * eased;
+
+      if (progress >= 1) {
+        setAnimatedDifference(toVal);
+        setAnimatingPeriodId(null);
+        marginAnimFrameRef.current = null;
+        return;
+      }
+
+      if (now - lastUpdateTime >= 30) {
+        lastUpdateTime = now;
+        setAnimatedDifference(Math.round(currentVal * 100) / 100);
+      }
+
+      marginAnimFrameRef.current = requestAnimationFrame(step);
+    };
+
+    marginAnimFrameRef.current = requestAnimationFrame(step);
+
+    return () => {
+      if (marginAnimFrameRef.current !== null) {
+        cancelAnimationFrame(marginAnimFrameRef.current);
+        marginAnimFrameRef.current = null;
+      }
+    };
+  }, [balanceRecordTick, period.id, period.lastRecordedAt, metrics.difference]);
 
   // Close compare dropdown when clicking outside
   useEffect(() => {
@@ -186,13 +272,22 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     const balance = parseFloat(balanceInput.replace(/,/g, '.'));
     if (isNaN(balance)) return;
 
+    const prevDiff = metrics.difference ?? 0;
+    marginAnimFromRef.current = prevDiff;
+    pendingMarginAnimRef.current = true;
+    setAnimatedDifference(prevDiff);
+    setAnimatingPeriodId(period.id);
+
     try {
       setSubmitting(true);
       await onRecordBalance(period.id, balance, balanceDate);
+      setBalanceRecordTick((t) => t + 1);
       setSuccessMsg(true);
       setBalanceInput(balance.toFixed(2));
       setTimeout(() => setSuccessMsg(false), 6000);
     } catch (error) {
+      pendingMarginAnimRef.current = false;
+      setAnimatingPeriodId(null);
       console.error('Error saving balance:', error);
     } finally {
       setSubmitting(false);
@@ -204,15 +299,23 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
     if (calcResult === null || !calcIsValid) return;
 
     const balance = Math.round(calcResult * 100) / 100;
+    const prevDiff = metrics.difference ?? 0;
+    marginAnimFromRef.current = prevDiff;
+    pendingMarginAnimRef.current = true;
+    setAnimatedDifference(prevDiff);
+    setAnimatingPeriodId(period.id);
 
     try {
       setSubmitting(true);
       await onRecordBalance(period.id, balance, balanceDate);
+      setBalanceRecordTick((t) => t + 1);
       setSuccessMsg(true);
       setCalcExpression('');
       setBalanceInput(balance.toFixed(2));
       setTimeout(() => setSuccessMsg(false), 6000);
     } catch (error) {
+      pendingMarginAnimRef.current = false;
+      setAnimatingPeriodId(null);
       console.error('Error saving balance:', error);
     } finally {
       setSubmitting(false);
@@ -1070,12 +1173,26 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       <div className="kpi-cards-grid animate-in delay-200">
         
         {/* Budget Goals Card */}
-        <div className="glass" style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div
+          className={`glass ${isMarginAnimating ? `margin-card-pumping margin-card-pumping-${marginAnimDirection}` : ''}`}
+          data-testid="margin-card"
+          style={{ padding: '16px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
+        >
           {(() => {
             let predictedNormalizationDate: Date | null = null;
             let isZeroSpendAssumption = false;
             let showWarning = false;
             const currentDiff = metrics.difference;
+            const displayDiff = isMarginAnimating && animatedDifference !== undefined
+              ? animatedDifference
+              : metrics.difference;
+            const displayStatus = displayDiff === undefined
+              ? 'neutral'
+              : displayDiff > 0
+                ? 'above'
+                : displayDiff < 0
+                  ? 'below'
+                  : 'neutral';
             
             if (lastRecordedBalance !== null && currentDiff !== undefined && currentDiff < 0) {
               const end = parseLocalDate(period.endDate);
@@ -1098,20 +1215,66 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               }
             }
 
+            const formattedMargin = displayDiff !== undefined
+              ? (displayDiff > 0 ? '+' : '') + formatCurrency(displayDiff)
+              : null;
+            const marginChars = formattedMargin ? Array.from(formattedMargin) : [];
+
             return (
               <>
                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
                   Margem
                 </span>
                 <div style={{ margin: '12px 0' }}>
-                  <span className="font-display" style={{ 
-                    fontSize: '2.2rem', 
-                    fontWeight: 800, 
-                    lineHeight: 1.1,
-                    color: metrics.status === 'above' ? 'var(--color-above)' : metrics.status === 'below' ? 'var(--color-below)' : 'var(--text-primary)',
-                    display: 'block'
-                  }}>
-                    {metrics.difference !== undefined ? (metrics.difference > 0 ? '+' : '') + formatCurrency(metrics.difference) : '—'}
+                  <span
+                    className={`font-display gas-pump-counter ${isMarginAnimating ? `is-pumping pumping-${marginAnimDirection}` : ''}`}
+                    data-testid="margin-card-value"
+                    data-animating={isMarginAnimating ? 'true' : 'false'}
+                    data-direction={isMarginAnimating ? marginAnimDirection : 'idle'}
+                    style={{ 
+                      fontSize: '2.2rem', 
+                      fontWeight: 800, 
+                      lineHeight: 1.15,
+                      color: displayStatus === 'above' ? 'var(--color-above)' : displayStatus === 'below' ? 'var(--color-below)' : 'var(--text-primary)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      fontVariantNumeric: 'tabular-nums',
+                      transition: 'color 0.25s ease'
+                    }}
+                  >
+                    {formattedMargin !== null ? (
+                      marginChars.map((char, idx) => {
+                        const posFromRight = marginChars.length - 1 - idx;
+                        const isDigit = /^[0-9]$/.test(char);
+                        if (isDigit) {
+                          const digit = parseInt(char, 10);
+                          return (
+                            <span
+                              key={`digit-${posFromRight}`}
+                              className="gas-pump-digit-slot"
+                              data-digit={digit}
+                            >
+                              <span className="gas-pump-digit-sr">{char}</span>
+                              <span
+                                aria-hidden="true"
+                                className="gas-pump-digit-wheel"
+                                style={{ transform: `translateY(-${digit * 10}%)` }}
+                              />
+                            </span>
+                          );
+                        }
+                        return (
+                          <span
+                            key={`sym-${posFromRight}-${char}`}
+                            className="gas-pump-symbol"
+                          >
+                            {char === ' ' ? '\u00a0' : char}
+                          </span>
+                        );
+                      })
+                    ) : (
+                      '—'
+                    )}
                   </span>
                 </div>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: (predictedNormalizationDate || showWarning) ? '12px' : '0' }}>

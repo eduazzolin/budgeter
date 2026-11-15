@@ -905,3 +905,82 @@ h1, h2, h3, h4, .font-display {
   50% { transform: scale(1.05); }
   100% { transform: scale(1); }
 }
+
+/* --- Gas Pump / Odometer Margin Counter Animation --- */
+.gas-pump-counter {
+  display: inline-flex;
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+  position: relative;
+}
+
+.gas-pump-digit-slot {
+  display: inline-block;
+  position: relative;
+  height: 1.15em;
+  line-height: 1.15em;
+  overflow: hidden;
+  vertical-align: bottom;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+}
+
+.gas-pump-digit-sr {
+  display: inline-block;
+  height: 1.15em;
+  line-height: 1.15em;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gas-pump-digit-wheel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 85ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+  pointer-events: none;
+  user-select: none;
+}
+
+.gas-pump-digit-wheel::before {
+  content: "0\A 1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9";
+  white-space: pre;
+  display: block;
+  line-height: 1.15em;
+  text-align: center;
+}
+
+.gas-pump-symbol {
+  display: inline-block;
+  height: 1.15em;
+  line-height: 1.15em;
+  vertical-align: bottom;
+}
+
+.margin-card-pumping-up {
+  border-color: var(--color-above) !important;
+  box-shadow: 0 0 18px var(--color-above-glow) !important;
+}
+
+.margin-card-pumping-down {
+  border-color: var(--color-below) !important;
+  box-shadow: 0 0 18px var(--color-below-glow) !important;
+}
+
