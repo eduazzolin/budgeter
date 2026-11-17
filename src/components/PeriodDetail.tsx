@@ -930,14 +930,14 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+    <div className="period-detail-layout" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
       
       {/* Period Header */}
-      <div className="animate-in">
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, background: 'linear-gradient(90deg, var(--text-primary), var(--text-secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '8px' }}>
+      <div className="animate-in period-detail-header">
+        <h1 className="period-detail-title" style={{ fontSize: '2.5rem', fontWeight: 800, background: 'linear-gradient(90deg, var(--text-primary), var(--text-secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '8px' }}>
           {period.name}
         </h1>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+        <div className="period-detail-meta" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Calendar size={16} /> {formatDate(period.startDate)} até {formatDate(period.endDate)}
           </span>
@@ -953,8 +953,8 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
 
       {/* SECTION 1: Record Current Balance (Moved Up for Quick Access) */}
-      <div className="glass animate-in delay-100" style={{ padding: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+      <div className="glass animate-in delay-100 record-balance-card" style={{ padding: '24px' }}>
+        <div className="record-balance-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <h3 style={{ fontSize: '1.2rem', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
             <DollarSign size={18} style={{ color: 'var(--color-primary)' }} /> Registrar Saldo Real
           </h3>
@@ -997,8 +997,8 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         </div>
 
         {!showCalculator ? (
-          <form onSubmit={handleBalanceSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'flex-end' }}>
-            <div style={{ flex: '2 1 200px' }}>
+          <form onSubmit={handleBalanceSubmit} className="record-balance-form" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'flex-end' }}>
+            <div className="record-balance-field" style={{ flex: '2 1 200px', minWidth: 0 }}>
               <label className="form-label">Saldo Real (R$)</label>
               <input
                 type="number"
@@ -1012,7 +1012,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               />
             </div>
 
-            <div style={{ flex: '1 1 150px' }}>
+            <div className="record-balance-field" style={{ flex: '1 1 150px', minWidth: 0 }}>
               <label className="form-label">Data de Registro</label>
               <input
                 type="date"
@@ -1028,7 +1028,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
             <button 
               type="submit" 
-              className="btn btn-primary" 
+              className="btn btn-primary record-balance-submit" 
               style={{ height: '46px', flex: '1 1 150px' }}
               disabled={submitting || !balanceInput}
             >
@@ -1036,8 +1036,8 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
             </button>
           </form>
         ) : (
-          <form onSubmit={handleCalcBalanceSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'flex-end' }}>
-            <div style={{ flex: '2 1 200px' }}>
+          <form onSubmit={handleCalcBalanceSubmit} className="record-balance-form record-balance-form-calc" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'flex-end' }}>
+            <div className="record-balance-field record-balance-expr-field" style={{ flex: '2 1 200px', minWidth: 0 }}>
               <label className="form-label">Expressão Matemática</label>
               <input
                 ref={calcInputRef}
@@ -1103,7 +1103,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
               </div>
             </div>
 
-            <div style={{ flex: '1 1 150px' }}>
+            <div className="record-balance-field" style={{ flex: '1 1 150px', minWidth: 0 }}>
               <label className="form-label">Data de Registro</label>
               <input
                 type="date"
@@ -1119,7 +1119,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
             <button 
               type="submit" 
-              className="btn btn-primary" 
+              className="btn btn-primary record-balance-submit" 
               style={{ height: '46px', flex: '1 1 150px' }}
               disabled={submitting || calcResult === null || !calcIsValid}
             >
@@ -1160,7 +1160,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         )}
 
         {lastRecordedDate && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px', marginBottom: '-6px' }}>
+          <div className="record-balance-last-entry" style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px', marginBottom: '-6px' }}>
             <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', opacity: 0.75 }}>
               Último registro: {formatDateTime(lastRecordedDate, lastRecordedTimestamp)}
             </span>

@@ -93,5 +93,47 @@ test.describe('Mobile Header Layout', () => {
     await page.goto('/');
     await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute('content', '#fafafa');
   });
+
+  test('margin card is visible above the fold on mobile', async ({ page }) => {
+    const mockPeriod = {
+      id: 'test-period-mobile-fold',
+      name: 'nov26',
+      startDate: '2026-11-03',
+      endDate: '2026-11-30',
+      initialBudget: 2918.68,
+      finalBudget: 0,
+      currentBalance: 1514.00,
+      currentBalanceDate: '2026-11-17',
+      balanceHistory: { '2026-11-17': 1514.00 },
+      createdAt: new Date().toISOString(),
+      userId: 'test-user'
+    };
+
+    await page.addInitScript((data) => {
+      window.localStorage.setItem('budgeter_periods', JSON.stringify([data]));
+      window.localStorage.setItem('budgeter_selected_period_id', data.id);
+      window.localStorage.setItem('lgpd_consent_accepted', 'true');
+    }, mockPeriod);
+
+    await page.goto('/');
+    await page.waitForSelector('[data-testid="margin-card"]');
+
+    const viewport = page.viewportSize()!;
+    const marginCardBox = await page.locator('[data-testid="margin-card"]').boundingBox();
+    const marginValueBox = await page.locator('[data-testid="margin-card-value"]').boundingBox();
+
+    expect(marginCardBox).not.toBeNull();
+    expect(marginValueBox).not.toBeNull();
+    // Both the margin value and the card itself should fit within the initial mobile viewport
+    expect(marginValueBox!.y + marginValueBox!.height).toBeLessThanOrEqual(viewport.height);
+    expect(marginCardBox!.y + marginCardBox!.height).toBeLessThanOrEqual(viewport.height);
+
+    // Saldo Real and Data de Registro should be side-by-side on mobile
+    const balanceInputBox = await page.locator('.record-balance-form input[type="number"]').boundingBox();
+    const dateInputBox = await page.locator('.record-balance-form input[type="date"]').boundingBox();
+    expect(balanceInputBox).not.toBeNull();
+    expect(dateInputBox).not.toBeNull();
+    expect(Math.abs(balanceInputBox!.y - dateInputBox!.y)).toBeLessThan(5);
+  });
 });
 
