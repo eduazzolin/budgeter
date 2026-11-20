@@ -150,7 +150,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
       : fromVal;
 
     const direction: 'up' | 'down' = toVal >= effectiveFrom ? 'up' : 'down';
-    const duration = 1350; // ms - fast initial spin, decelerating at final cents like a gas pump
+    const duration = 2200; // ms - slower, steady odometer-like roll with smooth deceleration
     const startTime = performance.now();
     let lastUpdateTime = 0;
     let initialized = false;
@@ -166,8 +166,8 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
 
       const elapsed = now - startTime;
       const progress = Math.min(1, elapsed / duration);
-      // Quartic ease-out: spins rapidly at first, then ticks cent-by-cent at the end
-      const eased = 1 - Math.pow(1 - progress, 4);
+      // Smooth odometer ease-out: steady mechanical rolling pace, gently settling on final digits
+      const eased = 1 - Math.pow(1 - progress, 2.8);
       const currentVal = effectiveFrom + (toVal - effectiveFrom) * eased;
 
       if (progress >= 1) {
@@ -177,7 +177,7 @@ export const PeriodDetail: React.FC<PeriodDetailProps> = ({
         return;
       }
 
-      if (now - lastUpdateTime >= 30) {
+      if (now - lastUpdateTime >= 55) {
         lastUpdateTime = now;
         setAnimatedDifference(Math.round(currentVal * 100) / 100);
       }
