@@ -105,7 +105,7 @@ export const AuthSettings: React.FC<AuthSettingsProps> = ({
 
   return (
     <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal-content glass" style={{ maxWidth: '480px', width: '90%', padding: '0', overflow: 'hidden', borderRadius: '16px' }}>
+      <div className="modal-content glass" style={{ maxWidth: '480px', width: '100%', padding: '0', overflow: 'hidden', borderRadius: '16px' }}>
         {/* Modal Header */}
         <div className="modal-header" style={{ padding: '16px 20px', borderBottom: '1px solid var(--card-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg-secondary)' }}>
           <h2 style={{ fontSize: '1.15rem', display: 'flex', alignItems: 'center', gap: '8px', margin: 0, fontWeight: 700, color: 'var(--text-primary)' }}>
@@ -278,24 +278,31 @@ export const AuthSettings: React.FC<AuthSettingsProps> = ({
             <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Aparência
             </span>
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div
+              data-testid="theme-selector"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                gap: '6px'
+              }}
+            >
               <button 
                 type="button"
                 onClick={() => onThemeChange('light')}
                 aria-pressed={theme === 'light'}
                 className={`btn ${theme === 'light' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, padding: '8px 10px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                style={{ minWidth: 0, padding: '8px 6px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap' }}
               >
-                <Sun size={14} /> Claro
+                <Sun size={13} style={{ flexShrink: 0 }} /> Claro
               </button>
               <button 
                 type="button"
                 onClick={() => onThemeChange('dark')}
                 aria-pressed={theme === 'dark'}
                 className={`btn ${theme === 'dark' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, padding: '8px 10px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                style={{ minWidth: 0, padding: '8px 6px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap' }}
               >
-                <Moon size={14} /> Escuro
+                <Moon size={13} style={{ flexShrink: 0 }} /> Escuro
               </button>
               <button 
                 type="button"
@@ -303,9 +310,9 @@ export const AuthSettings: React.FC<AuthSettingsProps> = ({
                 aria-pressed={theme === 'system'}
                 title="Acompanha automaticamente o tema claro ou escuro do seu dispositivo"
                 className={`btn ${theme === 'system' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, padding: '8px 10px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                style={{ minWidth: 0, padding: '8px 6px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap' }}
               >
-                <Monitor size={14} /> Sistema
+                <Monitor size={13} style={{ flexShrink: 0 }} /> Sistema
               </button>
             </div>
             {theme === 'system' && (

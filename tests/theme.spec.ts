@@ -79,4 +79,37 @@ test.describe('Dynamic System Theme', () => {
     await expect(page.locator('html')).toHaveClass(/\bdark\b/);
     await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute('content', '#09090b');
   });
+
+  test('theme selector buttons stay strictly inside modal on narrow mobile screens (360px)', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.addInitScript(() => {
+      window.localStorage.setItem('lgpd_consent_accepted', 'true');
+    });
+
+    await page.goto('/');
+    await page.waitForSelector('.app-header');
+    await page.locator('.app-header button.header-btn').last().click();
+
+    const modalBody = page.locator('.modal-body');
+    const selector = page.locator('[data-testid="theme-selector"]');
+    await expect(selector).toBeVisible();
+
+    const modalBodyBox = await modalBody.boundingBox();
+    const selectorBox = await selector.boundingBox();
+    expect(modalBodyBox).not.toBeNull();
+    expect(selectorBox).not.toBeNull();
+
+    // Ensure no horizontal overflow inside modal body
+    const hasHorizontalOverflow = await modalBody.evaluate((el) => el.scrollWidth > el.clientWidth + 1);
+    expect(hasHorizontalOverflow).toBe(false);
+
+    // Every button must sit strictly within the selector and modal content bounds
+    for (const label of ['Claro', 'Escuro', 'Sistema']) {
+      const btnBox = await page.getByRole('button', { name: label }).boundingBox();
+      expect(btnBox).not.toBeNull();
+      expect(btnBox!.x).toBeGreaterThanOrEqual(modalBodyBox!.x);
+      expect(btnBox!.x + btnBox!.width).toBeLessThanOrEqual(modalBodyBox!.x + modalBodyBox!.width);
+      expect(btnBox!.x + btnBox!.width).toBeLessThanOrEqual(selectorBox!.x + selectorBox!.width + 1);
+    }
+  });
 });
