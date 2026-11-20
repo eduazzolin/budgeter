@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { AppUser } from '../services/auth';
+import type { ThemeMode } from '../types';
 import { isFirebaseEnabled } from '../firebase';
 import { dbService } from '../services/db';
 import { authService } from '../services/auth';
@@ -12,6 +13,7 @@ import {
   Trash2,
   Sun,
   Moon,
+  Monitor,
   X,
   User
 } from 'lucide-react';
@@ -23,8 +25,8 @@ interface AuthSettingsProps {
   onLogout: () => Promise<void>;
   onLoginWithGoogle: () => Promise<void>;
   onSyncLocalData: () => Promise<void>;
-  theme: 'light' | 'dark';
-  onThemeChange: (theme: 'light' | 'dark') => void;
+  theme: ThemeMode;
+  onThemeChange: (theme: ThemeMode) => void;
 }
 
 export const AuthSettings: React.FC<AuthSettingsProps> = ({
@@ -280,20 +282,37 @@ export const AuthSettings: React.FC<AuthSettingsProps> = ({
               <button 
                 type="button"
                 onClick={() => onThemeChange('light')}
+                aria-pressed={theme === 'light'}
                 className={`btn ${theme === 'light' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, padding: '8px 12px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                style={{ flex: 1, padding: '8px 10px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
               >
                 <Sun size={14} /> Claro
               </button>
               <button 
                 type="button"
                 onClick={() => onThemeChange('dark')}
+                aria-pressed={theme === 'dark'}
                 className={`btn ${theme === 'dark' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, padding: '8px 12px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                style={{ flex: 1, padding: '8px 10px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
               >
                 <Moon size={14} /> Escuro
               </button>
+              <button 
+                type="button"
+                onClick={() => onThemeChange('system')}
+                aria-pressed={theme === 'system'}
+                title="Acompanha automaticamente o tema claro ou escuro do seu dispositivo"
+                className={`btn ${theme === 'system' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ flex: 1, padding: '8px 10px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+              >
+                <Monitor size={14} /> Sistema
+              </button>
             </div>
+            {theme === 'system' && (
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                Acompanha automaticamente o tema do seu dispositivo.
+              </span>
+            )}
           </div>
 
 

@@ -12,7 +12,7 @@ const AuthSettings = lazy(() => import('./components/AuthSettings').then(m => ({
 const HelpModal = lazy(() => import('./components/HelpModal').then(m => ({ default: m.HelpModal })));
 const PrivacyModal = lazy(() => import('./components/PrivacyModal').then(m => ({ default: m.PrivacyModal })));
 const CookieBanner = lazy(() => import('./components/CookieBanner').then(m => ({ default: m.CookieBanner })));
-import type { Period } from './types';
+import type { Period, ThemeMode } from './types';
 import { 
   User, 
   Plus, 
@@ -58,38 +58,51 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth > 968);
 
   // Theme state
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+  const [theme, setTheme] = useState<ThemeMode>(() => {
     const saved = localStorage.getItem('theme');
-    if (saved === 'dark' || saved === 'light') return saved;
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
-    return 'light';
+    if (saved === 'dark' || saved === 'light' || saved === 'system') return saved;
+    return 'system';
   });
 
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-      root.style.colorScheme = 'dark';
-    } else {
-      root.classList.remove('dark');
-      root.style.colorScheme = 'light';
-    }
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const applyTheme = (isDark: boolean) => {
+      if (isDark) {
+        root.classList.add('dark');
+        root.style.colorScheme = 'dark';
+      } else {
+        root.classList.remove('dark');
+        root.style.colorScheme = 'light';
+      }
+
+      // Update theme-color meta tags for mobile status bar matching
+      const themeColor = isDark ? '#09090b' : '#fafafa';
+      const metaTags = document.querySelectorAll('meta[name="theme-color"]');
+      if (metaTags.length > 0) {
+        metaTags.forEach(meta => {
+          meta.removeAttribute('media');
+          meta.setAttribute('content', themeColor);
+        });
+      } else {
+        const meta = document.createElement('meta');
+        meta.name = 'theme-color';
+        meta.id = 'theme-color-meta';
+        meta.content = themeColor;
+        document.head.appendChild(meta);
+      }
+    };
+
     localStorage.setItem('theme', theme);
 
-    // Update theme-color meta tags for mobile status bar matching
-    const themeColor = theme === 'dark' ? '#09090b' : '#fafafa';
-    const metaTags = document.querySelectorAll('meta[name="theme-color"]');
-    if (metaTags.length > 0) {
-      metaTags.forEach(meta => {
-        meta.removeAttribute('media');
-        meta.setAttribute('content', themeColor);
-      });
+    if (theme === 'system') {
+      applyTheme(mediaQuery.matches);
+      const handleChange = (e: MediaQueryListEvent) => applyTheme(e.matches);
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
     } else {
-      const meta = document.createElement('meta');
-      meta.name = 'theme-color';
-      meta.id = 'theme-color-meta';
-      meta.content = themeColor;
-      document.head.appendChild(meta);
+      applyTheme(theme === 'dark');
     }
   }, [theme]);
 

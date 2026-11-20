@@ -13,7 +13,7 @@
       (function() {
         try {
           var saved = localStorage.getItem('theme');
-          var isDark = saved ? saved === 'dark' : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          var isDark = saved === 'dark' || (saved !== 'light' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
           var color = isDark ? '#09090b' : '#fafafa';
           var meta = document.getElementById('theme-color-meta');
           if (meta) meta.setAttribute('content', color);

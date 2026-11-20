@@ -1,3 +1,5 @@
+export type ThemeMode = 'light' | 'dark' | 'system';
+
 export interface Period {
   id: string;
   name: string;
